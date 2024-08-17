@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "841152581104",
+    "project_id": "potential-plus-8f4ca",
+    "storage_bucket": "potential-plus-8f4ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841152581104:android:9fd4cc6b5c073aecf3a135",
+        "android_client_info": {
+          "package_name": "com.alphazesha.potentialplus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANsbFTA_YRzPFw35Q9vnKMEjTycMQ0NMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
