@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'potential-plus-8f4ca.appspot.com',
     iosBundleId: 'com.alphazesha.potentialplus',
   );
+
 }
