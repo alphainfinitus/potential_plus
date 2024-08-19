@@ -8,7 +8,7 @@ class DbService {
   static final usersCollRef = db
     .collection('users')
     .withConverter(
-      fromFirestore: AppUser.fromFirestore,
+      fromFirestore: (snapshot, _) => AppUser.fromMap(snapshot.data()!),
       toFirestore: (AppUser user, _) => user.toMap(),
     );
 

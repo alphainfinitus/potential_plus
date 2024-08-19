@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/constants/user_role.dart';
 
 class AppUser {
@@ -7,7 +6,8 @@ class AppUser {
     required this.username, //typically UID given by institution to the student/teacher, (assigned by us in case of admin role)
     required this.name,
     required this.email,
-    required this.role
+    required this.role,
+    required this.institutionId
   });
 
   final String id;
@@ -15,14 +15,10 @@ class AppUser {
   final String name;
   final String email;
   final UserRole role;
+  final String institutionId;
 
 
-  factory AppUser.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-    SnapshotOptions? options
-    ) {
-    final data = snapshot.data()!;
-
+  factory AppUser.fromMap(Map<String, dynamic> data) {
     UserRole role = UserRole.values.byName(data['role']);
 
     return AppUser(
@@ -31,6 +27,7 @@ class AppUser {
       name: data['name'],
       email: data['email'],
       role: role,
+      institutionId: data['institutionId']
     );
   }
 
@@ -40,5 +37,6 @@ class AppUser {
     'name': name,
     'email': email,
     'role': role.toString(),
+    'institutionId': institutionId
   };
 }
