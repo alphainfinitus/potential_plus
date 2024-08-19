@@ -27,10 +27,11 @@ class HomeScreen extends ConsumerWidget {
             );
           }
 
+          // TODO: return activity feed
           return const ProfileScreen();
         },
-        error: (error, _) => const Text(TextLiterals.authStatusUnkown),
-        loading: () => const CircularProgressIndicator()
+        error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
+        loading: () => const Center(child: CircularProgressIndicator())
       ),
 		);
 	}
