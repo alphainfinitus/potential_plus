@@ -4,6 +4,7 @@ import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen.dart';
 import 'package:potential_plus/screens/student/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
@@ -22,12 +23,14 @@ class HomeScreen extends ConsumerWidget {
 			),
 			body: user.when(
         data: (appUser) {
+        // Not logged in
           if (appUser == null) {
             return const Center(
               child: LoginScreen(),
             );
           }
 
+          // Logged in screens
           switch (appUser.role) {
             case UserRole.student:
               return StudentActivityFeed(appUser: appUser);
@@ -36,9 +39,7 @@ class HomeScreen extends ConsumerWidget {
                 child: Text('Teacher Home Screen'),
               );
             case UserRole.admin:
-              return const Center(
-                child: Text('Admin Home Screen'),
-              );
+              return AdminHomeScreen(appUser: appUser);
             default:
               return const Center(
                 child: Text('Error Code: 0x001 :( ${TextLiterals.genericError}'),
