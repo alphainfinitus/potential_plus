@@ -7,6 +7,7 @@ import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen.dart';
 import 'package:potential_plus/screens/student/activity_feed/student_activity_feed.dart';
+import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -35,9 +36,7 @@ class HomeScreen extends ConsumerWidget {
             case UserRole.student:
               return StudentActivityFeed(appUser: appUser);
             case UserRole.teacher:
-              return const Center(
-                child: Text('Teacher Home Screen'),
-              );
+              return TeacherHomeScreen(appUser: appUser);
             case UserRole.admin:
               return AdminHomeScreen(appUser: appUser);
             default:
