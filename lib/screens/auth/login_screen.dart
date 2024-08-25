@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   String? _errorMessage;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // email field
             TextFormField(
               controller: _emailController,
+              readOnly: _isLoading,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(labelText: 'Email'),
               validator: (value) {
@@ -50,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // password field
             TextFormField(
               controller: _passwordController,
+              readOnly: _isLoading,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (value) {
@@ -75,9 +78,10 @@ class _LoginScreenState extends State<LoginScreen> {
             // submit button
             FilledButton.tonal(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate() && !_isLoading) {
                   setState(() {
                     _errorMessage = null;
+                    _isLoading = true;
                   });
 
                   final email = _emailController.text.trim();
@@ -89,11 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   if(user == null) {
                     setState(() {
                       _errorMessage = TextLiterals.invalidLoginCredentials;
+                      _isLoading = false;
                     });
                   }
                 }
               },
-              child: const Text('Login'),
+              child: _isLoading ?
+                Transform.scale(
+                  scale: 0.5,
+                  child: const CircularProgressIndicator()
+                ) : 
+                const Text('Login'),
             ),
           ],
         )

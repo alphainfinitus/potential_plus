@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/shared/dark_mode_toggle_button.dart';
 class AppBarTitle extends StatelessWidget {
@@ -11,7 +12,10 @@ class AppBarTitle extends StatelessWidget {
 
     return Row(
       children: [
-        Text(title ?? TextLiterals.appTitle),
+        Text(
+          title ?? TextLiterals.appTitle,
+          style: GoogleFonts.micro5(fontSize: 42),
+        ),
         const Expanded(child: SizedBox()),
         const DarkModeToggleButton(),
       ]
