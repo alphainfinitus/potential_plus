@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+class AdminActionsSection extends StatelessWidget {
+  const AdminActionsSection({ super.key, required this.title, required this.actions });
+
+    final String title;    
+    final Map<String, String> actions; // action title and url to be called
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(title),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            spacing: 8.0,
+            children: actions.entries.map((actionItem) {
+              return ElevatedButton(
+                onPressed: () {
+                  // Perform navigation or any other action using entry.value (the URL)
+                  Navigator.pushNamed(context, actionItem.value);
+                },
+                child: Text(actionItem.key),
+              );
+            }).toList(),
+          ),
+        ),
+      ]
+    );
+  }
+}

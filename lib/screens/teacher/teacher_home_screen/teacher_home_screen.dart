@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
-import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
-class HomeScreen extends ConsumerWidget {
-	const HomeScreen({super.key});
+class TeacherHomeScreen extends ConsumerWidget {
+	const TeacherHomeScreen({super.key});
 
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
@@ -28,22 +27,10 @@ class HomeScreen extends ConsumerWidget {
             return null;
           }
 
-          // Logged in home-screens based on user role
-          switch (appUser.role) {
-            case UserRole.student:
-              AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.studentHomeScreen.path);
-              return null;
-            case UserRole.teacher:
-              AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.teacherHomeScreen.path);
-              return null;
-            case UserRole.admin:
-              AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.adminHomeScreen.path);
-              return null;
-            default:
-              return const Center(
-                child: Text('Error Code: 0x001 :( ${TextLiterals.genericError}'),
-              );
-          }
+          return const Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Text('This is the teacher home screen'),
+          );
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
         loading: () => const Center(child: CircularProgressIndicator())

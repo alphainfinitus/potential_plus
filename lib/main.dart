@@ -1,13 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/firebase_options.dart';
 import 'package:potential_plus/providers/current_theme_provider.dart';
-import 'package:potential_plus/screens/auth/forgot_password_screen.dart';
-import 'package:potential_plus/screens/auth/login_screen.dart';
-import 'package:potential_plus/screens/home/home_screen.dart';
-import 'package:potential_plus/screens/profile/profile_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,12 +23,7 @@ class AppRootWidget extends ConsumerWidget {
 		return MaterialApp(
 			title: TextLiterals.appTitle,
 			theme: currentTheme,
-      routes: {
-        '/': (context) => const HomeScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/profile': (context) => const ProfileScreen(),
-      },
+      routes: appRoutesMap,
 		);
 	}
 }

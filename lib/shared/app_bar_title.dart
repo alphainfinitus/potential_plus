@@ -14,7 +14,7 @@ class AppBarTitle extends StatelessWidget {
       children: [
         Text(
           title ?? TextLiterals.appTitle,
-          style: GoogleFonts.micro5(fontSize: 42),
+          style: title == null ? GoogleFonts.micro5(fontSize: 42) : null,
         ),
         const Expanded(child: SizedBox()),
         const DarkModeToggleButton(),
