@@ -33,7 +33,7 @@ class _LoginFormState extends State<LoginForm> {
             Center(
               child: Text(
                 TextLiterals.appTitle,
-                style: GoogleFonts.micro5(fontSize: 42),
+                style: GoogleFonts.micro5(fontSize: 48),
               ),
             ),
     

@@ -29,7 +29,7 @@ class LoginScreen extends ConsumerWidget {
           }
 
           return const Padding(
-            padding: EdgeInsets.all(32.0),
+            padding: EdgeInsets.fromLTRB(32, 0, 32, 0),
             child: LoginForm(),
           );
         },
