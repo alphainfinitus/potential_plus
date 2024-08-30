@@ -22,9 +22,9 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -36,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
                 style: GoogleFonts.micro5(fontSize: 48),
               ),
             ),
-    
+            
             const SizedBox(height: 32.0,),
               
             // email field
@@ -81,9 +81,9 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(_errorMessage!, style: const TextStyle(color: Colors.red),),
               ),
-  
+          
             const SizedBox(height: 16.0,),
-
+        
             // submit button
             FilledButton.tonal(
               onPressed: () async {
@@ -114,7 +114,7 @@ class _LoginFormState extends State<LoginForm> {
                 ) : 
                 const Text('Login'),
             ),
-
+        
             TextButton(
               onPressed: (){
                 Navigator.pushNamed(context, AppRoutes.forgotPassword.path);
@@ -122,8 +122,8 @@ class _LoginFormState extends State<LoginForm> {
               child: const Text('Forgot Password?')
             ),
           ],
-        ),
-      )
+        )
+      ),
     );
   }
 }

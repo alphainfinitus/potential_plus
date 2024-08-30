@@ -12,11 +12,15 @@ class AppBarTitle extends StatelessWidget {
 
     return Row(
       children: [
-        Text(
-          title ?? TextLiterals.appTitle,
-          style: title == null ? GoogleFonts.micro5(fontSize: 42) : null,
+        Expanded(
+          child: Text(
+            title ?? TextLiterals.appTitle,
+            overflow: TextOverflow.ellipsis,
+            style: title == null ?
+              GoogleFonts.micro5(fontSize: 42) :
+              const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
-        const Expanded(child: SizedBox()),
         const DarkModeToggleButton(),
       ]
     );

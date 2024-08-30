@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen/admin_actions_section.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/logout_button.dart';
@@ -16,10 +18,11 @@ class AdminHomeScreen extends ConsumerWidget {
 	Widget build(BuildContext context, WidgetRef ref) {
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
+    final Institution? institution = ref.watch(institutionProvider).value;
 
 		return Scaffold(
 			appBar: AppBar(
-				title: const AppBarTitle(),
+				title: AppBarTitle(title: institution?.name),
 			),
 			body: user.when(
         data: (appUser) {
@@ -35,11 +38,9 @@ class AdminHomeScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children:[
-                  Center(
-                    child: Text(
-                      'Welcome ${appUser.name.split(' ')[0]}, admin for the realm of ${appUser.institutionId}',
-                      style: const TextStyle(fontSize: 20.0),
-                    )
+                  Text(
+                    'Good Morning, ${appUser.name.split(' ')[0]} ☀️',
+                    style: const TextStyle(fontSize: 18.0),
                   ),
                   const SizedBox(height: 32.0,),
 

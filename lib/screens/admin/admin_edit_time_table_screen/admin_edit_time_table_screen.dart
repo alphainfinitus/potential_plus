@@ -4,6 +4,7 @@ import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/select_class_dropdown.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
@@ -27,9 +28,16 @@ class AdminEditTimeTableScreen extends ConsumerWidget {
             return null;
           }
 
-          return const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: Text('This is the edit time table screen'),
+          return const SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SelectClassDropdown()
+                ],
+              ),
+            ),
           );
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
