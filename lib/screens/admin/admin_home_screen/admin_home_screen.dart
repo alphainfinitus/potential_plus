@@ -32,6 +32,10 @@ class AdminHomeScreen extends ConsumerWidget {
             return null;
           }
 
+          if (institution == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
