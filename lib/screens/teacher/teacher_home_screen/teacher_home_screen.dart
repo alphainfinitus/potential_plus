@@ -5,6 +5,7 @@ import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
+import 'package:potential_plus/shared/logout_button.dart';
 import 'package:potential_plus/utils.dart';
 
 class TeacherHomeScreen extends ConsumerWidget {
@@ -29,7 +30,15 @@ class TeacherHomeScreen extends ConsumerWidget {
 
           return const Padding(
             padding: EdgeInsets.all(32.0),
-            child: Text('This is the teacher home screen'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('This is the teacher home screen'),
+                SizedBox(height: 32.0,),
+                LogoutButton(),
+              ],
+            ),
           );
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
