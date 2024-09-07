@@ -7,8 +7,10 @@ import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
-import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/select_class_dropdown.dart';
+import 'package:potential_plus/providers/teachers_provider.dart';
+import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
+import 'package:potential_plus/shared/institution/select_teacher_dropdown.dart';
 import 'package:potential_plus/utils.dart';
 
 class AdminEditTimeTableScreen extends ConsumerStatefulWidget {
@@ -26,6 +28,7 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
+    final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -43,6 +46,14 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
             return const Center(child: CircularProgressIndicator());
           }
 
+          if (institutionTeachers == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (institutionTeachers.isEmpty) {
+            return const Center(child: Text("No teachers found"));
+          }
+
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -55,7 +66,7 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
 
                   const SizedBox(height: 32.0),
                   
-                  if(selectedClass != null) _buildTimeTableView(institution, selectedClass!),
+                  if(selectedClass != null) _buildTimeTableView(institution, selectedClass!, institutionTeachers),
                 ],
               ),
             ),
@@ -67,7 +78,7 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
 		);
 	}
 
-  Widget _buildTimeTableView(Institution institution, InstitutionClass selectedClass) {
+  Widget _buildTimeTableView(Institution institution, InstitutionClass selectedClass, Map<String, AppUser>? institutionTeachers) {
 
     Widget buildPaddedTableCell({ required Widget child, padding = 8.0 }) {
       return TableCell(child: Padding(
@@ -84,15 +95,44 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
       );
     }
 
-    Widget buildTimeTableEntryColumn(TimetableEntry? timeTableEntry) {
+    Widget buildTimeTableEntryColumn(int periodIndex, int dayofWeekIndex, TimetableEntry? timeTableEntry) {
       return FilledButton.tonal(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(context: context, builder: (ctx) {
+            return AlertDialog(
+              title: Text("${AppUtils.getDayOfWeekByIndex(dayofWeekIndex)} - Period #${ periodIndex +1 }"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Subject: ${timeTableEntry?.subject ?? ''}"),
+                  SelectTeacherDropdown(defaultValue: institutionTeachers?[timeTableEntry?.teacherId]),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text("Close"),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text("Save"),
+                )
+              ],
+            );
+          });
+        },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Text(timeTableEntry?.subject ?? ''),
-              Text(timeTableEntry?.teacherId ?? ''),
+              Text(
+                institutionTeachers?[timeTableEntry?.teacherId]?.name ?? '',
+                style: const TextStyle(
+                  fontSize: 10.0
+                ),
+              ),
             ],
           ),
         ),
@@ -126,13 +166,19 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
           ),
 
           // loop for all periods
-          for (int i = 0; i <= institution.periodCount - 1; i++)
+          for (int periodIndex = 0; periodIndex <= institution.periodCount - 1; periodIndex++)
             TableRow(
               children: [
-                buildPaddedTableCell(child: buildHeaderText("${i+1}")),
+                buildPaddedTableCell(child: buildHeaderText("${periodIndex+1}")),
                 // loop for all days of the week
-                for (int j = 0; j < 7 ; j++)
-                  buildPaddedTableCell(child: buildTimeTableEntryColumn(selectedClass.timeTable[j.toString()]?[i])),
+                for (int dayOfWeekIndex = 0; dayOfWeekIndex < 7 ; dayOfWeekIndex++)
+                  buildPaddedTableCell(
+                    child: buildTimeTableEntryColumn(
+                      periodIndex,
+                      dayOfWeekIndex,
+                      selectedClass.timeTable[dayOfWeekIndex.toString()]?[periodIndex],
+                    )
+                  ),
               ]
             ),
         ]),

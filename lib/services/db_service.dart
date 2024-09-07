@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
@@ -30,6 +31,15 @@ class DbService {
       toFirestore: (InstitutionClass institutionClass, _) => institutionClass.toMap(),
     );
 
+  static Query<AppUser> institutionTeachersQueryRef(String institutionId) => db
+    .collection('users')
+    .where('institutionId', isEqualTo: institutionId)
+    .where('role', isEqualTo: UserRole.teacher.name)
+    .withConverter(
+      fromFirestore: (snapshot, _) => AppUser.fromMap(snapshot.data()!),
+      toFirestore: (AppUser user, _) => user.toMap(),
+    );
+
   // Methods
   static Future<AppUser?> fetchUserData(String userId) async {
     final userDoc = await usersCollRef().doc(userId).get();
@@ -45,6 +55,15 @@ class DbService {
   static Future<Map<String, InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
     final institutionClassesSnapshot = await institutionClassesCollRef(institutionId).get();
     return institutionClassesSnapshot.docs.fold<Map<String, InstitutionClass>>(
+      {},
+      (acc, doc) => acc..[doc.id] = doc.data(),
+    );
+  }
+
+  // returns a map with key of teacherId and value of AppUser
+  static Future<Map<String, AppUser>> fetchTeachersForInstitution(String institutionId) async {
+    final teachersSnapshot = await institutionTeachersQueryRef(institutionId).get();
+    return teachersSnapshot.docs.fold<Map<String, AppUser>>(
       {},
       (acc, doc) => acc..[doc.id] = doc.data(),
     );

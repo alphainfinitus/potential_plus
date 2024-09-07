@@ -4,9 +4,10 @@ import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/classes_provider.dart';
 
 class SelectClassDropdown extends ConsumerStatefulWidget {
-  const SelectClassDropdown({ this.onValueChanged, super.key });
+  const SelectClassDropdown({ this.defaultValue, this.onValueChanged, super.key });
 
   final Function(InstitutionClass value)? onValueChanged;
+  final InstitutionClass? defaultValue;
 
   @override
   ConsumerState<SelectClassDropdown> createState() => _SelectClassDropdownState();
@@ -14,6 +15,12 @@ class SelectClassDropdown extends ConsumerStatefulWidget {
 
 class _SelectClassDropdownState extends ConsumerState<SelectClassDropdown> {
   InstitutionClass? dropdownValue;
+
+  @override
+  void initState() {
+    dropdownValue = widget.defaultValue;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
