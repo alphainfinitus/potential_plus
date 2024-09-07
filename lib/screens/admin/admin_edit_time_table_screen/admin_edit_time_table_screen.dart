@@ -8,9 +8,9 @@ import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/providers/teachers_provider.dart';
+import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_period_dialog.dart';
 import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/shared/institution/select_teacher_dropdown.dart';
 import 'package:potential_plus/utils.dart';
 
 class AdminEditTimeTableScreen extends ConsumerStatefulWidget {
@@ -97,31 +97,16 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
 
     Widget buildTimeTableEntryColumn(int periodIndex, int dayofWeekIndex, TimetableEntry? timeTableEntry) {
       return FilledButton.tonal(
-        onPressed: () {
-          showDialog(context: context, builder: (ctx) {
-            return AlertDialog(
-              title: Text("${AppUtils.getDayOfWeekByIndex(dayofWeekIndex)} - Period #${ periodIndex +1 }"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Subject: ${timeTableEntry?.subject ?? ''}"),
-                  SelectTeacherDropdown(defaultValue: institutionTeachers?[timeTableEntry?.teacherId]),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text("Close"),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text("Save"),
-                )
-              ],
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) {
+            return AdminEditPeriodDialog(
+              periodIndex: periodIndex,
+              dayofWeekIndex: dayofWeekIndex,
+              timeTableEntry: timeTableEntry,
             );
-          });
-        },
+          }
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

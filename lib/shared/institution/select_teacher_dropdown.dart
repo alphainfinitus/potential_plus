@@ -18,8 +18,8 @@ class _SelectTeacherDropdownState extends ConsumerState<SelectTeacherDropdown> {
 
   @override
   void initState() {
-    dropdownValue = widget.defaultValue;
     super.initState();
+    dropdownValue = widget.defaultValue;
   }
 
   @override
@@ -36,10 +36,10 @@ class _SelectTeacherDropdownState extends ConsumerState<SelectTeacherDropdown> {
 
     return Row(
       children: [
-        const Text("Select Teacher : "),
+        const Text("Teacher : "),
         const SizedBox(width: 16.0),
         DropdownButton(
-          hint: const Text("Select Teacher"),
+          hint: const Text("Teacher"),
           value: dropdownValue,
           items: institutionTeachers.keys.map((String key) {
             return DropdownMenuItem(
