@@ -87,6 +87,43 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
     }
   }
 
+  Future clearPeriodDetails() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Call the update method and wait for it to complete
+      await updateClassPeriodDetails(
+        widget.institution,
+        widget.selectedClass,
+        widget.dayofWeekIndex,
+        widget.periodIndex,
+        const TimetableEntry(
+          subject: "",
+          teacherId: "",
+        ),
+      );
+
+      // Invalidate the provider to refresh the classes
+      ref.invalidate(classesProvider);
+
+      // Close the dialog
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Something went wrong. Please try again later.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
@@ -136,8 +173,14 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-
           child: const Text("Close"),
+        ),
+
+        const Expanded(child: SizedBox()),
+
+        FilledButton.tonal(
+          onPressed: _isLoading ? null : () => clearPeriodDetails(),
+          child: const Text("Clear"),
         ),
         FilledButton(
           onPressed: _isLoading ? null : () => savePeriodDetails(),
