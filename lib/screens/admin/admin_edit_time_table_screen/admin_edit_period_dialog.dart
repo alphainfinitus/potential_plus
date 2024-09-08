@@ -36,6 +36,16 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
   void initState() {
     super.initState();
     _subjectController.text = widget.currentTimeTableEntry?.subject ?? '';
+
+    // Fetch the list of teachers from the provider and set the selectedTeacher
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final institutionTeachers = ref.read(teachersProvider).value;
+      if (institutionTeachers != null && widget.currentTimeTableEntry != null) {
+        setState(() {
+          selectedTeacher = institutionTeachers[widget.currentTimeTableEntry!.teacherId];
+        });
+      }
+    });
   }
 
   String? _errorMessage;
@@ -128,10 +138,6 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
   Widget build(BuildContext context) {
     final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
 
-    setState(() {
-      selectedTeacher = institutionTeachers?[widget.currentTimeTableEntry?.teacherId];
-    });
-
     if(institutionTeachers == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -170,13 +176,12 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
             ),
           ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
           child: const Text("Close"),
         ),
-
-        const Expanded(child: SizedBox()),
 
         FilledButton.tonal(
           onPressed: _isLoading ? null : () => clearPeriodDetails(),
