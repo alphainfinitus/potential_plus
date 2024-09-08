@@ -6,6 +6,7 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/classes_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/providers/teachers_provider.dart';
 import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_period_dialog.dart';
@@ -25,6 +26,13 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
 
   @override
 	Widget build(BuildContext context) {
+
+    // Listen to changes in the classesProvider and trigger a setState to refresh the UI
+    ref.listen(classesProvider, (_, next) {
+      setState(() {
+        selectedClass = ref.read(classesProvider).value?.values.where((element) => element.id == selectedClass?.id).first;
+      });
+    });
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
@@ -98,6 +106,7 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
     Widget buildTimeTableEntryColumn(int periodIndex, int dayofWeekIndex, TimetableEntry? timeTableEntry) {
       return FilledButton.tonal(
         onPressed: () => showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (context) {
             return AdminEditPeriodDialog(

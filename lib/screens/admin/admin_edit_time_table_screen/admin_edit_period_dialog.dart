@@ -56,29 +56,44 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
       _errorMessage = null;
     });
 
-    await updateClassPeriodDetails(
-      widget.institution,
-      widget.selectedClass,
-      widget.dayofWeekIndex,
-      widget.periodIndex,
-      TimetableEntry(
-        subject: _subjectController.text,
-        teacherId: selectedTeacher!.id
-      )
-    );
+    try {
+      // Call the update method and wait for it to complete
+      await updateClassPeriodDetails(
+        widget.institution,
+        widget.selectedClass,
+        widget.dayofWeekIndex,
+        widget.periodIndex,
+        TimetableEntry(
+          subject: _subjectController.text,
+          teacherId: selectedTeacher!.id,
+        ),
+      );
 
-    // ref.invalidate(classesProvider);
-    // Navigator.of(context).pop();
+      // Invalidate the provider to refresh the classes
+      ref.invalidate(classesProvider);
 
-    setState(() {
-      _isLoading = false;
-      _errorMessage = null;
-    });
+      // Close the dialog
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Something went wrong. Please try again later.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
+
+    setState(() {
+      selectedTeacher = institutionTeachers?[widget.currentTimeTableEntry?.teacherId];
+    });
 
     if(institutionTeachers == null) {
       return const Center(child: CircularProgressIndicator());

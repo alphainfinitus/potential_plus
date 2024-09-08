@@ -59,4 +59,16 @@ class InstitutionClass {
     'name': name,
     'timeTable': timeTable.map((key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())),
   };
+
+  // Override the == operator to compare InstitutionClass objects by id
+  @override
+  bool operator == (Object other) {
+    if (identical(this, other)) return true;
+
+    return other is InstitutionClass && other.id == id;
+  }
+
+  // Override hashCode to return a hash based on id
+  @override
+  int get hashCode => id.hashCode;
 }
