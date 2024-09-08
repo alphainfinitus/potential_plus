@@ -68,5 +68,18 @@ class DbService {
       (acc, doc) => acc..[doc.id] = doc.data(),
     );
   }
+
+  static Future updateClassPeriodDetails(
+    String institutionId,
+    String institutionClassId,
+    Map<String, List<TimetableEntry>> newTimeTable,
+  ) async {
+    final institutionClassRef = institutionClassesCollRef(institutionId).doc(institutionClassId);
+
+    // TODO: optimise this to only update the specific period
+    await institutionClassRef.update({
+      'timeTable': newTimeTable.map((key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())),
+    });
+  }
     
 }

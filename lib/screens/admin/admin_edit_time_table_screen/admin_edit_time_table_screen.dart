@@ -101,9 +101,11 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
           context: context,
           builder: (context) {
             return AdminEditPeriodDialog(
+              institution: institution,
+              selectedClass: selectedClass,
               periodIndex: periodIndex,
               dayofWeekIndex: dayofWeekIndex,
-              timeTableEntry: timeTableEntry,
+              currentTimeTableEntry: timeTableEntry,
             );
           }
         ),
@@ -161,7 +163,12 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
                     child: buildTimeTableEntryColumn(
                       periodIndex,
                       dayOfWeekIndex,
-                      selectedClass.timeTable[dayOfWeekIndex.toString()]?[periodIndex],
+                      // selectedClass.timeTable[dayOfWeekIndex.toString()]?[periodIndex] ?? const TimetableEntry(subject: '', teacherId: '')
+                      // Check if dayOfWeekIndex exists and if the periodIndex is within bounds of the list
+                      (selectedClass.timeTable[dayOfWeekIndex.toString()] != null &&
+                      selectedClass.timeTable[dayOfWeekIndex.toString()]!.length > periodIndex)
+                          ? selectedClass.timeTable[dayOfWeekIndex.toString()]![periodIndex]
+                          : const TimetableEntry(subject: '', teacherId: ''),
                     )
                   ),
               ]

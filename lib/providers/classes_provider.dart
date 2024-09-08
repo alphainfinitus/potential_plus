@@ -1,5 +1,6 @@
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/services/db_service.dart';
@@ -19,4 +20,38 @@ Future<Map<String, InstitutionClass>?> classes(ClassesRef ref) async {
 
   // fetch institution's classes from db
   return await DbService.fetchClassesForInstitution(appUser.institutionId);
+}
+
+Future updateClassPeriodDetails(
+  Institution institution,
+  InstitutionClass institutionClass,
+  int editedDayOfWeekIndex,
+  int editedPeriodIndex,
+  TimetableEntry editedTimeTableEntry,
+) async {
+  Map<String, List<TimetableEntry>> newTimetable = {};
+
+  // loop through each day of the week, and for each period, populate old period details and update the new period details
+  for (int dayOfWeekIndex = 0; dayOfWeekIndex < 7; dayOfWeekIndex++) {
+    newTimetable[dayOfWeekIndex.toString()] = [];
+
+    for (int periodIndex = 0; periodIndex <= institution.periodCount - 1; periodIndex++) {
+      if (dayOfWeekIndex == editedDayOfWeekIndex && periodIndex == editedPeriodIndex) {
+        newTimetable[dayOfWeekIndex.toString()]!.add(editedTimeTableEntry);
+      } else {
+        newTimetable[dayOfWeekIndex.toString()]!.add(
+          (institutionClass.timeTable[dayOfWeekIndex.toString()] != null &&
+            institutionClass.timeTable[dayOfWeekIndex.toString()]!.length > periodIndex) ?
+              institutionClass.timeTable[dayOfWeekIndex.toString()]![periodIndex] :
+                const TimetableEntry(subject: '', teacherId: '')
+        );
+      }
+    }
+  }
+
+  await DbService.updateClassPeriodDetails(
+    institution.id,
+    institutionClass.id,
+    newTimetable
+  );
 }
