@@ -40,6 +40,15 @@ class DbService {
       toFirestore: (AppUser user, _) => user.toMap(),
     );
 
+  static Query<AppUser> institutionStudentsQueryRef(String institutionId) => db
+    .collection('users')
+    .where('institutionId', isEqualTo: institutionId)
+    .where('role', isEqualTo: UserRole.student.name)
+    .withConverter(
+      fromFirestore: (snapshot, _) => AppUser.fromMap(snapshot.data()!),
+      toFirestore: (AppUser user, _) => user.toMap(),
+    );
+
   // Methods
   static Future<AppUser?> fetchUserData(String userId) async {
     final userDoc = await usersCollRef().doc(userId).get();
@@ -64,6 +73,15 @@ class DbService {
   static Future<Map<String, AppUser>> fetchTeachersForInstitution(String institutionId) async {
     final teachersSnapshot = await institutionTeachersQueryRef(institutionId).get();
     return teachersSnapshot.docs.fold<Map<String, AppUser>>(
+      {},
+      (acc, doc) => acc..[doc.id] = doc.data(),
+    );
+  }
+
+  // returns a map with key of studentId and value of AppUser
+  static Future<Map<String, AppUser>> fetchStudentsForInstitution(String institutionId) async {
+    final studentsSnapshot = await institutionStudentsQueryRef(institutionId).get();
+    return studentsSnapshot.docs.fold<Map<String, AppUser>>(
       {},
       (acc, doc) => acc..[doc.id] = doc.data(),
     );

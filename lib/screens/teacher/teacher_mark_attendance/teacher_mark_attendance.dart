@@ -24,13 +24,25 @@ class _TeacherMarkAttendanceScreenState extends ConsumerState<TeacherMarkAttenda
   InstitutionClass? selectedClass;
 
   @override
-	Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    // Replace the ref.listen with a safer watch
+    final classesState = ref.watch(classesProvider);
 
-    // Listen to changes in the classesProvider and trigger a setState to refresh the UI
-    ref.listen(classesProvider, (_, next) {
-      setState(() {
-        selectedClass = ref.read(classesProvider).value?.values.where((element) => element.id == selectedClass?.id).first;
-      });
+    // Handle the AsyncValue state of classesProvider
+    classesState.whenData((classes) {
+      if (classes != null && selectedClass != null) {
+        final updatedClass = classes.values.firstWhere(
+          (element) => element.id == selectedClass?.id,
+          orElse: () => selectedClass!,
+        );
+        if (updatedClass != selectedClass) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {
+              selectedClass = updatedClass;
+            });
+          });
+        }
+      }
     });
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
@@ -64,7 +76,7 @@ class _TeacherMarkAttendanceScreenState extends ConsumerState<TeacherMarkAttenda
 
                   const SizedBox(height: 32.0),
 
-                  if (selectedClass != null) const AttendanceListView(),
+                  if (selectedClass != null) AttendanceListView(institutionClass: selectedClass!),
                 ],
               ),
             ),
