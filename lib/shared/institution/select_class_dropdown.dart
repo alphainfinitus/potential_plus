@@ -34,12 +34,16 @@ class _SelectClassDropdownState extends ConsumerState<SelectClassDropdown> {
       return const Center(child: Text("No classes found"));
     }
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text("Class : "),
-        const SizedBox(width: 16.0),
-        DropdownButton(
-          hint: const Text("Class"),
+        DropdownButtonFormField<InstitutionClass>(
+          isExpanded: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          ),
+          hint: const Text("Select a class"),
           value: dropdownValue,
           items: classes.keys.map((String key) {
             return DropdownMenuItem(

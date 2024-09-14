@@ -50,11 +50,7 @@ class _AdminEditTimeTableScreenState extends ConsumerState<AdminEditTimeTableScr
             return null;
           }
 
-          if (institution == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (institutionTeachers == null) {
+          if (institution == null || institutionTeachers == null) {
             return const Center(child: CircularProgressIndicator());
           }
 

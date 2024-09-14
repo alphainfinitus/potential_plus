@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider.dart';
+import 'package:potential_plus/screens/admin/admin_home_screen/admin_actions_section.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/logout_button.dart';
 import 'package:potential_plus/utils.dart';
@@ -15,10 +18,11 @@ class TeacherHomeScreen extends ConsumerWidget {
 	Widget build(BuildContext context, WidgetRef ref) {
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
+    final Institution? institution = ref.watch(institutionProvider).value;
 
 		return Scaffold(
 			appBar: AppBar(
-				title: const AppBarTitle(),
+				title: AppBarTitle(title: institution?.name),
 			),
 			body: user.when(
         data: (appUser) {
@@ -28,16 +32,33 @@ class TeacherHomeScreen extends ConsumerWidget {
             return null;
           }
 
-          return const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('This is the teacher home screen'),
-                SizedBox(height: 32.0,),
-                LogoutButton(),
-              ],
+          if (institution == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children:[
+                  Text(
+                    'Good Morning, ${appUser.name.split(' ')[0]} ☀️',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 32.0,),
+
+                  AdminActionsSection(
+                    title: 'Daily Actions :',
+                    actions: {
+                      'Mark Attendance': AppRoutes.teacherMarkAttendance.path,
+                    }
+                  ),
+
+                  const SizedBox(height: 32.0,),
+                  const LogoutButton(),
+                ]
+              ),
             ),
           );
         },

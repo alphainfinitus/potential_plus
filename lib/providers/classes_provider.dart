@@ -15,7 +15,7 @@ Future<Map<String, InstitutionClass>?> classes(ClassesRef ref) async {
   final AppUser? appUser = ref.watch(authProvider).value;
 
   // no need to fetch all classes if user is not an admin
-  if (appUser == null || appUser.role != UserRole.admin) return null;
+  if (appUser == null || (appUser.role != UserRole.admin && appUser.role != UserRole.teacher)) return null;
 
 
   // fetch institution's classes from db
