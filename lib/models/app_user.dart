@@ -1,4 +1,5 @@
 import 'package:potential_plus/constants/user_role.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
   const AppUser({
@@ -7,7 +8,9 @@ class AppUser {
     required this.name,
     required this.email,
     required this.role,
-    required this.institutionId
+    required this.institutionId,
+    required this.createdAt,
+    required this.updatedAt
   });
 
   final String id;
@@ -16,6 +19,8 @@ class AppUser {
   final String email;
   final UserRole role;
   final String institutionId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
 
   factory AppUser.fromMap(Map<String, dynamic> data) {
@@ -27,7 +32,9 @@ class AppUser {
       name: data['name'],
       email: data['email'],
       role: role,
-      institutionId: data['institutionId']
+      institutionId: data['institutionId'],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate()
     );
   }
 
@@ -37,6 +44,8 @@ class AppUser {
     'name': name,
     'email': email,
     'role': role.toString(),
-    'institutionId': institutionId
+    'institutionId': institutionId,
+    'createdAt': Timestamp.fromDate(createdAt),
+    'updatedAt': Timestamp.fromDate(updatedAt)
   };
 }
