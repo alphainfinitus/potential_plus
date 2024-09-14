@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TimetableEntry {
   const TimetableEntry({
     required this.subject,
@@ -25,15 +27,19 @@ class InstitutionClass {
     required this.id,
     required this.name,
     required this.timeTable,
+    required this.createdAt,
+    required this.updatedAt
   });
 
   final String id;
   final String name;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   // {
   //   0 (dayOfWeek): [
-  //     {subject: 'subject1', teacherId: 'teacherID1'},
-  //     {subject: 'subject2', teacherId: 'teacherID2'}
+  //     {subject: 'subject1', teacherId: 'teacherID1'}, // 1st period
+  //     {subject: 'subject2', teacherId: 'teacherID2'} // 2nd period
   //   ]
   // }
   final Map<String, List<TimetableEntry>> timeTable;
@@ -51,6 +57,8 @@ class InstitutionClass {
       id: data['id'],
       name: data['name'],
       timeTable: timeTable,
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate()
     );
   }
 
@@ -58,6 +66,8 @@ class InstitutionClass {
     'id': id,
     'name': name,
     'timeTable': timeTable.map((key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())),
+    'createdAt': Timestamp.fromDate(createdAt),
+    'updatedAt': Timestamp.fromDate(updatedAt)
   };
 
   // Override the == operator to compare InstitutionClass objects by id
