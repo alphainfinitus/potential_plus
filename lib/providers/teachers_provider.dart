@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'teachers_provider.g.dart';
 
-// returns a map with key of teacherId and value of AppUser 
+// returns a map with key of teacherId and value of AppUser
 @riverpod
 Future<Map<String, AppUser>?> teachers(TeachersRef ref) async {
   final AppUser? appUser = ref.watch(authProvider).value;
@@ -14,7 +14,20 @@ Future<Map<String, AppUser>?> teachers(TeachersRef ref) async {
   // no need to fetch all teachers if user is not an admin
   if (appUser == null || (appUser.role != UserRole.admin && appUser.role != UserRole.teacher)) return null;
 
-
   // fetch institution's classes from db
   return await DbService.fetchTeachersForInstitution(appUser.institutionId);
+}
+
+Future updateStudentAttendance({
+  required String studentId,
+  required bool isPresent,
+  required String institutionId,
+  required String markedByUserId,
+}) async {
+  await DbService.updateStudentAttendance(
+    studentId: studentId,
+    isPresent: isPresent,
+    institutionId: institutionId,
+    markedByUserId: markedByUserId,
+  );
 }

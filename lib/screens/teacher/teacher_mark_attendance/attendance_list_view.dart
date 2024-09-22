@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/providers/students_provider.dart';
+import 'package:potential_plus/providers/teachers_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
@@ -14,6 +17,20 @@ class AttendanceListView extends ConsumerStatefulWidget {
 }
 
 class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
+  Map<String, bool> attendanceMap = {};
+
+  void _handleAttendanceChange(String studentId, bool? value) {
+    setState(() {
+      attendanceMap[studentId] = value ?? false;
+    });
+    updateStudentAttendance(
+      studentId: studentId,
+      isPresent: value ?? false,
+      institutionId: ref.watch(institutionProvider).value!.id,
+      markedByUserId: ref.watch(authProvider).value!.id,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final InstitutionClass institutionClass = widget.institutionClass;
@@ -34,11 +51,22 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         final student = students.values.elementAt(index);
         return ListTile(
           title: Text(student.name),
-          trailing: Checkbox(
-            value: false,
-            onChanged: (bool? value) {
-              // Empty function
-            },
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Present'),
+              Radio<bool>(
+                value: true,
+                groupValue: attendanceMap[student.id] ?? false,
+                onChanged: (bool? value) => _handleAttendanceChange(student.id, value),
+              ),
+              const Text('Absent'),
+              Radio<bool>(
+                value: false,
+                groupValue: attendanceMap[student.id] ?? false,
+                onChanged: (bool? value) => _handleAttendanceChange(student.id, value),
+              ),
+            ],
           ),
         );
       },
