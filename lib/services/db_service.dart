@@ -67,16 +67,15 @@ class DbService {
         toFirestore: (AppUser user, _) => user.toMap(),
       );
 
-  static Query<Attendance> attendanceForTodayQueryRef({
+  static Query<Attendance> attendanceForDateQueryRef({
     required String userId,
     required String institutionId,
+		required DateTime date,
   }) {
-    final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final startOfTomorrow = DateTime(now.year, now.month, now.day + 1);
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
 
-    return db
-			.collection('attendances')
+    return attendancesCollRef()
 			.where('userId', isEqualTo: userId)
 			.where('institutionId', isEqualTo: institutionId)
 			.where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
@@ -157,7 +156,7 @@ class DbService {
     final batch = db.batch();
 
     // 1. check if attendance already exists for today
-    final todayAttendanceSnapshot = (await attendanceForTodayQueryRef(userId: studentId, institutionId: institutionId).limit(1).get()).docs.firstOrNull;
+    final todayAttendanceSnapshot = (await attendanceForDateQueryRef(userId: studentId, institutionId: institutionId, date: DateTime.now()).limit(1).get()).docs.firstOrNull;
 
     // 2. if it exists, update the attendance and the corresponding activity
     if (todayAttendanceSnapshot != null) {
@@ -225,4 +224,29 @@ class DbService {
 
     await batch.commit();
   }
+
+	static Future<List<Attendance>> fetchClassAttendanceByDate({
+		required String institutionId,
+		required String institutionClassId,
+		required DateTime date,
+	}) async {
+		//1. get all students in the class
+		final studentsSnapshot = await institutionStudentsQueryRef(institutionId).get();
+		final students = studentsSnapshot.docs.map((doc) => doc.data()).toList();
+
+		final studentIds = students.map((student) => student.id).toList();
+
+		final startOfDay = DateTime(date.year, date.month, date.day);
+    final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
+
+		final attendancesSnapshot = await attendancesCollRef()
+      .where('institutionId', isEqualTo: institutionId)
+      .where('userId', whereIn: studentIds)
+      .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+      .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow))
+      .get();
+
+		//3. return the attendances
+		return attendancesSnapshot.docs.map((doc) => doc.data()).toList();
+	}
 }

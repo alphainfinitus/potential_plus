@@ -1,5 +1,6 @@
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
@@ -54,4 +55,8 @@ Future updateClassPeriodDetails(
     institutionClass.id,
     newTimetable
   );
+}
+
+Future<List<Attendance>> fetchClassAttendanceByDate(String institutionId, String institutionClassId, DateTime date) async {
+  return await DbService.fetchClassAttendanceByDate(institutionId: institutionId, institutionClassId: institutionClassId, date: date);
 }

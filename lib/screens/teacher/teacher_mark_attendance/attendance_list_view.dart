@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/providers/students_provider.dart';
 import 'package:potential_plus/providers/teachers_provider.dart';
+import 'package:potential_plus/providers/classes_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
@@ -18,23 +20,81 @@ class AttendanceListView extends ConsumerStatefulWidget {
 
 class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
   Map<String, bool> attendanceMap = {};
+  Map<String, bool> loadingStates = {};
+  bool isLoading = true;
 
-  void _handleAttendanceChange(String studentId, bool? value) {
+  @override
+  void initState() {
+    super.initState();
+    _fetchAttendance();
+  }
+
+  Future<void> _fetchAttendance() async {
     setState(() {
-      attendanceMap[studentId] = value ?? false;
+      isLoading = true;
     });
-    updateStudentAttendance(
-      studentId: studentId,
-      isPresent: value ?? false,
-      institutionId: ref.watch(institutionProvider).value!.id,
-      markedByUserId: ref.watch(authProvider).value!.id,
-    );
+
+    try {
+      final institution = ref.read(institutionProvider).value!;
+      final List<Attendance> attendanceList = await fetchClassAttendanceByDate(
+        institution.id,
+        widget.institutionClass.id,
+        DateTime.now(),
+      );
+
+      setState(() {
+        attendanceMap = {
+          for (var attendance in attendanceList)
+            attendance.userId: attendance.isPresent
+        };
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch attendance: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleAttendanceChange(String studentId, bool? value) async {
+    setState(() {
+      loadingStates[studentId] = true;
+    });
+
+    try {
+      await updateStudentAttendance(
+        studentId: studentId,
+        isPresent: value ?? false,
+        institutionId: ref.read(institutionProvider).value!.id,
+        markedByUserId: ref.read(authProvider).value!.id,
+      );
+
+      setState(() {
+        attendanceMap[studentId] = value ?? false;
+      });
+    } catch (e) {
+      // Handle error (e.g., show a snackbar)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update attendance: $e')),
+      );
+    } finally {
+      setState(() {
+        loadingStates[studentId] = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final InstitutionClass institutionClass = widget.institutionClass;
     final Map<String, AppUser>? students = ref.watch(studentsProvider).value;
+
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     if (students == null) {
       return const Center(child: CircularProgressIndicator());
@@ -49,6 +109,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
       shrinkWrap: true,
       itemBuilder: (context, index) {
         final student = students.values.elementAt(index);
+        final bool isLoading = loadingStates[student.id] ?? false;
+
         return ListTile(
           title: Text(student.name),
           trailing: Row(
@@ -58,13 +120,13 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
               Radio<bool>(
                 value: true,
                 groupValue: attendanceMap[student.id] ?? false,
-                onChanged: (bool? value) => _handleAttendanceChange(student.id, value),
+                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
               ),
               const Text('Absent'),
               Radio<bool>(
                 value: false,
                 groupValue: attendanceMap[student.id] ?? false,
-                onChanged: (bool? value) => _handleAttendanceChange(student.id, value),
+                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
               ),
             ],
           ),
