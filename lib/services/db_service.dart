@@ -278,4 +278,14 @@ class DbService {
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
+
+  static Future<Attendance> fetchActivityDetails(String activityId, ActivityType activityType) async {
+    switch (activityType) {
+      case ActivityType.attendance:
+        final attendanceSnapshot = await attendancesCollRef().doc(activityId).get();
+        return attendanceSnapshot.data()!;
+      default:
+        throw Exception('Invalid activity type');
+    }
+  }
 }

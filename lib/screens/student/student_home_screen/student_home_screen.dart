@@ -36,7 +36,7 @@ class StudentHomeScreen extends ConsumerWidget {
           }
 
           return Padding(
-            padding: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.all(8.0),
             child: StudentActivityFeed(appUser: appUser),
           );
         },

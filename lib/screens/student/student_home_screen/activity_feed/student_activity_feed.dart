@@ -4,6 +4,7 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/shared/logout_button.dart';
 import 'package:potential_plus/providers/student_activity_provider.dart';
 import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:intl/intl.dart';
 
 class StudentActivityFeed extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                 );
               }
               final activity = activities[index];
-              return _buildActivityTile(activity);
+              return _buildActivityDetailTile(activity);
             },
           );
         },
@@ -53,13 +54,44 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
     );
   }
 
-  Widget _buildActivityTile(Activity activity) {
-    final formattedDate = DateFormat('EEE, h:mm a').format(activity.createdAt);
-    return ListTile(
-      minVerticalPadding: 16.0,
-      title: Text(activity.activityType.name),
-      subtitle: Text(activity.activityRefId),
-      leading: Text(formattedDate),
+  Widget _buildActivityDetailTile(Activity activity) {
+    return FutureBuilder<Attendance>(
+      future: ref.read(studentActivityNotifierProvider.notifier)
+          .fetchActivityDetails(activity.activityRefId, activity.activityType),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ListTile(
+            title: Text('Loading...'),
+            leading: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasError) {
+          return ListTile(
+            title: Text('Error: ${snapshot.error}'),
+            leading: const Icon(Icons.error),
+          );
+        }
+        final attendance = snapshot.data!;
+        final formattedDate = DateFormat('EEE dd, h:mm a').format(activity.createdAt);
+        return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(formattedDate, style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Text("Your ward is ${attendance.isPresent ? 'present' : 'absent'}", style: Theme.of(context).textTheme.headlineSmall),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

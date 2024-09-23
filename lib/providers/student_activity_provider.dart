@@ -1,4 +1,6 @@
+import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
@@ -28,6 +30,11 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
       ...state.value ?? [],
       ...nextActivities,
     ]);
+  }
+
+  // fetch activity details
+  Future<Attendance> fetchActivityDetails(String activityId, ActivityType activityType) async {
+    return await DbService.fetchActivityDetails(activityId, activityType);
   }
 }
 

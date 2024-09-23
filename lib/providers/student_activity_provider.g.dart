@@ -7,7 +7,7 @@ part of 'student_activity_provider.dart';
 // **************************************************************************
 
 String _$studentActivityNotifierHash() =>
-    r'2e25ed6b6539d1b2b3442807b4f9f1af366051a2';
+    r'8b0b5cbd255866a000cbe98840818fef6882a75e';
 
 /// See also [StudentActivityNotifier].
 @ProviderFor(StudentActivityNotifier)
