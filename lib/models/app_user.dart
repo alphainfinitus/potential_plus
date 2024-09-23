@@ -43,7 +43,7 @@ class AppUser {
     'username': username,
     'name': name,
     'email': email,
-    'role': role.toString(),
+    'role': role.name,
     'institutionId': institutionId,
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt)

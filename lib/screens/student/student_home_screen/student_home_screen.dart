@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
@@ -15,6 +17,7 @@ class StudentHomeScreen extends ConsumerWidget {
 	Widget build(BuildContext context, WidgetRef ref) {
 
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
+    final Institution? institution = ref.watch(institutionProvider).value;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -26,6 +29,10 @@ class StudentHomeScreen extends ConsumerWidget {
           if (appUser == null) {
             AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
             return null;
+          }
+
+          if (institution == null) {
+            return const Center(child: CircularProgressIndicator());
           }
 
           return Padding(

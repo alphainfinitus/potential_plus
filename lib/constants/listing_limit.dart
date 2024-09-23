@@ -1,0 +1,1 @@
+const LISTING_LIMIT = 20;

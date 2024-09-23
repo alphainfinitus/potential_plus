@@ -34,7 +34,7 @@ class Activity {
   Map<String, dynamic> toMap() => {
     'id': id,
     'userId': userId,
-    'activityType': activityType.toString(),
+    'activityType': activityType.name,
     'activityRefId': activityRefId,
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt),
