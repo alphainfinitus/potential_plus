@@ -1,28 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:potential_plus/constants/app_routes.dart';
+import 'package:potential_plus/constants/text_literals.dart';
+import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/institution.dart';
+import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/services/auth_service.dart';
+import 'package:potential_plus/shared/app_bar_title.dart';
+import 'package:potential_plus/shared/dark_mode_toggle_button.dart';
+import 'package:potential_plus/utils.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen extends ConsumerWidget {
+	const ProfileScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children:[
-          const Center(child: Text('Profile')),
+	@override
+	Widget build(BuildContext context, WidgetRef ref) {
 
-          const SizedBox(height: 16.0,),
+    final AsyncValue<AppUser?> user = ref.watch(authProvider);
+    final Institution? institution = ref.watch(institutionProvider).value;
 
-          FilledButton.tonal(
-            onPressed: () async {
-              await AuthService.signOut();
-            },
-            child: const Text('Sign Out')
-          ),
-        ]
+		return Scaffold(
+			appBar: AppBar(
+				title: const AppBarTitle(),
+			),
+			body: user.when(
+        data: (appUser) {
+          // Not logged in, redirect to login screen
+          if (appUser == null) {
+            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
+            return null;
+          }
+
+          if (institution == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(32.0),
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children:[
+                const Center(child: Text('Profile Settings and whatnot')),
+
+                const SizedBox(height: 16.0,),
+
+                const DarkModeToggleButton(),
+
+                const SizedBox(height: 16.0,),
+
+
+
+                FilledButton.tonal(
+                  onPressed: () async {
+                    await AuthService.signOut();
+                  },
+                  child: const Text('Sign Out')
+                ),
+              ]
+            ),
+          );
+        },
+        error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
+        loading: () => const Center(child: CircularProgressIndicator())
       ),
-    );
-  }
+		);
+	}
 }
