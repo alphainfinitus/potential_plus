@@ -20,6 +20,28 @@ class _LoginFormState extends State<LoginForm> {
   String? _errorMessage;
   bool _isLoading = false;
 
+  Future<void> onSubmit() async {
+    if (_formKey.currentState!.validate() && !_isLoading) {
+      setState(() {
+        _errorMessage = null;
+        _isLoading = true;
+      });
+
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      final user = await AuthService.signIn(email, password);
+
+      //error feedback
+      if(user == null) {
+        setState(() {
+          _errorMessage = TextLiterals.invalidLoginCredentials;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -71,6 +93,9 @@ class _LoginFormState extends State<LoginForm> {
                 }
                 return null;
               },
+							onFieldSubmitted: (value) {
+								onSubmit();
+							},
             ),
         
             const SizedBox(height: 16.0,),
@@ -87,25 +112,7 @@ class _LoginFormState extends State<LoginForm> {
             // submit button
             FilledButton.tonal(
               onPressed: () async {
-                if (_formKey.currentState!.validate() && !_isLoading) {
-                  setState(() {
-                    _errorMessage = null;
-                    _isLoading = true;
-                  });
-        
-                  final email = _emailController.text.trim();
-                  final password = _passwordController.text.trim();
-        
-                  final user = await AuthService.signIn(email, password);
-        
-                  //error feedback
-                  if(user == null) {
-                    setState(() {
-                      _errorMessage = TextLiterals.invalidLoginCredentials;
-                      _isLoading = false;
-                    });
-                  }
-                }
+                await onSubmit();
               },
               child: _isLoading ?
                 Transform.scale(

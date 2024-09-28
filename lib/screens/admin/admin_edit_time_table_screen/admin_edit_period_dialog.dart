@@ -144,53 +144,63 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
 
     return AlertDialog(
       title: Text("${AppUtils.getDayOfWeekByIndex(widget.dayofWeekIndex)} - Period #${ widget.periodIndex +1 }"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: _isLoading ? [
-            Center(
-              child: Transform.scale(
-                scale: 0.5,
-                child: const CircularProgressIndicator()
-              )
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _isLoading ? [
+              Center(
+                child: Transform.scale(
+                  scale: 0.5,
+                  child: const CircularProgressIndicator()
+                )
+              ),
+            ] : [
+              if(_errorMessage != null) Text(_errorMessage ?? 'Something went wrong. Please try again later.'),
+        
+              TextFormField(
+                controller: _subjectController,
+                readOnly: _isLoading,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(labelText: 'Subject'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid subject';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16.0),
+              SelectTeacherDropdown(
+                defaultValue: institutionTeachers[widget.currentTimeTableEntry?.teacherId],
+                onValueChanged: (value) => setState(() { selectedTeacher = value; }),
+              ),
+            ],
+        ),
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+              child: const Text("Close"),
             ),
-          ] : [
-            if(_errorMessage != null) Text(_errorMessage ?? 'Something went wrong. Please try again later.'),
-
-            TextFormField(
-              controller: _subjectController,
-              readOnly: _isLoading,
-              keyboardType: TextInputType.text,
-              decoration: const InputDecoration(labelText: 'Subject'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a valid subject';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16.0),
-            SelectTeacherDropdown(
-              defaultValue: institutionTeachers[widget.currentTimeTableEntry?.teacherId],
-              onValueChanged: (value) => setState(() { selectedTeacher = value; }),
+            Row(
+              children: [
+                FilledButton.tonal(
+                  onPressed: _isLoading ? null : () => clearPeriodDetails(),
+                  child: const Text("Clear"),
+                ),
+                const SizedBox(width: 8), // Add some spacing between buttons
+                FilledButton(
+                  onPressed: _isLoading ? null : () => savePeriodDetails(),
+                  child: const Text("Save"),
+                ),
+              ],
             ),
           ],
-      ),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text("Close"),
         ),
-
-        FilledButton.tonal(
-          onPressed: _isLoading ? null : () => clearPeriodDetails(),
-          child: const Text("Clear"),
-        ),
-        FilledButton(
-          onPressed: _isLoading ? null : () => savePeriodDetails(),
-          child: const Text("Save"),
-        )
       ],
     );
   }
