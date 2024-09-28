@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user/app_user.dart';
 import 'package:potential_plus/models/institution_class/institution_class.dart';
 import 'package:potential_plus/models/attendance/attendance.dart';
+import 'package:potential_plus/models/institution_class/institution_class_repository.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/providers/students_provider/students_provider.dart';
 import 'package:potential_plus/providers/teachers_provider/teachers_provider.dart';
-import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
@@ -36,7 +36,7 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
-      final List<Attendance> attendanceList = await fetchClassAttendanceByDate(
+      final List<Attendance> attendanceList = await InstitutionClassRepository.fetchClassAttendanceByDate(
         institution.id,
         widget.institutionClass.id,
         DateTime.now(),
