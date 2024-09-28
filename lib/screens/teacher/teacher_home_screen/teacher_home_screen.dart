@@ -8,7 +8,6 @@ import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen/admin_actions_section.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/shared/logout_button.dart';
 import 'package:potential_plus/utils.dart';
 
 class TeacherHomeScreen extends ConsumerWidget {

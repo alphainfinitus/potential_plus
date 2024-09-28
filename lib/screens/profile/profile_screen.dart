@@ -6,7 +6,6 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider.dart';
-import 'package:potential_plus/services/auth_service.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/dark_mode_toggle_button.dart';
 import 'package:potential_plus/shared/logout_button.dart';
