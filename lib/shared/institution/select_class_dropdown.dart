@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/institution_class.dart';
-import 'package:potential_plus/providers/classes_provider.dart';
+import 'package:potential_plus/models/institution_class/institution_class.dart';
+import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 
 class SelectClassDropdown extends ConsumerStatefulWidget {
   const SelectClassDropdown({ this.defaultValue, this.onValueChanged, super.key });

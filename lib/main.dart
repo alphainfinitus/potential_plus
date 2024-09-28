@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/firebase_options.dart';
-import 'package:potential_plus/providers/current_theme_provider.dart';
+import 'package:potential_plus/providers/current_theme_provider/current_theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

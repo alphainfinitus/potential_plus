@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/app_user/app_user.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

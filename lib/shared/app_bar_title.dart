@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 
 class AppBarTitle extends ConsumerWidget {
   const AppBarTitle({super.key, this.title});

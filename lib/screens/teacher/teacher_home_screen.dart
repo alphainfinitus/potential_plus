@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
-import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/models/institution.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
-import 'package:potential_plus/providers/institution_provider.dart';
-import 'package:potential_plus/screens/admin/admin_home_screen/admin_actions_section.dart';
+import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/institution/institution.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
+import 'package:potential_plus/shared/institution/institution_actions_section.dart';
 import 'package:potential_plus/utils.dart';
 
 class TeacherHomeScreen extends ConsumerWidget {
@@ -47,7 +47,7 @@ class TeacherHomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 32.0,),
 
-                  AdminActionsSection(
+                  InstitutionActionsSection(
                     title: 'Daily Actions :',
                     actions: {
                       'Mark Attendance': AppRoutes.teacherMarkAttendance.path,

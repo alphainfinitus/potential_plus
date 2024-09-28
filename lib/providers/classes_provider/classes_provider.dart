@@ -1,9 +1,9 @@
 import 'package:potential_plus/constants/user_role.dart';
-import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/models/attendance.dart';
-import 'package:potential_plus/models/institution.dart';
-import 'package:potential_plus/models/institution_class.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/attendance/attendance.dart';
+import 'package:potential_plus/models/institution/institution.dart';
+import 'package:potential_plus/models/institution_class/institution_class.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

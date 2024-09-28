@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/models/institution_class.dart';
-import 'package:potential_plus/models/attendance.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
-import 'package:potential_plus/providers/institution_provider.dart';
-import 'package:potential_plus/providers/students_provider.dart';
-import 'package:potential_plus/providers/teachers_provider.dart';
-import 'package:potential_plus/providers/classes_provider.dart';
+import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/institution_class/institution_class.dart';
+import 'package:potential_plus/models/attendance/attendance.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
+import 'package:potential_plus/providers/students_provider/students_provider.dart';
+import 'package:potential_plus/providers/teachers_provider/teachers_provider.dart';
+import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
