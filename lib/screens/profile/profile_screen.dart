@@ -9,6 +9,7 @@ import 'package:potential_plus/providers/institution_provider.dart';
 import 'package:potential_plus/services/auth_service.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/dark_mode_toggle_button.dart';
+import 'package:potential_plus/shared/logout_button.dart';
 import 'package:potential_plus/utils.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -36,27 +37,20 @@ class ProfileScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return Padding(
-            padding: const EdgeInsets.all(32.0),
+          return const Padding(
+            padding: EdgeInsets.all(32.0),
             child:Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children:[
-                const Center(child: Text('Profile Settings and whatnot')),
+                Center(child: Text('Profile Settings and whatnot')),
 
-                const SizedBox(height: 16.0,),
+                SizedBox(height: 16.0,),
 
-                const DarkModeToggleButton(),
+                DarkModeToggleButton(),
 
-                const SizedBox(height: 16.0,),
+                SizedBox(height: 16.0,),
 
-
-
-                FilledButton.tonal(
-                  onPressed: () async {
-                    await AuthService.signOut();
-                  },
-                  child: const Text('Sign Out')
-                ),
+                LogoutButton(),
               ]
             ),
           );

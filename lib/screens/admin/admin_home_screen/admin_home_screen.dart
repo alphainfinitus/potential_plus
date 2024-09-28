@@ -54,9 +54,6 @@ class AdminHomeScreen extends ConsumerWidget {
                       'Edit Time Table': AppRoutes.adminEditTimeTable.path,
                     }
                   ),
-
-                  const SizedBox(height: 32.0,),
-                  const LogoutButton(),
                 ]
               ),
             ),

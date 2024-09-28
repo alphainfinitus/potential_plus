@@ -54,9 +54,6 @@ class TeacherHomeScreen extends ConsumerWidget {
                       'Mark Attendance': AppRoutes.teacherMarkAttendance.path,
                     }
                   ),
-
-                  const SizedBox(height: 32.0,),
-                  const LogoutButton(),
                 ]
               ),
             ),

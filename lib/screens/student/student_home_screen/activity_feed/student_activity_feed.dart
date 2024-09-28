@@ -32,19 +32,9 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
             return const Center(child: Text('No activities found'));
           }
           return ListView.builder(
-            itemCount: activities.length + 1, // +1 for the logout button
+            itemCount: activities.length,
             itemBuilder: (context, index) {
-              if (index == activities.length) {
-                return const Column(
-                  children: [
-                    SizedBox(height: 16.0),
-                    LogoutButton(),
-                    SizedBox(height: 16.0),
-                  ],
-                );
-              }
-              final activity = activities[index];
-              return _buildActivityDetailTile(activity);
+              return _buildActivityDetailTile(activities[index]);
             },
           );
         },
