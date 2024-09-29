@@ -49,9 +49,11 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         };
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch attendance: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch attendance: $e')),
+        );
+      }
     } finally {
       setState(() {
         isLoading = false;
@@ -76,10 +78,11 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         attendanceMap[studentId] = value ?? false;
       });
     } catch (e) {
-      // Handle error (e.g., show a snackbar)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update attendance: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update attendance: $e')),
+        );
+      }
     } finally {
       setState(() {
         loadingStates[studentId] = false;
