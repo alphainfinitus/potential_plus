@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:potential_plus/models/attendance/attendance.dart';
-import 'package:potential_plus/models/institution/institution.dart';
-import 'package:potential_plus/models/institution/institution_repository.dart';
-import 'package:potential_plus/models/institution_class/institution_class.dart';
+import 'package:potential_plus/models/attendance.dart';
+import 'package:potential_plus/models/institution.dart';
+import 'package:potential_plus/repositories/institution_repository.dart';
+import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class InstitutionClassRepository {

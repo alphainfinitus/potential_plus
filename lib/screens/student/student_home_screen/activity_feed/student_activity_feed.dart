@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/student_activity_provider/student_activity_provider.dart';
-import 'package:potential_plus/models/activity/activity.dart';
-import 'package:potential_plus/models/attendance/attendance.dart';
+import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:intl/intl.dart';
 
 class StudentActivityFeed extends ConsumerStatefulWidget {

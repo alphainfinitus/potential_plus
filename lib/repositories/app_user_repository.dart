@@ -1,4 +1,4 @@
-import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class AppUserRepository {

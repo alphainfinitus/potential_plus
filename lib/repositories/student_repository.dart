@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/constants/listing_limit.dart';
-import 'package:potential_plus/models/activity/activity.dart';
-import 'package:potential_plus/models/attendance/attendance.dart';
+import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class StudentRepository {

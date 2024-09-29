@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/constants/user_role.dart';
-import 'package:potential_plus/models/activity/activity.dart';
-import 'package:potential_plus/models/app_user/app_user.dart';
-import 'package:potential_plus/models/attendance/attendance.dart';
-import 'package:potential_plus/models/institution/institution.dart';
-import 'package:potential_plus/models/institution_class/institution_class.dart';
+import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/models/attendance.dart';
+import 'package:potential_plus/models/institution.dart';
+import 'package:potential_plus/models/institution_class.dart';
 
 class DbService {
   static final FirebaseFirestore db = FirebaseFirestore.instance;

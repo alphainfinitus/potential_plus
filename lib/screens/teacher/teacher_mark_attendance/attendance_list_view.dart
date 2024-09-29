@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/app_user/app_user.dart';
-import 'package:potential_plus/models/app_user/teacher_repository.dart';
-import 'package:potential_plus/models/institution_class/institution_class.dart';
-import 'package:potential_plus/models/attendance/attendance.dart';
-import 'package:potential_plus/models/institution_class/institution_class_repository.dart';
+import 'package:potential_plus/models/app_user.dart';
+import 'package:potential_plus/repositories/teacher_repository.dart';
+import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/attendance.dart';
+import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/providers/students_provider/students_provider.dart';

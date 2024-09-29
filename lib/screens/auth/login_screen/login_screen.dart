@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
-import 'package:potential_plus/models/app_user/app_user.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_form.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
