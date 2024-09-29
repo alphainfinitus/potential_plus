@@ -37,9 +37,9 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     try {
       final institution = ref.read(institutionProvider).value!;
       final List<Attendance> attendanceList = await InstitutionClassRepository.fetchClassAttendanceByDate(
-        institution.id,
-        widget.institutionClass.id,
-        DateTime.now(),
+        institutionId: institution.id,
+        institutionClassId: widget.institutionClass.id,
+        date: DateTime.now(),
       );
 
       setState(() {

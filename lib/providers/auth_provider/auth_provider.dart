@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:potential_plus/models/app_user/app_user.dart';
-import 'package:potential_plus/services/db_service.dart';
+import 'package:potential_plus/models/app_user/app_user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -13,7 +13,7 @@ Stream<AppUser?> auth(AuthRef ref) async* {
     }
 
     // fetch user data from db
-    final appUser = await DbService.fetchUserData(user.uid);
+    final appUser = await AppUserRepository.fetchUserData(user.uid);
 
     if (appUser == null) {
       return null;
