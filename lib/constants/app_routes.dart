@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_time_table_screen.dart';
-import 'package:potential_plus/screens/admin/admin_home_screen/admin_home_screen.dart';
+import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
-import 'package:potential_plus/screens/home/home_screen.dart';
+import 'package:potential_plus/screens/home_screen.dart';
 import 'package:potential_plus/screens/profile/profile_screen.dart';
-import 'package:potential_plus/screens/student/student_home_screen/student_home_screen.dart';
-import 'package:potential_plus/screens/teacher/teacher_home_screen/teacher_home_screen.dart';
+import 'package:potential_plus/screens/student/student_home_screen.dart';
+import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 
 enum AppRoutes {

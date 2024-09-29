@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
-import 'package:potential_plus/providers/classes_provider.dart';
-import 'package:potential_plus/providers/teachers_provider.dart';
+import 'package:potential_plus/repositories/institution_class_repository.dart';
+import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
+import 'package:potential_plus/providers/teachers_provider/teachers_provider.dart';
 import 'package:potential_plus/shared/institution/select_teacher_dropdown.dart';
 import 'package:potential_plus/utils.dart';
 
@@ -68,7 +69,7 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
 
     try {
       // Call the update method and wait for it to complete
-      await updateClassPeriodDetails(
+      await InstitutionClassRepository.updateClassPeriodDetails(
         widget.institution,
         widget.selectedClass,
         widget.dayofWeekIndex,
@@ -105,7 +106,7 @@ class _AdminEditPeriodDialogState extends ConsumerState<AdminEditPeriodDialog> {
 
     try {
       // Call the update method and wait for it to complete
-      await updateClassPeriodDetails(
+      await InstitutionClassRepository.updateClassPeriodDetails(
         widget.institution,
         widget.selectedClass,
         widget.dayofWeekIndex,

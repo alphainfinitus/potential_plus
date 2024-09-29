@@ -1,9 +1,9 @@
 import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/repositories/student_repository.dart';
 import 'package:potential_plus/models/attendance.dart';
-import 'package:potential_plus/services/db_service.dart';
 import 'package:potential_plus/constants/user_role.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'student_activity_provider.g.dart';
@@ -16,7 +16,7 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
     if (appUser == null || appUser.role != UserRole.student) {
       return Stream.value(null);
     }
-    return DbService.fetchUserActivitiesStreamWithLimit(appUser.id);
+    return StudentRepository.fetchUserActivitiesStreamWithLimit(appUser.id);
   }
 
   Future<void> loadMoreActivities(Activity lastActivity) async {
@@ -24,7 +24,7 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
     if (appUser == null || appUser.role != UserRole.student) {
       return;
     }
-    final nextActivities = await DbService.fetchUserActivitiesBeforeDate(appUser.id, lastActivity.createdAt);
+    final nextActivities = await StudentRepository.fetchUserActivitiesBeforeDate(appUser.id, lastActivity.createdAt);
 
     state = AsyncValue.data([
       ...state.value ?? [],
@@ -34,7 +34,7 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
 
   // fetch activity details
   Future<Attendance> fetchActivityDetails(String activityId, ActivityType activityType) async {
-    return await DbService.fetchActivityDetails(activityId, activityType);
+    return await StudentRepository.fetchActivityDetails(activityId, activityType);
   }
 }
 
@@ -46,6 +46,6 @@ class LiveStudentActivityNotifier extends _$LiveStudentActivityNotifier {
     if (appUser == null || appUser.role != UserRole.student) {
       return Stream.value(null);
     }
-    return DbService.fetchUserActivitiesStreamWithLimit(appUser.id);
+    return StudentRepository.fetchUserActivitiesStream(appUser.id);
   }
 }

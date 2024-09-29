@@ -4,14 +4,14 @@ import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
-import 'package:potential_plus/providers/auth_provider.dart';
-import 'package:potential_plus/providers/institution_provider.dart';
-import 'package:potential_plus/screens/admin/admin_home_screen/admin_actions_section.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
+import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
+import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
-class TeacherHomeScreen extends ConsumerWidget {
-	const TeacherHomeScreen({super.key});
+class StudentHomeScreen extends ConsumerWidget {
+	const StudentHomeScreen({super.key});
 
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,7 @@ class TeacherHomeScreen extends ConsumerWidget {
 
 		return Scaffold(
 			appBar: AppBar(
-				title: AppBarTitle(title: institution?.name),
+				title: const AppBarTitle(),
 			),
 			body: user.when(
         data: (appUser) {
@@ -36,26 +36,8 @@ class TeacherHomeScreen extends ConsumerWidget {
           }
 
           return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children:[
-                  Text(
-                    'Good Morning, ${appUser.name.split(' ')[0]} ☀️',
-                    style: const TextStyle(fontSize: 18.0),
-                  ),
-                  const SizedBox(height: 32.0,),
-
-                  AdminActionsSection(
-                    title: 'Daily Actions :',
-                    actions: {
-                      'Mark Attendance': AppRoutes.teacherMarkAttendance.path,
-                    }
-                  ),
-                ]
-              ),
-            ),
+            padding: const EdgeInsets.all(8.0),
+            child: StudentActivityFeed(appUser: appUser),
           );
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AdminActionsSection extends StatelessWidget {
-  const AdminActionsSection({ super.key, required this.title, required this.actions });
+class InstitutionActionsSection extends StatelessWidget {
+  const InstitutionActionsSection({ super.key, required this.title, required this.actions });
 
     final String title;    
     final Map<String, String> actions; // action title and url to be called

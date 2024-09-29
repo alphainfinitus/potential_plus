@@ -7,12 +7,11 @@ import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/shared/dark_mode_toggle_button.dart';
-import 'package:potential_plus/shared/logout_button.dart';
+import 'package:potential_plus/shared/institution/institution_actions_section.dart';
 import 'package:potential_plus/utils.dart';
 
-class ProfileScreen extends ConsumerWidget {
-	const ProfileScreen({super.key});
+class TeacherHomeScreen extends ConsumerWidget {
+	const TeacherHomeScreen({super.key});
 
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +21,7 @@ class ProfileScreen extends ConsumerWidget {
 
 		return Scaffold(
 			appBar: AppBar(
-				title: const AppBarTitle(),
+				title: AppBarTitle(title: institution?.name),
 			),
 			body: user.when(
         data: (appUser) {
@@ -36,21 +35,26 @@ class ProfileScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return const Padding(
-            padding: EdgeInsets.all(32.0),
-            child:Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children:[
-                Center(child: Text('Profile Settings and whatnot')),
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children:[
+                  Text(
+                    'Good Morning, ${appUser.name.split(' ')[0]} ☀️',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 32.0,),
 
-                SizedBox(height: 16.0,),
-
-                DarkModeToggleButton(),
-
-                SizedBox(height: 16.0,),
-
-                LogoutButton(),
-              ]
+                  InstitutionActionsSection(
+                    title: 'Daily Actions :',
+                    actions: {
+                      'Mark Attendance': AppRoutes.teacherMarkAttendance.path,
+                    }
+                  ),
+                ]
+              ),
             ),
           );
         },
