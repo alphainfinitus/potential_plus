@@ -17,17 +17,3 @@ Future<Map<String, AppUser>?> teachers(TeachersRef ref) async {
   // fetch institution's classes from db
   return await DbService.fetchTeachersForInstitution(appUser.institutionId);
 }
-
-Future updateStudentAttendance({
-  required String studentId,
-  required bool isPresent,
-  required String institutionId,
-  required String markedByUserId,
-}) async {
-  await DbService.updateStudentAttendance(
-    studentId: studentId,
-    isPresent: isPresent,
-    institutionId: institutionId,
-    markedByUserId: markedByUserId,
-  );
-}
