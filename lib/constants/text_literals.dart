@@ -7,4 +7,5 @@ class TextLiterals {
   static const String genericError = "Something went wrong. Please try again.";
   static const String invalidLoginCredentials = "Invalid email or password";
   static const String authStatusUnkown = "Error loading auth status, please check your network and restart the app.";
+  static const String invalidEmail = "Please enter a valid email address";
 }

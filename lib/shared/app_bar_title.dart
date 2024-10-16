@@ -37,7 +37,10 @@ class AppBarTitle extends ConsumerWidget {
               Navigator.pushNamed(context, AppRoutes.profile.path);
             },
             icon: const Icon(Icons.account_circle_outlined),
-          )
+          ),
+
+        if (user.value == null)
+          Text(title ?? ""),
       ]
     );
   }
