@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/repositories/institution_repository.dart';
@@ -46,7 +47,7 @@ class InstitutionClassRepository {
 		required DateTime date,
 	}) async {
 		//1. get all students in the class
-		final studentsSnapshot = await DbService.institutionStudentsQueryRef(institutionId).get();
+		final studentsSnapshot = await DbService.classStudentsQueryRef(institutionClassId).get();
 		final students = studentsSnapshot.docs.map((doc) => doc.data()).toList();
 
 		final studentIds = students.map((student) => student.id).toList();
@@ -55,7 +56,6 @@ class InstitutionClassRepository {
     final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
 
 		final attendancesSnapshot = await DbService.attendancesCollRef()
-      .where('institutionId', isEqualTo: institutionId)
       .where('userId', whereIn: studentIds)
       .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
       .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow))
@@ -64,4 +64,15 @@ class InstitutionClassRepository {
 		//3. return the attendances
 		return attendancesSnapshot.docs.map((doc) => doc.data()).toList();
 	}
+
+  static Future<Map<String, AppUser>> fetchClassStudents({
+    required String classId,
+  }) async {
+    final studentsSnapshot = await DbService.classStudentsQueryRef(classId).get();
+
+    return studentsSnapshot.docs.fold<Map<String, AppUser>>(
+      {},
+      (acc, doc) => acc..[doc.id] = doc.data(),
+    );
+  }
 }

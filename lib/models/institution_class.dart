@@ -25,6 +25,7 @@ class TimetableEntry {
 class InstitutionClass {
   const InstitutionClass({
     required this.id,
+    required this.institutionId,
     required this.name,
     required this.timeTable,
     required this.createdAt,
@@ -32,6 +33,7 @@ class InstitutionClass {
   });
 
   final String id;
+  final String institutionId;
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -55,6 +57,7 @@ class InstitutionClass {
 
     return InstitutionClass(
       id: data['id'],
+      institutionId: data['institutionId'],
       name: data['name'],
       timeTable: timeTable,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
@@ -64,6 +67,7 @@ class InstitutionClass {
 
   Map<String, dynamic> toMap() => {
     'id': id,
+    'institutionId': institutionId,
     'name': name,
     'timeTable': timeTable.map((key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())),
     'createdAt': Timestamp.fromDate(createdAt),
@@ -75,7 +79,7 @@ class InstitutionClass {
   bool operator == (Object other) {
     if (identical(this, other)) return true;
 
-    return other is InstitutionClass && other.id == id;
+    return other is InstitutionClass && other.id == id && other.institutionId == institutionId;
   }
 
   // Override hashCode to return a hash based on id

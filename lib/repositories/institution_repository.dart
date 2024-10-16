@@ -11,7 +11,7 @@ class InstitutionRepository {
 
   // returns a map with key of institutionClassId and value of InstitutionClass
   static Future<Map<String, InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
-    final institutionClassesSnapshot = await DbService.institutionClassesCollRef(institutionId).get();
+    final institutionClassesSnapshot = await DbService.classesCollRef().where('institutionId', isEqualTo: institutionId).get();
     return institutionClassesSnapshot.docs.fold<Map<String, InstitutionClass>>(
       {},
       (acc, doc) => acc..[doc.id] = doc.data(),
@@ -27,22 +27,12 @@ class InstitutionRepository {
     );
   }
 
-  // returns a map with key of studentId and value of AppUser
-  static Future<Map<String, AppUser>> fetchStudentsForInstitution(String institutionId) async {
-    final studentsSnapshot = await DbService.institutionStudentsQueryRef(institutionId).get();
-    return studentsSnapshot.docs.fold<Map<String, AppUser>>(
-      {},
-      (acc, doc) => acc..[doc.id] = doc.data(),
-    );
-  }
-
-  // TODO : convert all functions to use named parameters
   static Future updateClassPeriodDetails({
     required String institutionId,
     required String institutionClassId,
     required Map<String, List<TimetableEntry>> newTimeTable,
   }) async {
-    final institutionClassRef = DbService.institutionClassesCollRef(institutionId).doc(institutionClassId);
+    final institutionClassRef = DbService.classesCollRef().doc(institutionClassId);
 
     // TODO: optimise this to only update the specific period
     await institutionClassRef.update({

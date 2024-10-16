@@ -34,12 +34,8 @@ class DbService {
   static CollectionReference<Attendance> attendancesCollRef() => 
       _collectionRef('attendances', Attendance.fromMap, (attendance) => attendance.toMap());
 
-  static CollectionReference<InstitutionClass> institutionClassesCollRef(String institutionId) => 
-      _collectionRef(
-        'institutions/$institutionId/classes',
-        InstitutionClass.fromMap,
-        (institutionClass) => institutionClass.toMap(),
-      );
+  static CollectionReference<InstitutionClass> classesCollRef() => 
+      _collectionRef('classes', InstitutionClass.fromMap, (institutionClass) => institutionClass.toMap());
 
   //queries
   static Query<AppUser> _institutionUserQueryRef(String institutionId, UserRole role) => 
@@ -50,8 +46,10 @@ class DbService {
   static Query<AppUser> institutionTeachersQueryRef(String institutionId) => 
       _institutionUserQueryRef(institutionId, UserRole.teacher);
 
-  static Query<AppUser> institutionStudentsQueryRef(String institutionId) => 
-      _institutionUserQueryRef(institutionId, UserRole.student);
+  static Query<AppUser> classStudentsQueryRef(String classId) => 
+      usersCollRef()
+          .where('classId', isEqualTo: classId)
+          .where('role', isEqualTo: UserRole.student.name);
 
   static Query<Attendance> attendanceForDateQueryRef({
     required String userId,

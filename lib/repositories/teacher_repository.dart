@@ -10,6 +10,7 @@ class TeacherRepository {
     required bool isPresent,
     required String institutionId,
     required String markedByUserId,
+    required String classId,
   }) async {
     // TODO: use transactions to ensure atomicity
     // TODO: control flow is too messy, refactor
@@ -60,6 +61,7 @@ class TeacherRepository {
         id: newAttendanceDoc.id,
         userId: studentId,
         institutionId: institutionId,
+        classId: classId,
         isPresent: isPresent,
         markedByUserId: markedByUserId,
         createdAt: DateTime.now(),

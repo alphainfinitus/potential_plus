@@ -27,6 +27,8 @@ class ForgotPasswordScreen extends ConsumerWidget {
             return null;
           }
 
+          // TODO : implement forgot password screen
+
           return const Padding(
             padding: EdgeInsets.all(32.0),
             child: Text('Forgot Password Screen here'),

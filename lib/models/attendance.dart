@@ -6,6 +6,7 @@ class Attendance {
     required this.userId,
     required this.isPresent,
     required this.institutionId,
+    this.classId,
     required this.createdAt,
     required this.updatedAt,
     required this.markedByUserId,
@@ -15,6 +16,7 @@ class Attendance {
   final String userId;
   final bool isPresent;
   final String institutionId;
+  final String? classId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final String markedByUserId;
@@ -25,6 +27,7 @@ class Attendance {
       userId: data['userId'],
       isPresent: data['isPresent'],
       institutionId: data['institutionId'],
+      classId: data['classId'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       markedByUserId: data['markedByUserId'],
@@ -36,6 +39,7 @@ class Attendance {
     'userId': userId,
     'isPresent': isPresent,
     'institutionId': institutionId,
+    'classId': classId,
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt),
     'markedByUserId': markedByUserId,

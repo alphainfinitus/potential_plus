@@ -7,7 +7,7 @@ part of 'student_activity_provider.dart';
 // **************************************************************************
 
 String _$studentActivityNotifierHash() =>
-    r'8b0b5cbd255866a000cbe98840818fef6882a75e';
+    r'5576b5a51518e8acfc73084272e25b0a029c945b';
 
 /// See also [StudentActivityNotifier].
 @ProviderFor(StudentActivityNotifier)
@@ -24,7 +24,7 @@ final studentActivityNotifierProvider = AutoDisposeStreamNotifierProvider<
 
 typedef _$StudentActivityNotifier = AutoDisposeStreamNotifier<List<Activity>?>;
 String _$liveStudentActivityNotifierHash() =>
-    r'4d1f4cba00006f49841468cd753cb96f94d9b876';
+    r'99ab03548386859a40c6cf51983c3b4aeeadd939';
 
 /// See also [LiveStudentActivityNotifier].
 @ProviderFor(LiveStudentActivityNotifier)

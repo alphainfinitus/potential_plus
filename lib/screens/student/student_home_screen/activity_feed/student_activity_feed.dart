@@ -75,7 +75,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                 Text(formattedDate, style: Theme.of(context).textTheme.labelSmall),
                 const SizedBox(height: 8),
                 const SizedBox(height: 8),
-                Text("Your ward is ${attendance.isPresent ? 'present' : 'absent'}", style: Theme.of(context).textTheme.headlineSmall),
+                Text("${widget.appUser.name} is ${attendance.isPresent ? 'present' : 'absent'}", style: Theme.of(context).textTheme.headlineSmall),
               ],
             ),
           ),

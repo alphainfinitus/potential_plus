@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_time_table_screen.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
+import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
 import 'package:potential_plus/screens/home_screen.dart';
@@ -20,13 +21,14 @@ enum AppRoutes {
   //admin routes
   adminHomeScreen,
   adminEditTimeTable,
-
-  //student routes
-  studentHomeScreen,
+  adminStudentInfo,
 
   //teacher routes
   teacherHomeScreen,
-  teacherMarkAttendance
+  teacherMarkAttendance,
+
+  //student routes
+  studentHomeScreen,
 }
 
 extension AppRoutesExtension on AppRoutes {
@@ -46,14 +48,16 @@ extension AppRoutesExtension on AppRoutes {
         return '/admin/';
       case AppRoutes.adminEditTimeTable:
         return '/admin/edit-time-table';
-
-      case AppRoutes.studentHomeScreen:
-        return '/student/';
+      case AppRoutes.adminStudentInfo:
+        return '/admin/student-info';
 
       case AppRoutes.teacherHomeScreen:
         return '/teacher/';
       case AppRoutes.teacherMarkAttendance:
         return '/teacher/mark-attendance';
+
+      case AppRoutes.studentHomeScreen:
+      return '/student/';
 
       default:
         return '/';
@@ -70,9 +74,11 @@ final Map<String, WidgetBuilder> appRoutesMap = {
 
   AppRoutes.adminHomeScreen.path: (context) => const AdminHomeScreen(),
   AppRoutes.adminEditTimeTable.path: (context) => const AdminEditTimeTableScreen(),
-
-  AppRoutes.studentHomeScreen.path: (context) => const StudentHomeScreen(),
+  AppRoutes.adminStudentInfo.path: (context) => const AdminStudentInfoScreen(),
 
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
   AppRoutes.teacherMarkAttendance.path: (context) => const TeacherMarkAttendanceScreen(),
+
+  AppRoutes.studentHomeScreen.path: (context) => const StudentHomeScreen(),
+
 };

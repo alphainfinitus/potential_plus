@@ -9,6 +9,7 @@ class AppUser {
     required this.email,
     required this.role,
     required this.institutionId,
+    this.classId,
     required this.createdAt,
     required this.updatedAt
   });
@@ -21,6 +22,7 @@ class AppUser {
   final String institutionId;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? classId;
 
 
   factory AppUser.fromMap(Map<String, dynamic> data) {
@@ -33,6 +35,7 @@ class AppUser {
       email: data['email'],
       role: role,
       institutionId: data['institutionId'],
+      classId: data['classId'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate()
     );
@@ -45,6 +48,7 @@ class AppUser {
     'email': email,
     'role': role.name,
     'institutionId': institutionId,
+    'classId': classId,
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt)
   };

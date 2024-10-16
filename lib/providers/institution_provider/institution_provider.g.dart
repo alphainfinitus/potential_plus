@@ -6,7 +6,7 @@ part of 'institution_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$institutionHash() => r'9aff7d42275b3acd9d18a9acf2119d1802a04c82';
+String _$institutionHash() => r'dd32aa8a6a2bde6dc3835de5e973dfe7d52a1df8';
 
 /// See also [institution].
 @ProviderFor(institution)
