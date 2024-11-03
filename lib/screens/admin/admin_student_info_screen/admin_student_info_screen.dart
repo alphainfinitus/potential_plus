@@ -6,6 +6,7 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
+import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
@@ -55,6 +56,8 @@ class _AdminStudentInfoScreenState extends ConsumerState<AdminStudentInfoScreen>
 
                   const SizedBox(height: 32.0),
 
+                  if(selectedClass == null) const Text("Please select a class to view students"),
+
                   if(selectedClass != null) _buildStudentListView(institution, selectedClass!),
                 ],
               ),
@@ -68,6 +71,35 @@ class _AdminStudentInfoScreenState extends ConsumerState<AdminStudentInfoScreen>
   }
 
   Widget _buildStudentListView(Institution institution, InstitutionClass selectedClass) {
-    return const Placeholder();
+    final AsyncValue<Map<String, AppUser>> studentsAsync = ref.watch(classStudentsProvider(selectedClass.id));
+
+    return studentsAsync.when(
+      data: (students) {
+        if (students.isEmpty) {
+          return const Center(child: Text('No students found in this class'));
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: students.length,
+          itemBuilder: (context, index) {
+            final student = students.values.elementAt(index);
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              child: ListTile(
+                title: Text(student.name),
+                subtitle: Text(student.email),
+                leading: const CircleAvatar(
+                  child: Icon(Icons.person),
+                ),
+              ),
+            );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Error loading students: $error')),
+    );
   }
 }
