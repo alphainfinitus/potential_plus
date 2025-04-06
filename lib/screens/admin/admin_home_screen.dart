@@ -62,6 +62,10 @@ class AdminHomeScreen extends ConsumerWidget {
                           actions: {
                             'Student Info': AppRoutes.adminStudentInfo.path,
                             'Manage Classes': AppRoutes.adminManageClasses.path,
+                            'Manage Students':
+                                AppRoutes.adminManageStudents.path,
+                            'Manage Teachers':
+                                AppRoutes.adminManageTeachers.path,
                           }),
                     ]),
               ),

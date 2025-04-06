@@ -40,4 +40,40 @@ class TextLiterals {
       "Students added to class successfully";
   static const String failedToAddStudents = "Failed to add students: ";
   static const String cancel = "Cancel";
+
+  // Manage Students
+  static const String manageStudents = "Manage Students";
+  static const String createNewStudent = "Create New Student";
+  static const String studentName = "Student Name";
+  static const String studentEmail = "Email";
+  static const String studentUsername = "Student ID/Username";
+  static const String pleaseEnterStudentName = "Please enter a student name";
+  static const String pleaseEnterStudentEmail = "Please enter a valid email";
+  static const String pleaseEnterStudentUsername =
+      "Please enter a student ID/username";
+  static const String createStudent = "Create Student";
+  static const String studentCreatedSuccessfully =
+      "Student created successfully";
+  static const String failedToCreateStudent = "Failed to create student: ";
+  static const String allStudents = "All Students";
+  static const String noStudentsFound = "No students found";
+  static const String errorLoadingStudentList = "Error loading students: ";
+
+  // Manage Teachers
+  static const String manageTeachers = "Manage Teachers";
+  static const String createNewTeacher = "Create New Teacher";
+  static const String teacherName = "Teacher Name";
+  static const String teacherEmail = "Email";
+  static const String teacherUsername = "Teacher ID/Username";
+  static const String pleaseEnterTeacherName = "Please enter a teacher name";
+  static const String pleaseEnterTeacherEmail = "Please enter a valid email";
+  static const String pleaseEnterTeacherUsername =
+      "Please enter a teacher ID/username";
+  static const String createTeacher = "Create Teacher";
+  static const String teacherCreatedSuccessfully =
+      "Teacher created successfully";
+  static const String failedToCreateTeacher = "Failed to create teacher: ";
+  static const String allTeachers = "All Teachers";
+  static const String noTeachersFound = "No teachers found";
+  static const String errorLoadingTeachers = "Error loading teachers: ";
 }

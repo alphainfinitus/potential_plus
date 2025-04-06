@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_time_table_screen.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_manage_classes_screen.dart';
+import 'package:potential_plus/screens/admin/admin_manage_students_screen.dart';
+import 'package:potential_plus/screens/admin/admin_manage_teachers_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
@@ -24,6 +26,8 @@ enum AppRoutes {
   adminEditTimeTable,
   adminStudentInfo,
   adminManageClasses,
+  adminManageStudents,
+  adminManageTeachers,
 
   //teacher routes
   teacherHomeScreen,
@@ -54,6 +58,10 @@ extension AppRoutesExtension on AppRoutes {
         return '/admin/student-info';
       case AppRoutes.adminManageClasses:
         return '/admin/manage-classes';
+      case AppRoutes.adminManageStudents:
+        return '/admin/manage-students';
+      case AppRoutes.adminManageTeachers:
+        return '/admin/manage-teachers';
 
       case AppRoutes.teacherHomeScreen:
         return '/teacher/';
@@ -80,6 +88,10 @@ final Map<String, WidgetBuilder> appRoutesMap = {
   AppRoutes.adminStudentInfo.path: (context) => const AdminStudentInfoScreen(),
   AppRoutes.adminManageClasses.path: (context) =>
       const AdminManageClassesScreen(),
+  AppRoutes.adminManageStudents.path: (context) =>
+      const AdminManageStudentsScreen(),
+  AppRoutes.adminManageTeachers.path: (context) =>
+      const AdminManageTeachersScreen(),
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
   AppRoutes.teacherMarkAttendance.path: (context) =>
       const TeacherMarkAttendanceScreen(),
