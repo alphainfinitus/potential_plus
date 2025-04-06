@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class AppUtils {
-  static void pushReplacementNamedAfterBuild(BuildContext context, String routeName) {
+  static void pushReplacementNamedAfterBuild(
+      BuildContext context, String routeName) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).pushReplacementNamed(routeName);
     });
@@ -31,5 +33,9 @@ class AppUtils {
   static String toTitleCase(String text) {
     if (text.isEmpty) return text;
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
+
+  static String formatDate(DateTime date) {
+    return DateFormat('MMM dd, yyyy').format(date);
   }
 }
