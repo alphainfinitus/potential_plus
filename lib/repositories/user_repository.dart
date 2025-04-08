@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/services/db_service.dart';
@@ -41,23 +42,47 @@ class UserRepository {
     required String institutionId,
     required UserRole role,
   }) async {
-    final newUserDoc = DbService.usersCollRef().doc();
-    final now = DateTime.now();
+    // Check if user with email already exists
+    try {
+      final existingUsers = await DbService.usersCollRef()
+          .where('email', isEqualTo: email)
+          .get();
 
-    final newUser = AppUser(
-      id: newUserDoc.id,
-      username: username,
-      name: name,
-      email: email,
-      role: role,
-      institutionId: institutionId,
-      classId: null, // Will be set when adding to a class
-      createdAt: now,
-      updatedAt: now,
-    );
+      if (existingUsers.docs.isNotEmpty) {
+        throw Exception('A user with this email already exists');
+      }
 
-    await newUserDoc.set(newUser);
-    return newUserDoc.id;
+      // Create Firebase Auth user with username as password
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: username, // Using username as default password
+      );
+
+      final userId = userCredential.user!.uid;
+      final newUserDoc = DbService.usersCollRef().doc(userId);
+      final now = DateTime.now();
+
+      final newUser = AppUser(
+        id: userId,
+        username: username,
+        name: name,
+        email: email,
+        role: role,
+        institutionId: institutionId,
+        classId: null, // Will be set when adding to a class
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      await newUserDoc.set(newUser);
+      return userId;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        throw Exception('A user with this email already exists');
+      }
+      rethrow;
+    }
   }
 
   static Future<Map<String, AppUser>> fetchAllStudentsForInstitution(
