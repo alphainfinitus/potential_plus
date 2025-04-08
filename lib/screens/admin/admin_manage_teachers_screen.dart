@@ -11,7 +11,6 @@ import 'package:potential_plus/providers/users_provider/users_provider.dart';
 import 'package:potential_plus/screens/admin/admin_manage_teachers_screen/create_teacher_form.dart';
 import 'package:potential_plus/screens/admin/admin_manage_teachers_screen/teacher_list_item.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/utils.dart';
 
 class AdminManageTeachersScreen extends ConsumerWidget {
   const AdminManageTeachersScreen({super.key});

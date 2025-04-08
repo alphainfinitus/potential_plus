@@ -11,7 +11,6 @@ import 'package:potential_plus/providers/classes_provider/classes_provider.dart'
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
-import 'package:potential_plus/utils.dart';
 
 class AdminStudentInfoScreen extends ConsumerWidget {
   const AdminStudentInfoScreen({super.key});

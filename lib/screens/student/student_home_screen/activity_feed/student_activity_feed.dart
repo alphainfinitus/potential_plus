@@ -23,7 +23,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
     return RefreshIndicator(
       onRefresh: () async {
         // Refresh the activities
-        ref.refresh(studentActivityNotifierProvider);
+        await ref.refresh(studentActivityNotifierProvider.future);
       },
       child: activitiesStream.when(
         data: (activities) {

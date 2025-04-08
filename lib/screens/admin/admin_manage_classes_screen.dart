@@ -13,7 +13,6 @@ import 'package:potential_plus/screens/admin/admin_manage_classes_screen/add_stu
 import 'package:potential_plus/screens/admin/admin_manage_classes_screen/class_list_item.dart';
 import 'package:potential_plus/screens/admin/admin_manage_classes_screen/create_class_form.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/utils.dart';
 
 class AdminManageClassesScreen extends ConsumerWidget {
   const AdminManageClassesScreen({super.key});
