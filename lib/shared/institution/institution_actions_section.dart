@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class InstitutionActionsSection extends StatelessWidget {
   const InstitutionActionsSection({ super.key, required this.title, required this.actions });
@@ -19,8 +20,7 @@ class InstitutionActionsSection extends StatelessWidget {
             children: actions.entries.map((actionItem) {
               return ElevatedButton(
                 onPressed: () {
-                  // Perform navigation or any other action using entry.value (the URL)
-                  Navigator.pushNamed(context, actionItem.value);
+                  context.push(actionItem.value);
                 },
                 child: Text(actionItem.key),
               );

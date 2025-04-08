@@ -5,6 +5,7 @@ import 'package:potential_plus/repositories/institution_repository.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 part 'classes_provider.g.dart';
 
@@ -38,3 +39,5 @@ final studentsWithoutClassProvider =
   return await InstitutionClassRepository.fetchInstitutionStudentsWithoutClass(
       institutionId: institutionId);
 });
+
+final selectedClassProvider = StateProvider<InstitutionClass?>((ref) => null);

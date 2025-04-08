@@ -51,7 +51,7 @@ extension AppRoutesExtension on AppRoutes {
         return '/forgot-password';
 
       case AppRoutes.adminHomeScreen:
-        return '/admin/';
+        return '/admin';
       case AppRoutes.adminEditTimeTable:
         return '/admin/edit-time-table';
       case AppRoutes.adminStudentInfo:
@@ -64,12 +64,12 @@ extension AppRoutesExtension on AppRoutes {
         return '/admin/manage-teachers';
 
       case AppRoutes.teacherHomeScreen:
-        return '/teacher/';
+        return '/teacher';
       case AppRoutes.teacherMarkAttendance:
         return '/teacher/mark-attendance';
 
       case AppRoutes.studentHomeScreen:
-        return '/student/';
+        return '/student';
 
       default:
         return '/';

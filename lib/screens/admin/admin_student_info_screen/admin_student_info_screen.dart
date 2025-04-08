@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -12,31 +13,25 @@ import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
 import 'package:potential_plus/utils.dart';
 
-class AdminStudentInfoScreen extends ConsumerStatefulWidget {
+class AdminStudentInfoScreen extends ConsumerWidget {
   const AdminStudentInfoScreen({super.key});
 
   @override
-  ConsumerState<AdminStudentInfoScreen> createState() => _AdminStudentInfoScreenState();
-}
-
-class _AdminStudentInfoScreenState extends ConsumerState<AdminStudentInfoScreen> {
-  InstitutionClass? selectedClass;
-
-  @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
 
     return Scaffold(
       appBar: AppBar(
-        title: const AppBarTitle(title: "Student Info",),
+        title: const AppBarTitle(title: "Student Info"),
       ),
       body: user.when(
         data: (appUser) {
           // Not logged in, redirect to login screen
           if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go(AppRoutes.login.path);
+            });
             return null;
           }
 
@@ -51,14 +46,14 @@ class _AdminStudentInfoScreenState extends ConsumerState<AdminStudentInfoScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SelectClassDropdown(onValueChanged: (value)  {
-                    setState(() { selectedClass = value; });
+                    ref.read(selectedClassProvider.notifier).state = value;
                   }),
 
                   const SizedBox(height: 32.0),
 
-                  if(selectedClass == null) const Text("Please select a class to view students"),
+                  if(ref.watch(selectedClassProvider) == null) const Text("Please select a class to view students"),
 
-                  if(selectedClass != null) _buildStudentListView(institution, selectedClass!),
+                  if(ref.watch(selectedClassProvider) != null) _buildStudentListView(context, ref, institution, ref.watch(selectedClassProvider)!),
                 ],
               ),
             ),
@@ -70,7 +65,7 @@ class _AdminStudentInfoScreenState extends ConsumerState<AdminStudentInfoScreen>
     );
   }
 
-  Widget _buildStudentListView(Institution institution, InstitutionClass selectedClass) {
+  Widget _buildStudentListView(BuildContext context, WidgetRef ref, Institution institution, InstitutionClass selectedClass) {
     final AsyncValue<Map<String, AppUser>> studentsAsync = ref.watch(classStudentsProvider(selectedClass.id));
 
     return studentsAsync.when(

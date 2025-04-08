@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -14,17 +15,10 @@ import 'package:potential_plus/screens/admin/admin_manage_classes_screen/create_
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
-class AdminManageClassesScreen extends ConsumerStatefulWidget {
+class AdminManageClassesScreen extends ConsumerWidget {
   const AdminManageClassesScreen({super.key});
 
-  @override
-  ConsumerState<AdminManageClassesScreen> createState() =>
-      _AdminManageClassesScreenState();
-}
-
-class _AdminManageClassesScreenState
-    extends ConsumerState<AdminManageClassesScreen> {
-  void _showAddStudentsDialog(BuildContext context, Institution institution,
+  void _showAddStudentsDialog(BuildContext context, WidgetRef ref, Institution institution,
       InstitutionClass selectedClass) {
     showDialog(
       context: context,
@@ -39,7 +33,7 @@ class _AdminManageClassesScreenState
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
     final AsyncValue<Map<String, InstitutionClass>?> classes =
@@ -53,8 +47,9 @@ class _AdminManageClassesScreenState
         data: (appUser) {
           // Not logged in, redirect to login screen
           if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(
-                context, AppRoutes.login.path);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go(AppRoutes.login.path);
+            });
             return null;
           }
 
@@ -98,7 +93,7 @@ class _AdminManageClassesScreenState
                             institution: institution,
                             onAddStudents: (classData) {
                               _showAddStudentsDialog(
-                                  context, institution, classData);
+                                  context, ref, institution, classData);
                             },
                           );
                         },

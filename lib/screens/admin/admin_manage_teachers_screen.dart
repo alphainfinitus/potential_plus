@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -30,8 +31,9 @@ class AdminManageTeachersScreen extends ConsumerWidget {
         data: (appUser) {
           // Not logged in, redirect to login screen
           if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(
-                context, AppRoutes.login.path);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go(AppRoutes.login.path);
+            });
             return null;
           }
 

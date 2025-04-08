@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -8,7 +9,6 @@ import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/utils.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
 	const StudentHomeScreen({super.key});
@@ -27,7 +27,9 @@ class StudentHomeScreen extends ConsumerWidget {
         data: (appUser) {
           // Not logged in, redirect to login screen
           if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go(AppRoutes.login.path);
+            });
             return null;
           }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,7 @@ class AppBarTitle extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final currentRoute = GoRouterState.of(context).uri.path;
     final user = ref.watch(authProvider);
 
     return Row(
@@ -34,7 +35,7 @@ class AppBarTitle extends ConsumerWidget {
         if (currentRoute != AppRoutes.profile.path && user.value != null)
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.profile.path);
+              context.push(AppRoutes.profile.path);
             },
             icon: const Icon(Icons.account_circle_outlined),
           ),
