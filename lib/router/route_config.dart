@@ -11,6 +11,10 @@ import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
 import 'package:potential_plus/screens/home_screen.dart';
 import 'package:potential_plus/screens/profile/profile_screen.dart';
 import 'package:potential_plus/screens/student/student_home_screen.dart';
+import 'package:potential_plus/screens/student/student_attendance_screen.dart';
+import 'package:potential_plus/screens/student/student_results_screen.dart';
+import 'package:potential_plus/screens/student/student_events_screen.dart';
+import 'package:potential_plus/screens/student/student_feedback_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 
@@ -77,6 +81,22 @@ final router = GoRouter(
     GoRoute(
       path: RoutePaths.student,
       builder: (context, state) => const StudentHomeScreen(),
+    ),
+    GoRoute(
+      path: RoutePaths.studentAttendance,
+      builder: (context, state) => const StudentAttendanceScreen(),
+    ),
+    GoRoute(
+      path: RoutePaths.studentResults,
+      builder: (context, state) => const StudentResultsScreen(),
+    ),
+    GoRoute(
+      path: RoutePaths.studentEvents,
+      builder: (context, state) => const StudentEventsScreen(),
+    ),
+    GoRoute(
+      path: RoutePaths.studentFeedback,
+      builder: (context, state) => const StudentFeedbackScreen(),
     ),
   ],
 ); 

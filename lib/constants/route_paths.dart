@@ -21,4 +21,8 @@ class RoutePaths {
 
   // Student
   static const String student = '/student';
+  static const String studentAttendance = '$student/attendance';
+  static const String studentResults = '$student/results';
+  static const String studentEvents = '$student/events';
+  static const String studentFeedback = '$student/feedback';
 } 
