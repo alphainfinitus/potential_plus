@@ -15,6 +15,7 @@ import 'package:potential_plus/screens/student/student_attendance_screen.dart';
 import 'package:potential_plus/screens/student/student_results_screen.dart';
 import 'package:potential_plus/screens/student/student_events_screen.dart';
 import 'package:potential_plus/screens/student/student_feedback_screen.dart';
+import 'package:potential_plus/screens/student/student_timetable_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 
@@ -98,5 +99,9 @@ final router = GoRouter(
       path: RoutePaths.studentFeedback,
       builder: (context, state) => const StudentFeedbackScreen(),
     ),
+    GoRoute(
+      path: RoutePaths.studentTimetable,
+      builder: (context, state) => const StudentTimetableScreen(),
+    ),
   ],
-); 
+);

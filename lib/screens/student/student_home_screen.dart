@@ -11,6 +11,8 @@ import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
   const StudentHomeScreen({super.key});
@@ -86,10 +88,6 @@ class StudentHomeScreen extends ConsumerWidget {
                         height: Responsive.getMargin(
                             context, ResponsiveSizes.marginXLarge)),
                     _buildActivityFeed(appUser, context),
-                    // Add some bottom padding for better scrolling experience
-                    SizedBox(
-                        height: Responsive.getMargin(
-                            context, ResponsiveSizes.marginXLarge)),
                   ],
                 ),
               ),
@@ -175,10 +173,10 @@ class StudentHomeScreen extends ConsumerWidget {
               onTap: () => context.push(RoutePaths.studentResults),
             ),
             _QuickActionCard(
-              icon: Icons.calendar_today,
-              title: 'Events',
+              icon: Icons.calendar_month,
+              title: 'Timetable',
               color: Colors.teal.shade600,
-              onTap: () => context.push(RoutePaths.studentEvents),
+              onTap: () => context.push(RoutePaths.studentTimetable),
             ),
             _QuickActionCard(
               icon: Icons.chat,

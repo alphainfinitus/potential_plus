@@ -25,4 +25,5 @@ class RoutePaths {
   static const String studentResults = '$student/results';
   static const String studentEvents = '$student/events';
   static const String studentFeedback = '$student/feedback';
+  static const String studentTimetable = '/student/timetable';
 } 

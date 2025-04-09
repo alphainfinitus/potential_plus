@@ -7,23 +7,23 @@ import 'package:potential_plus/providers/current_theme_provider/current_theme_pr
 import 'package:potential_plus/router/route_config.dart';
 
 Future<void> main() async {
-	WidgetsFlutterBinding.ensureInitialized();
-	await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-	runApp(const ProviderScope(child: AppRootWidget()));
+  runApp(const ProviderScope(child: AppRootWidget()));
 }
 
 class AppRootWidget extends ConsumerWidget {
-	const AppRootWidget({super.key});
+  const AppRootWidget({super.key});
 
-	@override
-	Widget build(BuildContext context, WidgetRef ref) {
-		final currentTheme = ref.watch(currentThemeNotifierProvider);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentTheme = ref.watch(currentThemeNotifierProvider);
 
-		return MaterialApp.router(
-			title: TextLiterals.appTitle,
-			theme: currentTheme,
-			routerConfig: router,
-		);
-	}
+    return MaterialApp.router(
+      title: TextLiterals.appTitle,
+      theme: currentTheme,
+      routerConfig: router,
+    );
+  }
 }
