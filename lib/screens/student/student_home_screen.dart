@@ -42,44 +42,56 @@ class StudentHomeScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.getPadding(
-                    context, ResponsiveSizes.paddingLarge),
-                vertical: Responsive.getPadding(
-                    context, ResponsiveSizes.paddingMedium),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      height: Responsive.getMargin(
-                          context, ResponsiveSizes.marginMedium)),
-                  Text(
-                    'Welcome, ${appUser.name}',
-                    style: TextStyle(
-                      fontSize: Responsive.getFontSize(context, 26),
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
+          return RefreshIndicator(
+            onRefresh: () async {
+              // Refresh the providers
+              ref.refresh(authProvider);
+              ref.refresh(institutionProvider);
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.getPadding(
+                      context, ResponsiveSizes.paddingLarge),
+                  vertical: Responsive.getPadding(
+                      context, ResponsiveSizes.paddingMedium),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                        height: Responsive.getMargin(
+                            context, ResponsiveSizes.marginMedium)),
+                    Text(
+                      'Welcome, ${appUser.name}',
+                      style: TextStyle(
+                        fontSize: Responsive.getFontSize(context, 26),
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.primary,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Access your academic information',
-                    style: TextStyle(
-                      fontSize: Responsive.getFontSize(context, 16),
-                      color: colorScheme.onSurface.withOpacity(0.7),
+                    Text(
+                      'Access your academic information',
+                      style: TextStyle(
+                        fontSize: Responsive.getFontSize(context, 16),
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                      height: Responsive.getMargin(
-                          context, ResponsiveSizes.marginLarge)),
-                  _buildQuickActions(context),
-                  SizedBox(
-                      height: Responsive.getMargin(
-                          context, ResponsiveSizes.marginXLarge)),
-                  _buildActivityFeed(appUser, context),
-                ],
+                    SizedBox(
+                        height: Responsive.getMargin(
+                            context, ResponsiveSizes.marginLarge)),
+                    _buildQuickActions(context),
+                    SizedBox(
+                        height: Responsive.getMargin(
+                            context, ResponsiveSizes.marginXLarge)),
+                    _buildActivityFeed(appUser, context),
+                    // Add some bottom padding for better scrolling experience
+                    SizedBox(
+                        height: Responsive.getMargin(
+                            context, ResponsiveSizes.marginXLarge)),
+                  ],
+                ),
               ),
             ),
           );
@@ -181,6 +193,7 @@ class StudentHomeScreen extends ConsumerWidget {
   }
 
   Widget _buildActivityFeed(AppUser appUser, BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -196,12 +209,21 @@ class StudentHomeScreen extends ConsumerWidget {
             ),
           ),
         ),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(
-              Responsive.getRadius(context, ResponsiveSizes.radiusLarge)),
-          child: SizedBox(
-            height: Responsive.isMobile(context) ? 300 : 400,
-            child: StudentActivityFeed(appUser: appUser),
+        Card(
+          elevation: 0,
+          color:
+              Theme.of(context).cardColor.withOpacity(isDarkMode ? 0.1 : 0.7),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+                Responsive.getRadius(context, ResponsiveSizes.radiusLarge)),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(
+                Responsive.getRadius(context, ResponsiveSizes.radiusLarge)),
+            child: SizedBox(
+              height: Responsive.isMobile(context) ? 300 : 400,
+              child: StudentActivityFeed(appUser: appUser),
+            ),
           ),
         ),
       ],

@@ -6,7 +6,8 @@ import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class StudentRepository {
-  static Stream<List<Activity>> fetchUserActivitiesStreamWithLimit(String userId) {
+  static Stream<List<Activity>> fetchUserActivitiesStreamWithLimit(
+      String userId) {
     return DbService.activitiesCollRef()
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
@@ -23,7 +24,8 @@ class StudentRepository {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  static Future<List<Activity>> fetchUserActivitiesBeforeDate(String userId, DateTime lastActivityDate) async {
+  static Future<List<Activity>> fetchUserActivitiesBeforeDate(
+      String userId, DateTime lastActivityDate) async {
     final activitiesSnapshot = await DbService.activitiesCollRef()
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
@@ -34,10 +36,12 @@ class StudentRepository {
     return activitiesSnapshot.docs.map((doc) => doc.data()).toList();
   }
 
-  static Future<Attendance> fetchActivityDetails(String activityId, ActivityType activityType) async {
+  static Future<Attendance> fetchActivityDetails(
+      String activityId, ActivityType activityType) async {
     switch (activityType) {
       case ActivityType.attendance:
-        final attendanceSnapshot = await DbService.attendancesCollRef().doc(activityId).get();
+        final attendanceSnapshot =
+            await DbService.attendancesCollRef().doc(activityId).get();
         return attendanceSnapshot.data()!;
       default:
         throw Exception('Invalid activity type');
