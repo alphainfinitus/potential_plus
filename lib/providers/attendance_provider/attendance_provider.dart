@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
@@ -10,7 +10,7 @@ part 'attendance_provider.g.dart';
 
 @riverpod
 Future<Map<DateTime, List<Attendance>>> studentAttendance(
-    StudentAttendanceRef ref) async {
+    Ref ref) async {
   final appUser = ref.watch(authProvider).value;
   if (appUser == null || appUser.classId == null) {
     return {};
@@ -20,15 +20,12 @@ Future<Map<DateTime, List<Attendance>>> studentAttendance(
 
   // Get attendance for the last 6 months
   final now = DateTime.now();
-  final sixMonthsAgo = DateTime(now.year, now.month - 6, 1);
 
   final attendanceMap = <DateTime, List<Attendance>>{};
 
   // Fetch attendance for each month
   for (int i = 0; i < 6; i++) {
     final date = DateTime(now.year, now.month - i, 1);
-    final startOfMonth = DateTime(date.year, date.month, 1);
-    final endOfMonth = DateTime(date.year, date.month + 1, 0);
 
     try {
       final attendances =
@@ -57,7 +54,7 @@ Future<Map<DateTime, List<Attendance>>> studentAttendance(
 }
 
 @riverpod
-Future<Map<String, int>> attendanceStats(AttendanceStatsRef ref) async {
+Future<Map<String, int>> attendanceStats(Ref ref) async {
   final attendances = await ref.watch(studentAttendanceProvider.future);
 
   int totalClasses = 0;
