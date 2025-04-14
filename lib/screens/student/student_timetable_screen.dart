@@ -319,8 +319,8 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
 
     // This is a simplified example - you'd want to calculate this based on your school's actual schedule
     final int totalMinutes = currentHour * 60 + currentMinute;
-    final int schoolStartMinutes = 8 * 60; // 8:00 AM
-    final int schoolEndMinutes = 16 * 60; // 4:00 PM
+    const int schoolStartMinutes = 8 * 60; // 8:00 AM
+    const int schoolEndMinutes = 16 * 60; // 4:00 PM
 
     double progress = 0.0;
     if (totalMinutes >= schoolStartMinutes &&
