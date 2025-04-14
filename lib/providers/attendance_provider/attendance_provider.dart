@@ -9,8 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'attendance_provider.g.dart';
 
 @riverpod
-Future<Map<DateTime, List<Attendance>>> studentAttendance(
-    Ref ref) async {
+Future<Map<DateTime, List<Attendance>>> studentAttendance(Ref ref) async {
   final appUser = ref.watch(authProvider).value;
   if (appUser == null || appUser.classId == null) {
     return {};
