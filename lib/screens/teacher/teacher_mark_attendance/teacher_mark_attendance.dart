@@ -14,13 +14,15 @@ import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
 class TeacherMarkAttendanceScreen extends ConsumerStatefulWidget {
-	const TeacherMarkAttendanceScreen({super.key});
+  const TeacherMarkAttendanceScreen({super.key});
 
-	@override
-  ConsumerState<TeacherMarkAttendanceScreen> createState() => _TeacherMarkAttendanceScreenState();
+  @override
+  ConsumerState<TeacherMarkAttendanceScreen> createState() =>
+      _TeacherMarkAttendanceScreenState();
 }
 
-class _TeacherMarkAttendanceScreenState extends ConsumerState<TeacherMarkAttendanceScreen> {
+class _TeacherMarkAttendanceScreenState
+    extends ConsumerState<TeacherMarkAttendanceScreen> {
   InstitutionClass? selectedClass;
 
   @override
@@ -48,43 +50,51 @@ class _TeacherMarkAttendanceScreenState extends ConsumerState<TeacherMarkAttenda
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
 
-		return Scaffold(
-			appBar: AppBar(
-				title: const AppBarTitle(title: "Mark Attendance",),
-			),
-			body: user.when(
-        data: (appUser) {
-          // Not logged in, redirect to login screen
-          if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
-            return null;
-          }
-
-          if (institution == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SelectClassDropdown(onValueChanged: (value)  {
-                    setState(() { selectedClass = value; });
-                  }),
-
-                  const SizedBox(height: 32.0),
-
-                  if (selectedClass != null) AttendanceListView(institutionClass: selectedClass!),
-                ],
-              ),
-            ),
-          );
-        },
-        error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
-        loading: () => const Center(child: CircularProgressIndicator())
+    return Scaffold(
+      appBar: AppBar(
+        title: const AppBarTitle(
+          title: "Mark Attendance",
+        ),
       ),
-		);
-	}
+      body: user.when(
+          data: (appUser) {
+            // Not logged in, redirect to login screen
+            if (appUser == null) {
+              AppUtils.pushReplacementNamedAfterBuild(
+                  context, AppRoutes.login.path);
+              return null;
+            }
+
+            if (institution == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(32.0, 16.0, 32.0, 8.0),
+                  child: SelectClassDropdown(
+                    onValueChanged: (value) {
+                      setState(() {
+                        selectedClass = value;
+                      });
+                    },
+                  ),
+                ),
+                if (selectedClass != null)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                      child:
+                          AttendanceListView(institutionClass: selectedClass!),
+                    ),
+                  ),
+              ],
+            );
+          },
+          error: (error, _) =>
+              const Center(child: Text(TextLiterals.authStatusUnkown)),
+          loading: () => const Center(child: CircularProgressIndicator())),
+    );
+  }
 }
