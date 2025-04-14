@@ -9,6 +9,7 @@ import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/utils.dart';
+import 'package:potential_plus/providers/attendance_provider/attendance_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
@@ -94,13 +95,12 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
       final teacher = ref.read(authProvider).value!;
 
       for (var entry in pendingUpdates.entries) {
-        await TeacherRepository.updateStudentAttendance(
-          studentId: entry.key,
-          isPresent: entry.value,
-          institutionId: institution.id,
-          markedByUserId: teacher.id,
-          classId: widget.institutionClass.id,
-        );
+        await ref.read(attendanceNotifierProvider.notifier).markAttendance(
+              studentId: entry.key,
+              isPresent: entry.value,
+              institutionId: institution.id,
+              classId: widget.institutionClass.id,
+            );
       }
 
       setState(() {
@@ -116,7 +116,7 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update attendance: $e')),
+          SnackBar(content: Text('Error updating attendance: $e')),
         );
       }
     } finally {

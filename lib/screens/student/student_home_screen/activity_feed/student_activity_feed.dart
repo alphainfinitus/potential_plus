@@ -115,7 +115,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
     return FutureBuilder<Attendance>(
       future: ref
           .read(studentActivityNotifierProvider.notifier)
-          .fetchActivityDetails(activity.activityRefId, activity.activityType),
+          .fetchActivityDetails(activity.id, activity.type),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
@@ -181,7 +181,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
 
         final attendance = snapshot.data!;
         final formattedDate =
-            DateFormat('EEE, MMM dd, h:mm a').format(activity.createdAt);
+            DateFormat('EEE, MMM dd, h:mm a').format(activity.timestamp);
         final isPresent = attendance.isPresent;
 
         return Padding(

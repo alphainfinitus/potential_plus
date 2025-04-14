@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
 import 'package:potential_plus/constants/text_literals.dart';
+import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
+import 'package:potential_plus/providers/teacher_activity_provider/teacher_activity_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
@@ -46,7 +48,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                   _buildQuickActions(context),
                   const SizedBox(height: 24),
-                  _buildRecentActivity(context),
+                  _buildRecentActivity(context, ref),
                 ],
               ),
             ),
@@ -158,7 +160,9 @@ class TeacherDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentActivity(BuildContext context) {
+  Widget _buildRecentActivity(BuildContext context, WidgetRef ref) {
+    final activitiesAsync = ref.watch(teacherActivitiesProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -169,37 +173,79 @@ class TeacherDashboardScreen extends ConsumerWidget {
               ),
         ),
         const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _ActivityItem(
-                  icon: Icons.check_circle,
-                  title: 'Attendance Marked',
-                  subtitle: 'Class 10A - 45 students present',
-                  time: 'Today, 9:30 AM',
+        activitiesAsync.when(
+          data: (activities) {
+            if (activities.isEmpty) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'No recent activities',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
+                          ),
+                    ),
+                  ),
                 ),
-                const Divider(),
-                _ActivityItem(
-                  icon: Icons.assignment,
-                  title: 'New Assignment Created',
-                  subtitle: 'Mathematics - Chapter 5 Homework',
-                  time: 'Yesterday, 3:45 PM',
+              );
+            }
+
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    for (var i = 0; i < activities.length; i++)
+                      Column(
+                        children: [
+                          _ActivityItem(
+                            icon: _getActivityIcon(activities[i].type),
+                            title: activities[i].title,
+                            subtitle: activities[i].description,
+                            time:
+                                AppUtils.formatTimeAgo(activities[i].timestamp),
+                          ),
+                          if (i < activities.length - 1) const Divider(),
+                        ],
+                      ),
+                  ],
                 ),
-                const Divider(),
-                _ActivityItem(
-                  icon: Icons.calendar_today,
-                  title: 'Timetable Updated',
-                  subtitle: 'New schedule for next week',
-                  time: '2 days ago',
-                ),
-              ],
+              ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text(
+              'Error loading activities: $error',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
             ),
           ),
         ),
       ],
     );
+  }
+
+  IconData _getActivityIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'attendance':
+        return Icons.check_circle;
+      case 'assignment':
+        return Icons.assignment;
+      case 'timetable':
+        return Icons.calendar_today;
+      case 'exam':
+        return Icons.quiz;
+      case 'announcement':
+        return Icons.announcement;
+      default:
+        return Icons.event;
+    }
   }
 }
 
