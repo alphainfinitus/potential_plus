@@ -35,13 +35,27 @@ class Attendance {
   }
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'userId': userId,
-    'isPresent': isPresent,
-    'institutionId': institutionId,
-    'classId': classId,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
-    'markedByUserId': markedByUserId,
-  };
+        'id': id,
+        'userId': userId,
+        'isPresent': isPresent,
+        'institutionId': institutionId,
+        'classId': classId,
+        'createdAt': Timestamp.fromDate(createdAt),
+        'updatedAt': Timestamp.fromDate(updatedAt),
+        'markedByUserId': markedByUserId,
+      };
+
+  factory Attendance.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Attendance(
+      id: doc.id,
+      userId: data['userId'] ?? '',
+      isPresent: data['isPresent'] ?? false,
+      institutionId: data['institutionId'] ?? '',
+      classId: data['classId'] ?? '',
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      markedByUserId: data['markedByUserId'] ?? '',
+    );
+  }
 }

@@ -1,42 +1,52 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:potential_plus/constants/activity_type.dart';
 
 class Activity {
-  const Activity({
+  final String id;
+  final String teacherId;
+  final String type;
+  final String title;
+  final String description;
+  final DateTime timestamp;
+
+  Activity({
     required this.id,
-    required this.userId,
-    required this.activityType,
-    required this.activityRefId,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.teacherId,
+    required this.type,
+    required this.title,
+    required this.description,
+    required this.timestamp,
   });
 
-  final String id;
-  final String userId;
-  final ActivityType activityType;
-  final String activityRefId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
-  factory Activity.fromMap(Map<String, dynamic> data) {
-    ActivityType activityType = ActivityType.values.byName(data['activityType']);
-
+  factory Activity.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Activity(
-      id: data['id'],
-      userId: data['userId'],
-      activityType: activityType,
-      activityRefId: data['activityRefId'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      id: doc.id,
+      teacherId: data['teacherId'] ?? '',
+      type: data['type'] ?? '',
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
     );
   }
 
-  Map<String, dynamic> toMap() => {
-    'id': id,
-    'userId': userId,
-    'activityType': activityType.name,
-    'activityRefId': activityRefId,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
-  };
+  factory Activity.fromMap(Map<String, dynamic> data) {
+    return Activity(
+      id: data['id'] ?? '',
+      teacherId: data['teacherId'] ?? '',
+      type: data['type'] ?? '',
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'teacherId': teacherId,
+      'type': type,
+      'title': title,
+      'description': description,
+      'timestamp': Timestamp.fromDate(timestamp),
+    };
+  }
 }
