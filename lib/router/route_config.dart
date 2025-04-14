@@ -18,6 +18,7 @@ import 'package:potential_plus/screens/student/student_home_screen.dart';
 import 'package:potential_plus/screens/student/student_profile_screen.dart';
 import 'package:potential_plus/screens/student/student_results_screen.dart';
 import 'package:potential_plus/screens/student/student_timetable_screen.dart';
+import 'package:potential_plus/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 
@@ -82,6 +83,10 @@ final router = GoRouter(
     GoRoute(
       path: AppRoutes.teacherMarkAttendance.path,
       builder: (context, state) => const TeacherMarkAttendanceScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.teacherDashboard.path,
+      builder: (context, state) => const TeacherDashboardScreen(),
     ),
 
     // Student routes

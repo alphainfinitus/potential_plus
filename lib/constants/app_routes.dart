@@ -19,6 +19,7 @@ import 'package:potential_plus/screens/student/student_results_screen.dart';
 import 'package:potential_plus/screens/student/student_events_screen.dart';
 import 'package:potential_plus/screens/student/student_feedback_screen.dart';
 import 'package:potential_plus/screens/student/student_timetable_screen.dart';
+import 'package:potential_plus/screens/teacher/teacher_dashboard_screen.dart';
 
 enum AppRoutes {
   home,
@@ -41,6 +42,7 @@ enum AppRoutes {
   //teacher routes
   teacherHomeScreen,
   teacherMarkAttendance,
+  teacherDashboard,
 
   //student routes
   studentHomeScreen,
@@ -85,6 +87,8 @@ extension AppRoutesExtension on AppRoutes {
         return '/teacher';
       case AppRoutes.teacherMarkAttendance:
         return '/teacher/mark-attendance';
+      case AppRoutes.teacherDashboard:
+        return '/teacher/dashboard';
 
       case AppRoutes.studentHomeScreen:
         return '/student';
@@ -125,6 +129,7 @@ final Map<String, WidgetBuilder> appRoutesMap = {
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
   AppRoutes.teacherMarkAttendance.path: (context) =>
       const TeacherMarkAttendanceScreen(),
+  AppRoutes.teacherDashboard.path: (context) => const TeacherDashboardScreen(),
   AppRoutes.studentHomeScreen.path: (context) => const StudentHomeScreen(),
   AppRoutes.studentTimetable.path: (context) => const StudentTimetableScreen(),
   AppRoutes.studentAttendance.path: (context) =>
