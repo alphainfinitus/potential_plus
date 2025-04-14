@@ -1,9 +1,11 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
+import 'package:potential_plus/repositories/teacher_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attendance_provider.g.dart';
@@ -15,41 +17,42 @@ Future<Map<DateTime, List<Attendance>>> studentAttendance(Ref ref) async {
     return {};
   }
 
-  log('Fetching attendance for student: ${appUser.id}');
+  return TeacherRepository.fetchStudentAttendance(appUser.id);
+}
 
-  // Get attendance for the last 6 months
-  final now = DateTime.now();
+@riverpod
+class AttendanceNotifier extends _$AttendanceNotifier {
+  @override
+  FutureOr<void> build() {}
 
-  final attendanceMap = <DateTime, List<Attendance>>{};
+  Future<void> markAttendance({
+    required String studentId,
+    required bool isPresent,
+    required String institutionId,
+    required String classId,
+  }) async {
+    final teacher = ref.read(authProvider).value;
+    if (teacher == null) throw Exception('Not authenticated');
 
-  // Fetch attendance for each month
-  for (int i = 0; i < 6; i++) {
-    final date = DateTime(now.year, now.month - i, 1);
+    await TeacherRepository.updateStudentAttendance(
+      studentId: studentId,
+      isPresent: isPresent,
+      institutionId: institutionId,
+      markedByUserId: teacher.id,
+      classId: classId,
+    );
 
-    try {
-      final attendances =
-          await InstitutionClassRepository.fetchClassAttendanceByDate(
-        institutionId: appUser.institutionId,
-        institutionClassId: appUser.classId!,
-        date: date,
-      );
+    // Create activity record
+    final activity = {
+      'teacherId': teacher.id,
+      'type': 'attendance',
+      'title': 'Attendance Marked',
+      'description': 'Marked attendance for student $studentId',
+      'timestamp': FieldValue.serverTimestamp(),
+    };
 
-      // Filter attendances for the current student
-      final studentAttendances = attendances
-          .where((attendance) => attendance.userId == appUser.id)
-          .toList();
-
-      if (studentAttendances.isNotEmpty) {
-        attendanceMap[date] = studentAttendances;
-      }
-
-      log('Fetched ${studentAttendances.length} attendance records for ${date.month}/${date.year}');
-    } catch (e) {
-      log('Error fetching attendance for ${date.month}/${date.year}: $e');
-    }
+    await FirebaseFirestore.instance.collection('activities').add(activity);
   }
-
-  return attendanceMap;
 }
 
 @riverpod

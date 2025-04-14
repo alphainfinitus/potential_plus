@@ -5,6 +5,32 @@ import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class TeacherRepository {
+  static Future<Map<DateTime, List<Attendance>>> fetchStudentAttendance(
+      String studentId) async {
+    final now = DateTime.now();
+    final attendanceMap = <DateTime, List<Attendance>>{};
+
+    // Fetch attendance for the last 6 months
+    for (int i = 0; i < 6; i++) {
+      final date = DateTime(now.year, now.month - i, 1);
+      final snapshot = await FirebaseFirestore.instance
+          .collection('attendance')
+          .where('studentId', isEqualTo: studentId)
+          .where('date', isGreaterThanOrEqualTo: date)
+          .where('date', isLessThan: DateTime(date.year, date.month + 1, 1))
+          .get();
+
+      final attendances =
+          snapshot.docs.map((doc) => Attendance.fromFirestore(doc)).toList();
+
+      if (attendances.isNotEmpty) {
+        attendanceMap[date] = attendances;
+      }
+    }
+
+    return attendanceMap;
+  }
+
   static Future updateStudentAttendance({
     required String studentId,
     required bool isPresent,
@@ -18,7 +44,14 @@ class TeacherRepository {
     final batch = DbService.db.batch();
 
     // 1. check if attendance already exists for today
-    final todayAttendanceSnapshot = (await DbService.attendanceForDateQueryRef(userId: studentId, institutionId: institutionId, date: DateTime.now()).limit(1).get()).docs.firstOrNull;
+    final todayAttendanceSnapshot = (await DbService.attendanceForDateQueryRef(
+                userId: studentId,
+                institutionId: institutionId,
+                date: DateTime.now())
+            .limit(1)
+            .get())
+        .docs
+        .firstOrNull;
 
     // 2. if it exists, update the attendance and the corresponding activity
     if (todayAttendanceSnapshot != null) {
@@ -29,7 +62,10 @@ class TeacherRepository {
       });
 
       // 2.1. update the corresponding activity
-      final activitySnapshot = await DbService.activityByActivityRefIdQueryRef(todayAttendanceSnapshot.id).limit(1).get();
+      final activitySnapshot = await DbService.activityByActivityRefIdQueryRef(
+              todayAttendanceSnapshot.id)
+          .limit(1)
+          .get();
       final activity = activitySnapshot.docs.firstOrNull;
 
       if (activity != null) {
@@ -43,14 +79,14 @@ class TeacherRepository {
 
         final newActivity = Activity(
           id: newActivityDoc.id,
-          userId: studentId,
-          activityType: ActivityType.attendance,
-          activityRefId: todayAttendanceSnapshot.id,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
+          teacherId: markedByUserId,
+          type: 'attendance',
+          title: 'Attendance Marked',
+          description: 'Marked attendance for student $studentId',
+          timestamp: DateTime.now(),
         );
 
-        batch.set(newActivityDoc, newActivity);
+        batch.set(newActivityDoc, newActivity.toMap());
       }
     }
     // 3. if it doesn't exist, create it
@@ -75,14 +111,14 @@ class TeacherRepository {
 
       final newActivity = Activity(
         id: newActivityDoc.id,
-        userId: studentId,
-        activityType: ActivityType.attendance,
-        activityRefId: newAttendanceDoc.id,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        teacherId: markedByUserId,
+        type: 'attendance',
+        title: 'Attendance Marked',
+        description: 'Marked attendance for student $studentId',
+        timestamp: DateTime.now(),
       );
 
-      batch.set(newActivityDoc, newActivity);
+      batch.set(newActivityDoc, newActivity.toMap());
     }
 
     await batch.commit();

@@ -24,7 +24,9 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
     if (appUser == null || appUser.role != UserRole.student) {
       return;
     }
-    final nextActivities = await StudentRepository.fetchUserActivitiesBeforeDate(appUser.id, lastActivity.createdAt);
+    final nextActivities =
+        await StudentRepository.fetchUserActivitiesBeforeDate(
+            appUser.id, lastActivity.timestamp);
 
     state = AsyncValue.data([
       ...state.value ?? [],
@@ -33,8 +35,9 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
   }
 
   // fetch activity details
-  Future<Attendance> fetchActivityDetails(String activityId, ActivityType activityType) async {
-    return await StudentRepository.fetchActivityDetails(activityId, activityType);
+  Future<Attendance> fetchActivityDetails(
+      String activityId, String type) async {
+    return await StudentRepository.fetchActivityDetails(activityId, type);
   }
 }
 

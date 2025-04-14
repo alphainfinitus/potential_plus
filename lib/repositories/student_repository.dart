@@ -37,14 +37,20 @@ class StudentRepository {
   }
 
   static Future<Attendance> fetchActivityDetails(
-      String activityId, ActivityType activityType) async {
-    switch (activityType) {
-      case ActivityType.attendance:
-        final attendanceSnapshot =
-            await DbService.attendancesCollRef().doc(activityId).get();
-        return attendanceSnapshot.data()!;
-      default:
-        throw Exception('Invalid activity type');
+      String activityId, String type) async {
+    if (type != 'attendance') {
+      throw Exception('Unsupported activity type: $type');
     }
+
+    final doc = await FirebaseFirestore.instance
+        .collection('attendance')
+        .doc(activityId)
+        .get();
+
+    if (!doc.exists) {
+      throw Exception('Activity details not found');
+    }
+
+    return Attendance.fromFirestore(doc);
   }
 }
