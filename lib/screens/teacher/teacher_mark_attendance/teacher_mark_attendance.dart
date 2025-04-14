@@ -9,92 +9,94 @@ import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/attendance_list_view.dart';
-import 'package:potential_plus/shared/institution/select_class_dropdown.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
-class TeacherMarkAttendanceScreen extends ConsumerStatefulWidget {
+class TeacherMarkAttendanceScreen extends ConsumerWidget {
   const TeacherMarkAttendanceScreen({super.key});
 
   @override
-  ConsumerState<TeacherMarkAttendanceScreen> createState() =>
-      _TeacherMarkAttendanceScreenState();
-}
-
-class _TeacherMarkAttendanceScreenState
-    extends ConsumerState<TeacherMarkAttendanceScreen> {
-  InstitutionClass? selectedClass;
-
-  @override
-  Widget build(BuildContext context) {
-    // Replace the ref.listen with a safer watch
-    final classesState = ref.watch(classesProvider);
-
-    // Handle the AsyncValue state of classesProvider
-    classesState.whenData((classes) {
-      if (classes != null && selectedClass != null) {
-        final updatedClass = classes.values.firstWhere(
-          (element) => element.id == selectedClass?.id,
-          orElse: () => selectedClass!,
-        );
-        if (updatedClass != selectedClass) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              selectedClass = updatedClass;
-            });
-          });
-        }
-      }
-    });
-
+  Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
+    final AsyncValue<Map<String, InstitutionClass>?> classes =
+        ref.watch(classesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const AppBarTitle(
-          title: "Mark Attendance",
-        ),
+        title: const AppBarTitle(title: "Mark Attendance"),
       ),
       body: user.when(
-          data: (appUser) {
-            // Not logged in, redirect to login screen
-            if (appUser == null) {
-              AppUtils.pushReplacementNamedAfterBuild(
-                  context, AppRoutes.login.path);
-              return null;
-            }
+        data: (appUser) {
+          // Not logged in, redirect to login screen
+          if (appUser == null) {
+            AppUtils.pushReplacementNamedAfterBuild(
+                context, AppRoutes.login.path);
+            return null;
+          }
 
-            if (institution == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          if (institution == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32.0, 16.0, 32.0, 8.0),
-                  child: SelectClassDropdown(
-                    onValueChanged: (value) {
-                      setState(() {
-                        selectedClass = value;
-                      });
-                    },
-                  ),
-                ),
-                if (selectedClass != null)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
-                      child:
-                          AttendanceListView(institutionClass: selectedClass!),
+          return classes.when(
+            data: (classList) {
+              if (classList == null || classList.isEmpty) {
+                return const Center(child: Text('No classes found'));
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: classList.length,
+                itemBuilder: (context, index) {
+                  final institutionClass = classList.values.elementAt(index);
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text(
+                        institutionClass.name,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                      ),
+                      subtitle: Text(
+                        'Class ID: ${institutionClass.id}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                            ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Scaffold(
+                              appBar: AppBar(
+                                title: Text(institutionClass.name),
+                              ),
+                              body: AttendanceListView(
+                                  institutionClass: institutionClass),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-              ],
-            );
-          },
-          error: (error, _) =>
-              const Center(child: Text(TextLiterals.authStatusUnkown)),
-          loading: () => const Center(child: CircularProgressIndicator())),
+                  );
+                },
+              );
+            },
+            error: (error, _) => Center(child: Text('Error: $error')),
+            loading: () => const Center(child: CircularProgressIndicator()),
+          );
+        },
+        error: (error, _) =>
+            const Center(child: Text(TextLiterals.authStatusUnkown)),
+        loading: () => const Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }

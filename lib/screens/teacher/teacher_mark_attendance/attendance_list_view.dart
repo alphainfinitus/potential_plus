@@ -8,6 +8,7 @@ import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
+import 'package:potential_plus/utils.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
@@ -20,8 +21,9 @@ class AttendanceListView extends ConsumerStatefulWidget {
 
 class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
   Map<String, bool> attendanceMap = {};
-  Map<String, bool> loadingStates = {};
+  Map<String, bool> pendingUpdates = {};
   bool isLoading = true;
+  bool isSubmitting = false;
 
   @override
   void initState() {
@@ -36,7 +38,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
-      final List<Attendance> attendanceList = await InstitutionClassRepository.fetchClassAttendanceByDate(
+      final List<Attendance> attendanceList =
+          await InstitutionClassRepository.fetchClassAttendanceByDate(
         institutionId: institution.id,
         institutionClassId: widget.institutionClass.id,
         date: DateTime.now(),
@@ -47,6 +50,7 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
           for (var attendance in attendanceList)
             attendance.userId: attendance.isPresent
         };
+        pendingUpdates = {};
       });
     } catch (e) {
       if (context.mounted) {
@@ -61,23 +65,54 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
   }
 
-  Future<void> _handleAttendanceChange(String studentId, bool? value) async {
+  void _markAll(bool isPresent) {
     setState(() {
-      loadingStates[studentId] = true;
+      final students =
+          ref.read(classStudentsProvider(widget.institutionClass.id)).value;
+      if (students != null) {
+        for (var student in students.values) {
+          pendingUpdates[student.id] = isPresent;
+        }
+      }
+    });
+  }
+
+  Future<void> _submitAttendance() async {
+    if (pendingUpdates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No changes to submit')),
+      );
+      return;
+    }
+
+    setState(() {
+      isSubmitting = true;
     });
 
     try {
-      await TeacherRepository.updateStudentAttendance(
-        studentId: studentId,
-        isPresent: value ?? false,
-        institutionId: ref.read(institutionProvider).value!.id,
-        markedByUserId: ref.read(authProvider).value!.id,
-        classId: widget.institutionClass.id,
-      );
+      final institution = ref.read(institutionProvider).value!;
+      final teacher = ref.read(authProvider).value!;
+
+      for (var entry in pendingUpdates.entries) {
+        await TeacherRepository.updateStudentAttendance(
+          studentId: entry.key,
+          isPresent: entry.value,
+          institutionId: institution.id,
+          markedByUserId: teacher.id,
+          classId: widget.institutionClass.id,
+        );
+      }
 
       setState(() {
-        attendanceMap[studentId] = value ?? false;
+        attendanceMap.addAll(pendingUpdates);
+        pendingUpdates.clear();
       });
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Attendance updated successfully')),
+        );
+      }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +121,7 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
       }
     } finally {
       setState(() {
-        loadingStates[studentId] = false;
+        isSubmitting = false;
       });
     }
   }
@@ -94,7 +129,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
   @override
   Widget build(BuildContext context) {
     final InstitutionClass institutionClass = widget.institutionClass;
-    final Map<String, AppUser>? students = ref.watch(classStudentsProvider(institutionClass.id)).value;
+    final Map<String, AppUser>? students =
+        ref.watch(classStudentsProvider(institutionClass.id)).value;
 
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -105,37 +141,148 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
 
     if (students.isEmpty) {
-      return Center(child: Text('No students found for ${institutionClass.name}'));
+      return Center(
+          child: Text('No students found for ${institutionClass.name}'));
     }
 
-    return ListView.builder(
-      itemCount: students.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        final student = students.values.elementAt(index);
-        final bool isLoading = loadingStates[student.id] ?? false;
-
-        return ListTile(
-          title: Text(student.name),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Present'),
-              Radio<bool>(
-                value: true,
-                groupValue: attendanceMap[student.id] ?? false,
-                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
-              ),
-              const Text('Absent'),
-              Radio<bool>(
-                value: false,
-                groupValue: attendanceMap[student.id] ?? false,
-                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
-              ),
-            ],
+    return Column(
+      children: [
+        Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${students.length} Students',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Attendance for ${AppUtils.formatDate(DateTime.now())}',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.7),
+                                  ),
+                        ),
+                      ],
+                    ),
+                    if (pendingUpdates.isNotEmpty)
+                      Text(
+                        '${pendingUpdates.length} changes pending',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _markAll(true),
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: const Text('Mark All Present'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _markAll(false),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Mark All Absent'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              final student = students.values.elementAt(index);
+              final bool isPresent = pendingUpdates[student.id] ??
+                  attendanceMap[student.id] ??
+                  false;
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  title: Text(student.name),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Present'),
+                      Radio<bool>(
+                        value: true,
+                        groupValue: isPresent,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            pendingUpdates[student.id] = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Absent'),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: isPresent,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            pendingUpdates[student.id] = value ?? false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        if (pendingUpdates.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: isSubmitting ? null : _submitAttendance,
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Submit Attendance'),
+            ),
+          ),
+      ],
     );
   }
 }
