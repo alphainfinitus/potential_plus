@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -85,9 +87,11 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        error: (error, stack) {
+          log(error.toString());
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.error_outline,
@@ -106,7 +110,8 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
               ),
             ],
           ),
-        ),
+        );
+        }
       ),
     );
   }
