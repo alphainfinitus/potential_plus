@@ -21,22 +21,26 @@ class Activity {
     final data = doc.data() as Map<String, dynamic>;
     return Activity(
       id: doc.id,
-      teacherId: data['teacherId'] ?? '',
-      type: data['type'] ?? '',
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      teacherId: data['teacherId'],
+      type: data['type'],
+      title: data['title'],
+      description: data['description'],
+      timestamp: data['timestamp'] != null
+          ? (data['timestamp'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
   factory Activity.fromMap(Map<String, dynamic> data) {
     return Activity(
-      id: data['id'] ?? '',
-      teacherId: data['teacherId'] ?? '',
-      type: data['type'] ?? '',
-      title: data['title'] ?? '',
-      description: data['description'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      id: data['id'],
+      teacherId: data['teacherId'],
+      type: data['type'],
+      title: data['title'],
+      description: data['description'],
+      timestamp: data['timestamp'] != null
+          ? (data['timestamp'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
