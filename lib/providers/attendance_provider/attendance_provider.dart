@@ -1,10 +1,8 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
-import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/repositories/teacher_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

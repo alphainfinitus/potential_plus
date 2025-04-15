@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/constants/listing_limit.dart';
 import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/models/attendance.dart';
@@ -8,6 +9,7 @@ import 'package:potential_plus/services/db_service.dart';
 class StudentRepository {
   static Stream<List<Activity>> fetchUserActivitiesStreamWithLimit(
       String userId) {
+    log('Fetching activities for user: $userId with limit: $LISTING_LIMIT');
     return DbService.activitiesCollRef()
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)

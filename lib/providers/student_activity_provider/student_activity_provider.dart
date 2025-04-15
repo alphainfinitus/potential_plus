@@ -1,4 +1,3 @@
-import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/repositories/student_repository.dart';
 import 'package:potential_plus/models/attendance.dart';
