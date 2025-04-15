@@ -103,8 +103,6 @@ extension AppRoutesExtension on AppRoutes {
       case AppRoutes.studentFeedback:
         return '/student/feedback';
 
-      default:
-        return '/';
     }
   }
 }

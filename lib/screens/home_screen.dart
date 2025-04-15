@@ -47,10 +47,6 @@ class HomeScreen extends ConsumerWidget {
                 context.go(AppRoutes.adminHomeScreen.path);
               });
               return null;
-            default:
-              return const Center(
-                child: Text('Error Code: 0x001 :( ${TextLiterals.genericError}'),
-              );
           }
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
