@@ -109,54 +109,6 @@ class _AttendanceHeatmapState extends State<AttendanceHeatmap> {
     );
   }
 
-  Widget _buildLegend(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildLegendItem(
-          context,
-          'Present',
-          Theme.of(context).colorScheme.primary.withOpacity(0.7),
-        ),
-        const SizedBox(width: 24),
-        _buildLegendItem(
-          context,
-          'Absent',
-          Theme.of(context).colorScheme.error.withOpacity(0.7),
-        ),
-        const SizedBox(width: 24),
-        _buildLegendItem(
-          context,
-          'No Class',
-          Colors.grey.shade300,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLegendItem(BuildContext context, String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 16,
-          height: 16,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: Responsive.getFontSize(context, 12),
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-      ],
-    );
-  }
-
   void _showDayDetailsDialog(BuildContext context, DateTime date) {
     // Find attendance for this date
     final dateAttendances = widget.attendanceData.entries

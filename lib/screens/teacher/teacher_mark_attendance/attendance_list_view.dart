@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
-import 'package:potential_plus/repositories/teacher_repository.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
-import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/utils.dart';
 import 'package:potential_plus/providers/attendance_provider/attendance_provider.dart';
@@ -92,7 +90,6 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
-      final teacher = ref.read(authProvider).value!;
 
       for (var entry in pendingUpdates.entries) {
         await ref.read(attendanceNotifierProvider.notifier).markAttendance(

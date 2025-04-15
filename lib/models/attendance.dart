@@ -49,13 +49,13 @@ class Attendance {
     final data = doc.data() as Map<String, dynamic>;
     return Attendance(
       id: doc.id,
-      userId: data['userId'] ?? '',
-      isPresent: data['isPresent'] ?? false,
-      institutionId: data['institutionId'] ?? '',
-      classId: data['classId'] ?? '',
+      userId: data['userId'],
+      isPresent: data['isPresent'],
+      institutionId: data['institutionId'],
+      classId: data['classId'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
-      markedByUserId: data['markedByUserId'] ?? '',
+      markedByUserId: data['markedByUserId'],
     );
   }
 }
