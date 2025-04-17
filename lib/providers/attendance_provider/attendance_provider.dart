@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/attendance.dart';
@@ -50,6 +49,16 @@ class AttendanceNotifier extends _$AttendanceNotifier {
     };
 
     await FirebaseFirestore.instance.collection('activities').add(activity);
+  }
+
+  Future<void> updateAttendance({
+    required String attendanceId,
+    required bool isPresent,
+  }) async {
+    await TeacherRepository.updateAttendanceRecord(
+      attendanceId: attendanceId,
+      isPresent: isPresent,
+    );
   }
 }
 
