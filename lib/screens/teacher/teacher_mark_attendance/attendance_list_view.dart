@@ -6,11 +6,13 @@ import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
-import 'package:potential_plus/utils.dart';
-import 'package:potential_plus/providers/attendance_provider/attendance_provider.dart';
+import 'package:potential_plus/screens/teacher/teacher_mark_attendance/mark_attendance_screen.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
-  const AttendanceListView({super.key, required this.institutionClass});
+  const AttendanceListView({
+    super.key,
+    required this.institutionClass,
+  });
 
   final InstitutionClass institutionClass;
 
@@ -19,10 +21,8 @@ class AttendanceListView extends ConsumerStatefulWidget {
 }
 
 class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
-  Map<String, bool> attendanceMap = {};
-  Map<String, bool> pendingUpdates = {};
+  Map<String, List<Attendance>> attendanceMap = {};
   bool isLoading = true;
-  bool isSubmitting = false;
 
   @override
   void initState() {
@@ -37,6 +37,10 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
+      print('Fetching attendance for institution: ${institution.id}');
+      print('Class ID: ${widget.institutionClass.id}');
+      print('Date: ${DateTime.now()}');
+
       final List<Attendance> attendanceList =
           await InstitutionClassRepository.fetchClassAttendanceByDate(
         institutionId: institution.id,
@@ -44,12 +48,21 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         date: DateTime.now(),
       );
 
+      print('Fetched ${attendanceList.length} attendance records');
+
+      // Group attendance by student
+      final Map<String, List<Attendance>> groupedAttendance = {};
+      for (var attendance in attendanceList) {
+        print('Processing attendance for student: ${attendance.userId}');
+        groupedAttendance
+            .putIfAbsent(attendance.userId, () => [])
+            .add(attendance);
+      }
+
+      print('Grouped attendance into ${groupedAttendance.length} students');
+
       setState(() {
-        attendanceMap = {
-          for (var attendance in attendanceList)
-            attendance.userId: attendance.isPresent
-        };
-        pendingUpdates = {};
+        attendanceMap = groupedAttendance;
       });
     } catch (e) {
       if (context.mounted) {
@@ -64,200 +77,89 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
   }
 
-  void _markAll(bool isPresent) {
-    setState(() {
-      final students =
-          ref.read(classStudentsProvider(widget.institutionClass.id)).value;
-      if (students != null) {
-        for (var student in students.values) {
-          pendingUpdates[student.id] = isPresent;
-        }
-      }
-    });
-  }
 
-  Future<void> _submitAttendance() async {
-    if (pendingUpdates.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No changes to submit')),
-      );
-      return;
-    }
-
-    setState(() {
-      isSubmitting = true;
-    });
-
-    try {
-      final institution = ref.read(institutionProvider).value!;
-
-      for (var entry in pendingUpdates.entries) {
-        await ref.read(attendanceNotifierProvider.notifier).markAttendance(
-              studentId: entry.key,
-              isPresent: entry.value,
-              institutionId: institution.id,
-              classId: widget.institutionClass.id,
-            );
-      }
-
-      setState(() {
-        attendanceMap.addAll(pendingUpdates);
-        pendingUpdates.clear();
-      });
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Attendance updated successfully')),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating attendance: $e')),
-        );
-      }
-    } finally {
-      setState(() {
-        isSubmitting = false;
-      });
-    }
+  Widget _buildAttendanceDots(List<Attendance> attendances) {
+    return Row(
+      children: [
+        const Text('Today\'s Attendance: '),
+        ...attendances.map((attendance) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4.0),
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                color: attendance.isPresent ? Colors.green : Colors.red,
+                shape: BoxShape.circle,
+              ),
+            )),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final InstitutionClass institutionClass = widget.institutionClass;
-    final Map<String, AppUser>? students =
-        ref.watch(classStudentsProvider(institutionClass.id)).value;
-
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final students =
+        ref.watch(classStudentsProvider(widget.institutionClass.id)).value;
 
     if (students == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (students.isEmpty) {
-      return Center(
-          child: Text('No students found for ${institutionClass.name}'));
-    }
+    return Scaffold(
+      body: _buildBody(context, ref, students),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MarkAttendanceScreen(
+                institutionClass: widget.institutionClass,
+              ),
+            ),
+          ).then((_) => _fetchAttendance());
+        },
+        tooltip: 'Add Attendance',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
 
+  Widget _buildBody(
+      BuildContext context, WidgetRef ref, Map<String, AppUser> students) {
     return Column(
       children: [
-        Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${students.length} Students',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Attendance for ${AppUtils.formatDate(DateTime.now())}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
-                        ),
-                      ],
-                    ),
-                    if (pendingUpdates.isNotEmpty)
-                      Text(
-                        '${pendingUpdates.length} changes pending',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _markAll(true),
-                        icon: const Icon(Icons.check_circle_outline),
-                        label: const Text('Mark All Present'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _markAll(false),
-                        icon: const Icon(Icons.cancel_outlined),
-                        label: const Text('Mark All Absent'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+        const SizedBox(height: 16),
+        Text('Today\'s Attendance',
+            style: Theme.of(context).textTheme.titleLarge),
         Expanded(
           child: ListView.builder(
             itemCount: students.length,
             itemBuilder: (context, index) {
               final student = students.values.elementAt(index);
-              final bool isPresent = pendingUpdates[student.id] ??
-                  attendanceMap[student.id] ??
-                  false;
+              final attendances = attendanceMap[student.id] ?? [];
 
               return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  title: Text(student.name),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Present'),
-                      Radio<bool>(
-                        value: true,
-                        groupValue: isPresent,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            pendingUpdates[student.id] = value ?? false;
-                          });
-                        },
+                      Text(
+                        student.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const Text('Absent'),
-                      Radio<bool>(
-                        value: false,
-                        groupValue: isPresent,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            pendingUpdates[student.id] = value ?? false;
-                          });
-                        },
-                      ),
+                      const SizedBox(height: 8),
+                      if (attendances.isEmpty)
+                        const Text(
+                          'No attendance marked today',
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      else
+                        _buildAttendanceDots(attendances),
                     ],
                   ),
                 ),
@@ -265,20 +167,127 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
             },
           ),
         ),
-        if (pendingUpdates.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: isSubmitting ? null : _submitAttendance,
-              child: isSubmitting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Submit Attendance'),
-            ),
+      ],
+    );
+  }
+}
+
+class AddAttendanceDialog extends StatefulWidget {
+  const AddAttendanceDialog({super.key});
+
+  @override
+  State<AddAttendanceDialog> createState() => _AddAttendanceDialogState();
+}
+
+class _AddAttendanceDialogState extends State<AddAttendanceDialog> {
+  bool isPresent = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add Attendance'),
+      content: Row(
+        children: [
+          const Text('Status: '),
+          const Text('Present'),
+          Radio<bool>(
+            value: true,
+            groupValue: isPresent,
+            onChanged: (bool? value) {
+              setState(() {
+                isPresent = value ?? true;
+              });
+            },
           ),
+          const Text('Absent'),
+          Radio<bool>(
+            value: false,
+            groupValue: isPresent,
+            onChanged: (bool? value) {
+              setState(() {
+                isPresent = value ?? false;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, isPresent);
+          },
+          child: const Text('Add'),
+        ),
+      ],
+    );
+  }
+}
+
+class EditAttendanceDialog extends StatefulWidget {
+  const EditAttendanceDialog({
+    super.key,
+    required this.initialIsPresent,
+  });
+
+  final bool initialIsPresent;
+
+  @override
+  State<EditAttendanceDialog> createState() => _EditAttendanceDialogState();
+}
+
+class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
+  late bool isPresent;
+
+  @override
+  void initState() {
+    super.initState();
+    isPresent = widget.initialIsPresent;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Attendance'),
+      content: Row(
+        children: [
+          const Text('Status: '),
+          const Text('Present'),
+          Radio<bool>(
+            value: true,
+            groupValue: isPresent,
+            onChanged: (bool? value) {
+              setState(() {
+                isPresent = value ?? true;
+              });
+            },
+          ),
+          const Text('Absent'),
+          Radio<bool>(
+            value: false,
+            groupValue: isPresent,
+            onChanged: (bool? value) {
+              setState(() {
+                isPresent = value ?? false;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, isPresent);
+          },
+          child: const Text('Save'),
+        ),
       ],
     );
   }
