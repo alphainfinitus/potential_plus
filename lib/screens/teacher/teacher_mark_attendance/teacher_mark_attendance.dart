@@ -11,12 +11,20 @@ import 'package:potential_plus/providers/institution_provider/institution_provid
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/attendance_list_view.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
+import 'package:go_router/go_router.dart';
 
-class TeacherMarkAttendanceScreen extends ConsumerWidget {
+class TeacherMarkAttendanceScreen extends ConsumerStatefulWidget {
   const TeacherMarkAttendanceScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TeacherMarkAttendanceScreen> createState() =>
+      _TeacherMarkAttendanceScreenState();
+}
+
+class _TeacherMarkAttendanceScreenState
+    extends ConsumerState<TeacherMarkAttendanceScreen> {
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
     final AsyncValue<Map<String, InstitutionClass>?> classes =
@@ -26,77 +34,73 @@ class TeacherMarkAttendanceScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const AppBarTitle(title: "Mark Attendance"),
       ),
-      body: user.when(
-        data: (appUser) {
-          // Not logged in, redirect to login screen
-          if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(
-                context, AppRoutes.login.path);
-            return null;
-          }
+      body: _buildBody(context, ref),
+    );
+  }
 
-          if (institution == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final AsyncValue<AppUser?> user = ref.watch(authProvider);
+    final Institution? institution = ref.watch(institutionProvider).value;
+    final AsyncValue<Map<String, InstitutionClass>?> classes =
+        ref.watch(classesProvider);
 
-          return classes.when(
-            data: (classList) {
-              if (classList == null || classList.isEmpty) {
-                return const Center(child: Text('No classes found'));
-              }
+    return user.when(
+      data: (appUser) {
+        // Not logged in, redirect to login screen
+        if (appUser == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go(AppRoutes.login.path);
+          });
+          return const SizedBox.shrink();
+        }
 
-              return ListView.builder(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: classList.length,
+        if (institution == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return classes.when(
+          data: (classesMap) {
+            if (classesMap == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final classes = classesMap.values.toList();
+
+            if (classes.isEmpty) {
+              return const Center(
+                  child: Text('No classes found for this institution'));
+            }
+
+            return Expanded(
+              child: ListView.builder(
+                itemCount: classes.length,
                 itemBuilder: (context, index) {
-                  final institutionClass = classList.values.elementAt(index);
+                  final institutionClass = classes[index];
                   return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
+                    margin: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      title: Text(
-                        institutionClass.name,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                      ),
+                      title: Text(institutionClass.name),
                       subtitle: Text(
-                        'Class ID: ${institutionClass.id}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.7),
-                            ),
-                      ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                          '${institutionClass.studentIds.length} students'),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Scaffold(
-                              appBar: AppBar(
-                                title: Text(institutionClass.name),
-                              ),
-                              body: AttendanceListView(
-                                  institutionClass: institutionClass),
-                            ),
-                          ),
+                        context.push(
+                          '${AppRoutes.teacherMarkAttendance.path}/${institutionClass.id}',
+                          extra: institutionClass,
                         );
                       },
                     ),
                   );
                 },
-              );
-            },
-            error: (error, _) => Center(child: Text('Error: $error')),
-            loading: () => const Center(child: CircularProgressIndicator()),
-          );
-        },
-        error: (error, _) =>
-            const Center(child: Text(TextLiterals.authStatusUnkown)),
-        loading: () => const Center(child: CircularProgressIndicator()),
-      ),
+              ),
+            );
+          },
+          error: (error, _) => Center(child: Text('Error: $error')),
+          loading: () => const Center(child: CircularProgressIndicator()),
+        );
+      },
+      error: (error, _) =>
+          const Center(child: Text(TextLiterals.authStatusUnkown)),
+      loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 }

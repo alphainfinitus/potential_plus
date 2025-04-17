@@ -51,6 +51,7 @@ class InstitutionClassRepository {
     required String institutionId,
     required String institutionClassId,
     required DateTime date,
+    String? periodId,
   }) async {
     //1. get all students in the class
     final studentsSnapshot =
@@ -62,12 +63,17 @@ class InstitutionClassRepository {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
 
-    final attendancesSnapshot = await DbService.attendancesCollRef()
+    Query<Attendance> query = DbService.attendancesCollRef()
         .where('userId', whereIn: studentIds)
         .where('createdAt',
             isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-        .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow))
-        .get();
+        .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow));
+
+    if (periodId != null) {
+      query = query.where('periodId', isEqualTo: periodId);
+    }
+
+    final attendancesSnapshot = await query.get();
 
     //3. return the attendances
     return attendancesSnapshot.docs.map((doc) => doc.data()).toList();

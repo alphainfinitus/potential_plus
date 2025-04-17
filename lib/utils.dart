@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
 
 class AppUtils {
   static void pushReplacementNamedAfterBuild(
@@ -36,7 +35,29 @@ class AppUtils {
   }
 
   static String formatDate(DateTime date) {
-    return DateFormat('MMM dd, yyyy').format(date);
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  static String formatTime(DateTime date) {
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+
+  static String getMonthName(int month) {
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    return monthNames[month - 1];
   }
 
   static String formatTimeAgo(DateTime dateTime) {
