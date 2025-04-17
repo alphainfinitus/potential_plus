@@ -13,12 +13,12 @@ class TeacherRepository {
     for (int i = 0; i < 6; i++) {
       final date = DateTime(now.year, now.month - i, 1);
       final snapshot = await FirebaseFirestore.instance
-          .collection('attendance')
-          .where('studentId', isEqualTo: studentId)
-          .where('date', isGreaterThanOrEqualTo: date)
-          .where('date', isLessThan: DateTime(date.year, date.month + 1, 1))
+          .collection('attendances')
+          .where('userId', isEqualTo: studentId)
+          .where('createdAt', isGreaterThanOrEqualTo: date)
+          .where('createdAt',
+              isLessThan: DateTime(date.year, date.month + 1, 1))
           .get();
-
       final attendances =
           snapshot.docs.map((doc) => Attendance.fromFirestore(doc)).toList();
 
@@ -26,7 +26,6 @@ class TeacherRepository {
         attendanceMap[date] = attendances;
       }
     }
-
     return attendanceMap;
   }
 
@@ -37,59 +36,7 @@ class TeacherRepository {
     required String markedByUserId,
     required String classId,
   }) async {
-    // TODO: use transactions to ensure atomicity
-    // TODO: control flow is too messy, refactor
-
-    final batch = DbService.db.batch();
-
-    // 1. check if attendance already exists for today
-    final todayAttendanceSnapshot = (await DbService.attendanceForDateQueryRef(
-                userId: studentId,
-                institutionId: institutionId,
-                date: DateTime.now())
-            .limit(1)
-            .get())
-        .docs
-        .firstOrNull;
-
-    // 2. if it exists, update the attendance and the corresponding activity
-    if (todayAttendanceSnapshot != null) {
-      batch.update(todayAttendanceSnapshot.reference, {
-        'isPresent': isPresent,
-        'markedByUserId': markedByUserId,
-        'updatedAt': Timestamp.now(),
-      });
-
-      // 2.1. update the corresponding activity
-      final activitySnapshot = await DbService.activityByActivityRefIdQueryRef(
-              todayAttendanceSnapshot.id)
-          .limit(1)
-          .get();
-      final activity = activitySnapshot.docs.firstOrNull;
-
-      if (activity != null) {
-        batch.update(activity.reference, {
-          'updatedAt': Timestamp.now(),
-        });
-      }
-      // 2.2. create an activity for the attendance
-      else {
-        final newActivityDoc = DbService.activitiesCollRef().doc();
-
-        final newActivity = Activity(
-          id: newActivityDoc.id,
-          teacherId: markedByUserId,
-          type: 'attendance',
-          title: 'Attendance Marked',
-          description: 'Marked attendance for student $studentId',
-          timestamp: DateTime.now(),
-        );
-
-        batch.set(newActivityDoc, newActivity.toMap());
-      }
-    }
-    // 3. if it doesn't exist, create it
-    else {
+    try {
       final newAttendanceDoc = DbService.attendancesCollRef().doc();
 
       final newAttendance = Attendance(
@@ -103,9 +50,9 @@ class TeacherRepository {
         updatedAt: DateTime.now(),
       );
 
-      batch.set(newAttendanceDoc, newAttendance);
+      await newAttendanceDoc.set(newAttendance);
 
-      // 4. create an activity for the attendance
+      // Create activity record
       final newActivityDoc = DbService.activitiesCollRef().doc();
 
       final newActivity = Activity(
@@ -117,9 +64,22 @@ class TeacherRepository {
         timestamp: DateTime.now(),
       );
 
-      batch.set(newActivityDoc, newActivity.toMap());
+      await newActivityDoc.set(newActivity);
+    } catch (e) {
+      print('Error in updateStudentAttendance: $e');
+      rethrow;
     }
+  }
 
-    await batch.commit();
+  static Future<void> updateAttendanceRecord({
+    required String attendanceId,
+    required bool isPresent,
+  }) async {
+    final attendanceDoc = DbService.attendancesCollRef().doc(attendanceId);
+
+    await attendanceDoc.update({
+      'isPresent': isPresent,
+      'updatedAt': Timestamp.now(),
+    });
   }
 }
