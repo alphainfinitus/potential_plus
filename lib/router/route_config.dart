@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/app_routes.dart';
+import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_time_table_screen.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_manage_classes_screen.dart';
@@ -21,6 +23,7 @@ import 'package:potential_plus/screens/student/student_timetable_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_dashboard_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
+import 'package:potential_plus/screens/teacher/teacher_mark_attendance/attendance_list_view.dart';
 
 final router = GoRouter(
   initialLocation: AppRoutes.home.path,
@@ -83,6 +86,22 @@ final router = GoRouter(
     GoRoute(
       path: AppRoutes.teacherMarkAttendance.path,
       builder: (context, state) => const TeacherMarkAttendanceScreen(),
+      routes: [
+        GoRoute(
+          path: ':classId',
+          builder: (context, state) {
+            final institutionClass = state.extra as InstitutionClass;
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(institutionClass.name),
+              ),
+              body: AttendanceListView(
+                institutionClass: institutionClass,
+              ),
+            );
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: AppRoutes.teacherDashboard.path,
