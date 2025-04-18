@@ -227,7 +227,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
             size: 80,
             color: isError
                 ? Theme.of(context).colorScheme.error
-                : Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 24),
           Text(
@@ -290,7 +290,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -319,8 +319,8 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
 
     // This is a simplified example - you'd want to calculate this based on your school's actual schedule
     final int totalMinutes = currentHour * 60 + currentMinute;
-    final int schoolStartMinutes = 8 * 60; // 8:00 AM
-    final int schoolEndMinutes = 16 * 60; // 4:00 PM
+    const int schoolStartMinutes = 8 * 60; // 8:00 AM
+    const int schoolEndMinutes = 16 * 60; // 4:00 PM
 
     double progress = 0.0;
     if (totalMinutes >= schoolStartMinutes &&
@@ -336,7 +336,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
             Theme.of(context).colorScheme.primary,
           ],
           begin: Alignment.topLeft,
@@ -369,7 +369,10 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
             width: 80,
             height: 4,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onPrimary
+                  .withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
             child: FractionallySizedBox(
@@ -399,10 +402,10 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
         isScrollable: true,
         labelColor: Theme.of(context).colorScheme.primary,
         unselectedLabelColor:
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         ),
         tabs: List.generate(_days.length, (index) {
           // Check if this tab is for today
@@ -446,14 +449,18 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
             Icon(
               Icons.event_busy_outlined,
               size: 64,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
               'No classes scheduled',
               style: TextStyle(
                 fontSize: Responsive.getFontSize(context, 18),
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -520,7 +527,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: Theme.of(context).dividerColor.withOpacity(0.1),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -529,8 +536,8 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
             borderRadius: BorderRadius.circular(16),
             gradient: LinearGradient(
               colors: [
-                subjectColor.withOpacity(0.15),
-                subjectColor.withOpacity(0.05),
+                subjectColor.withValues(alpha: 0.15),
+                subjectColor.withValues(alpha: 0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -574,7 +581,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                               height: 30,
                               width: 2,
                               decoration: BoxDecoration(
-                                color: subjectColor.withOpacity(0.5),
+                                color: subjectColor.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(1),
                               ),
                             ),
@@ -598,7 +605,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                 width: 50,
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: subjectColor.withOpacity(0.2),
+                                  color: subjectColor.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
@@ -635,7 +642,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                           color: Theme.of(context)
                                               .colorScheme
                                               .onSurface
-                                              .withOpacity(0.7),
+                                              .withValues(alpha: 0.7),
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
@@ -646,7 +653,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onSurface
-                                                .withOpacity(0.7),
+                                                .withValues(alpha: 0.7),
                                           ),
                                         ),
                                       ],
@@ -660,7 +667,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                           color: Theme.of(context)
                                               .colorScheme
                                               .onSurface
-                                              .withOpacity(0.7),
+                                              .withValues(alpha: 0.7),
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
@@ -671,7 +678,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onSurface
-                                                .withOpacity(0.7),
+                                                .withValues(alpha: 0.7),
                                           ),
                                         ),
                                       ],
@@ -687,7 +694,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                         ),
                       ],
                     ),
@@ -737,7 +744,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: Theme.of(context).dividerColor.withOpacity(0.1),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -764,7 +771,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -775,7 +782,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.2),
+                            .withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(1),
                       ),
                     ),
@@ -788,7 +795,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -805,7 +812,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -815,7 +822,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.6),
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                       ),
@@ -834,7 +841,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .withOpacity(0.7),
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -845,7 +852,7 @@ class _StudentTimetableScreenState extends ConsumerState<StudentTimetableScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .withOpacity(0.5),
+                                    .withValues(alpha: 0.5),
                               ),
                             ),
                           ],

@@ -83,8 +83,10 @@ class _AttendanceHeatmapState extends State<AttendanceHeatmap> {
         vertical: Responsive.getPadding(context, ResponsiveSizes.paddingSmall),
       ),
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).colorScheme.surfaceContainerHigh.withOpacity(0.3),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHigh
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(
             Responsive.getRadius(context, ResponsiveSizes.radiusMedium)),
       ),
@@ -94,12 +96,13 @@ class _AttendanceHeatmapState extends State<AttendanceHeatmap> {
         colorMode: ColorMode.color,
         datasets: heatmapDatasets,
         colorsets: {
-          1: Theme.of(context).colorScheme.primary.withOpacity(0.7),
-          -1: Theme.of(context).colorScheme.error.withOpacity(0.7),
+          1: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+          -1: Theme.of(context).colorScheme.error.withValues(alpha: 0.7),
           0: Colors.grey.shade300,
         },
         weekFontSize: 12.0,
-        weekTextColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        weekTextColor:
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         textColor: Theme.of(context).colorScheme.onSurface,
         showColorTip: false,
         onClick: (dateTime) {

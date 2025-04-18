@@ -29,90 +29,91 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
         await ref.refresh(studentActivityNotifierProvider.future);
       },
       child: activitiesStream.when(
-        data: (activities) {
-          if (activities == null || activities.isEmpty) {
+          data: (activities) {
+            if (activities == null || activities.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.event_note,
+                      size: Responsive.getFontSize(context, 48),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.5),
+                    ),
+                    SizedBox(
+                        height: Responsive.getMargin(
+                            context, ResponsiveSizes.marginMedium)),
+                    Text(
+                      'No activities found',
+                      style: TextStyle(
+                        fontSize: Responsive.getFontSize(context, 16),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return ListView.separated(
+              padding: EdgeInsets.symmetric(
+                vertical: Responsive.getPadding(
+                    context, ResponsiveSizes.paddingMedium),
+                horizontal: Responsive.getPadding(
+                    context, ResponsiveSizes.paddingMedium),
+              ),
+              itemCount: activities.length,
+              separatorBuilder: (context, index) => Divider(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+                height:
+                    Responsive.getMargin(context, ResponsiveSizes.marginMedium),
+              ),
+              itemBuilder: (context, index) {
+                if (index == activities.length - 1) {
+                  // Load more when reaching the end
+                  ref
+                      .read(studentActivityNotifierProvider.notifier)
+                      .loadMoreActivities(activities[index]);
+                }
+                return _buildActivityDetailTile(activities[index]);
+              },
+            );
+          },
+          loading: () => Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+          error: (error, stack) {
+            log(error.toString());
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.event_note,
+                    Icons.error_outline,
                     size: Responsive.getFontSize(context, 48),
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.error,
                   ),
                   SizedBox(
                       height: Responsive.getMargin(
                           context, ResponsiveSizes.marginMedium)),
                   Text(
-                    'No activities found',
+                    'Error loading activities',
                     style: TextStyle(
                       fontSize: Responsive.getFontSize(context, 16),
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 ],
               ),
             );
-          }
-          return ListView.separated(
-            padding: EdgeInsets.symmetric(
-              vertical:
-                  Responsive.getPadding(context, ResponsiveSizes.paddingMedium),
-              horizontal:
-                  Responsive.getPadding(context, ResponsiveSizes.paddingMedium),
-            ),
-            itemCount: activities.length,
-            separatorBuilder: (context, index) => Divider(
-              color: Theme.of(context).dividerColor.withOpacity(0.5),
-              height:
-                  Responsive.getMargin(context, ResponsiveSizes.marginMedium),
-            ),
-            itemBuilder: (context, index) {
-              if (index == activities.length - 1) {
-                // Load more when reaching the end
-                ref
-                    .read(studentActivityNotifierProvider.notifier)
-                    .loadMoreActivities(activities[index]);
-              }
-              return _buildActivityDetailTile(activities[index]);
-            },
-          );
-        },
-        loading: () => Center(
-          child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        error: (error, stack) {
-          log(error.toString());
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: Responsive.getFontSize(context, 48),
-                color: Theme.of(context).colorScheme.error,
-              ),
-              SizedBox(
-                  height: Responsive.getMargin(
-                      context, ResponsiveSizes.marginMedium)),
-              Text(
-                'Error loading activities',
-                style: TextStyle(
-                  fontSize: Responsive.getFontSize(context, 16),
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ],
-          ),
-        );
-        }
-      ),
+          }),
     );
   }
 
@@ -148,7 +149,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.7),
+                        .withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -204,8 +205,8 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                         context, ResponsiveSizes.paddingSmall)),
                     decoration: BoxDecoration(
                       color: isPresent
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.red.withOpacity(0.1),
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(Responsive.getRadius(
                           context, ResponsiveSizes.radiusMedium)),
                     ),
@@ -240,7 +241,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.7),
+                                .withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -261,7 +262,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -272,7 +273,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
                   ),
                 ],

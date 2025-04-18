@@ -8,9 +8,7 @@ import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
-import 'package:potential_plus/screens/teacher/teacher_mark_attendance/attendance_list_view.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/utils.dart';
 import 'package:go_router/go_router.dart';
 
 class TeacherMarkAttendanceScreen extends ConsumerStatefulWidget {
@@ -25,10 +23,6 @@ class _TeacherMarkAttendanceScreenState
     extends ConsumerState<TeacherMarkAttendanceScreen> {
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<AppUser?> user = ref.watch(authProvider);
-    final Institution? institution = ref.watch(institutionProvider).value;
-    final AsyncValue<Map<String, InstitutionClass>?> classes =
-        ref.watch(classesProvider);
 
     return Scaffold(
       appBar: AppBar(

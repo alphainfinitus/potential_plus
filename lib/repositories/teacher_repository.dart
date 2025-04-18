@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/services/db_service.dart';
@@ -68,7 +69,7 @@ class TeacherRepository {
 
       await newActivityDoc.set(newActivity);
     } catch (e) {
-      print('Error in updateStudentAttendance: $e');
+      debugPrint('Error in updateStudentAttendance: $e');
       rethrow;
     }
   }

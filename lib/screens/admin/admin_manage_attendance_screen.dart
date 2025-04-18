@@ -23,10 +23,6 @@ class _AdminManageAttendanceScreenState
     extends ConsumerState<AdminManageAttendanceScreen> {
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<AppUser?> user = ref.watch(authProvider);
-    final Institution? institution = ref.watch(institutionProvider).value;
-    final AsyncValue<Map<String, InstitutionClass>?> classes =
-        ref.watch(classesProvider);
 
     return Scaffold(
       appBar: AppBar(

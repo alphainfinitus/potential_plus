@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -8,7 +6,7 @@ import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
-import 'package:potential_plus/screens/teacher/teacher_mark_attendance/mark_attendance_screen.dart';
+import 'package:potential_plus/screens/teacher/attendance/screens/mark_attendance_screen.dart';
 import 'package:potential_plus/utils.dart';
 import 'package:potential_plus/providers/attendance_provider.dart';
 
@@ -42,9 +40,9 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
-      print('Fetching attendance for institution: ${institution.id}');
-      print('Class ID: ${widget.institutionClass.id}');
-      print('Date: $selectedDate');
+      debugPrint('Fetching attendance for institution: ${institution.id}');
+      debugPrint('Class ID: ${widget.institutionClass.id}');
+      debugPrint('Date: $selectedDate');
 
       final List<Attendance> attendanceList =
           await InstitutionClassRepository.fetchClassAttendanceByDate(
@@ -53,18 +51,19 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         date: selectedDate,
       );
 
-      print('Fetched ${attendanceList.length} attendance records');
+      debugPrint('Fetched ${attendanceList.length} attendance records');
 
       // Group attendance by student
       final Map<String, List<Attendance>> groupedAttendance = {};
       for (var attendance in attendanceList) {
-        print('Processing attendance for student: ${attendance.userId}');
+        debugPrint('Processing attendance for student: ${attendance.userId}');
         groupedAttendance
             .putIfAbsent(attendance.userId, () => [])
             .add(attendance);
       }
 
-      print('Grouped attendance into ${groupedAttendance.length} students');
+      debugPrint(
+          'Grouped attendance into ${groupedAttendance.length} students');
 
       setState(() {
         attendanceMap = groupedAttendance;
