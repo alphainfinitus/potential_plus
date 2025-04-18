@@ -60,7 +60,7 @@ class AdminProfileScreen extends ConsumerWidget {
       padding: EdgeInsets.all(
           Responsive.getPadding(context, ResponsiveSizes.paddingLarge)),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(
               Responsive.getRadius(context, ResponsiveSizes.radiusLarge)),
@@ -99,7 +99,10 @@ class AdminProfileScreen extends ConsumerWidget {
             user.email,
             style: TextStyle(
               fontSize: Responsive.getFontSize(context, 16),
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -237,7 +240,7 @@ class AdminProfileScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(
               Responsive.getRadius(context, ResponsiveSizes.radiusMedium)),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
         child: Column(
@@ -358,7 +361,10 @@ class AdminProfileScreen extends ConsumerWidget {
             label,
             style: TextStyle(
               fontSize: Responsive.getFontSize(context, 14),
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
             ),
           ),
           Text(

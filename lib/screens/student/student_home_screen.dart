@@ -75,7 +75,7 @@ class StudentHomeScreen extends ConsumerWidget {
                       'Access your academic information',
                       style: TextStyle(
                         fontSize: Responsive.getFontSize(context, 16),
-                        color: colorScheme.onSurface.withOpacity(0.7),
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     SizedBox(
@@ -207,8 +207,9 @@ class StudentHomeScreen extends ConsumerWidget {
         ),
         Card(
           elevation: 0,
-          color:
-              Theme.of(context).cardColor.withOpacity(isDarkMode ? 0.1 : 0.7),
+          color: Theme.of(context)
+              .cardColor
+              .withValues(alpha: isDarkMode ? 0.1 : 0.7),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
                 Responsive.getRadius(context, ResponsiveSizes.radiusLarge)),
@@ -265,7 +266,7 @@ class _QuickActionCard extends StatelessWidget {
                 padding: EdgeInsets.all(Responsive.getPadding(
                     context, ResponsiveSizes.paddingSmall)),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(Responsive.getRadius(
                       context, ResponsiveSizes.radiusMedium)),
                 ),

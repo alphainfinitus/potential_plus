@@ -76,7 +76,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
         attendanceStatus[attendance.userId] = attendance.isPresent;
       }
     } catch (e) {
-      print('Error loading attendance: $e');
+      debugPrint('Error loading attendance: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -125,19 +125,19 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
           ref.read(classStudentsProvider(widget.institutionClass.id)).value;
 
       if (students == null) {
-        print('Error: Students list is null');
+        debugPrint('Error: Students list is null');
         return;
       }
 
-      print('Starting to mark attendance for ${students.length} students');
-      print('Institution ID: ${institution.id}');
-      print('Class ID: ${widget.institutionClass.id}');
-      print('Date: ${selectedDate}');
+      debugPrint('Starting to mark attendance for ${students.length} students');
+      debugPrint('Institution ID: ${institution.id}');
+      debugPrint('Class ID: ${widget.institutionClass.id}');
+      debugPrint('Date: ${selectedDate}');
 
       // Mark attendance for each student
       for (var student in students.values) {
         final isPresent = attendanceStatus[student.id] ?? true;
-        print(
+        debugPrint(
             'Marking attendance for student ${student.id}: ${isPresent ? 'Present' : 'Absent'}');
 
         try {
@@ -148,14 +148,15 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
                 classId: widget.institutionClass.id,
                 date: selectedDate,
               );
-          print('Successfully marked attendance for student ${student.id}');
+          debugPrint(
+              'Successfully marked attendance for student ${student.id}');
         } catch (e) {
-          print('Error marking attendance for student ${student.id}: $e');
+          debugPrint('Error marking attendance for student ${student.id}: $e');
           rethrow;
         }
       }
 
-      print('Successfully marked attendance for all students');
+      debugPrint('Successfully marked attendance for all students');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -164,8 +165,8 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
         Navigator.pop(context);
       }
     } catch (e, stackTrace) {
-      print('Error in _saveAttendance: $e');
-      print('Stack trace: $stackTrace');
+      debugPrint('Error in _saveAttendance: $e');
+      debugPrint('Stack trace: $stackTrace');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -116,7 +116,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -132,7 +132,8 @@ class StudentAttendanceScreen extends ConsumerWidget {
         calendarStyle: CalendarStyle(
           outsideDaysVisible: false,
           weekendTextStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           defaultTextStyle: TextStyle(
             color: Theme.of(context).colorScheme.onSurface,
@@ -142,7 +143,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
             shape: BoxShape.circle,
           ),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             shape: BoxShape.circle,
             border: Border.all(
               color: Theme.of(context).colorScheme.primary,
@@ -178,8 +179,8 @@ class StudentAttendanceScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: hasAttendance
                     ? (isPresent
-                        ? Colors.green.withOpacity(0.3)
-                        : Colors.red.withOpacity(0.3))
+                        ? Colors.green.withValues(alpha: 0.3)
+                        : Colors.red.withValues(alpha: 0.3))
                     : null,
                 shape: BoxShape.circle,
               ),
@@ -217,7 +218,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -295,7 +296,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -316,8 +317,10 @@ class StudentAttendanceScreen extends ConsumerWidget {
               child: Text(
                 'No attendance records for this day',
                 style: TextStyle(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
                 ),
               ),
             )
@@ -338,7 +341,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
           Icon(
             Icons.class_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -441,7 +444,7 @@ class StudentAttendanceScreen extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
         ),
       ),
       child: Row(

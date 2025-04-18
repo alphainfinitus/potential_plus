@@ -21,10 +21,10 @@ import 'package:potential_plus/screens/student/student_home_screen.dart';
 import 'package:potential_plus/screens/student/student_profile_screen.dart';
 import 'package:potential_plus/screens/student/student_results_screen.dart';
 import 'package:potential_plus/screens/student/student_timetable_screen.dart';
-import 'package:potential_plus/screens/teacher/teacher_dashboard_screen.dart';
-import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
+import 'package:potential_plus/screens/teacher/attendance/widgets/attendance_list_view.dart';
+import 'package:potential_plus/screens/teacher/dashboard/teacher_dashboard_screen.dart';
+import 'package:potential_plus/screens/teacher/dashboard/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
-import 'package:potential_plus/screens/teacher/teacher_mark_attendance/attendance_list_view.dart';
 
 final router = GoRouter(
   initialLocation: AppRoutes.home.path,

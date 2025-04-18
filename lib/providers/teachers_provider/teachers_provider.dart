@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/repositories/institution_repository.dart';
@@ -8,7 +9,7 @@ part 'teachers_provider.g.dart';
 
 // returns a map with key of teacherId and value of AppUser
 @riverpod
-Future<Map<String, AppUser>?> teachers(TeachersRef ref) async {
+Future<Map<String, AppUser>?> teachers(Ref ref) async {
   final AppUser? appUser = ref.watch(authProvider).value;
 
   // no need to fetch all teachers if user is not an admin

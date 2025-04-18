@@ -10,7 +10,8 @@ import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
 import 'package:potential_plus/screens/home_screen.dart';
 import 'package:potential_plus/screens/profile/profile_screen.dart';
 import 'package:potential_plus/screens/student/student_home_screen.dart';
-import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
+import 'package:potential_plus/screens/teacher/dashboard/teacher_dashboard_screen.dart';
+import 'package:potential_plus/screens/teacher/dashboard/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 import 'package:potential_plus/screens/student/student_profile_screen.dart';
 import 'package:potential_plus/screens/admin/admin_profile_screen.dart';
@@ -19,7 +20,6 @@ import 'package:potential_plus/screens/student/student_results_screen.dart';
 import 'package:potential_plus/screens/student/student_events_screen.dart';
 import 'package:potential_plus/screens/student/student_feedback_screen.dart';
 import 'package:potential_plus/screens/student/student_timetable_screen.dart';
-import 'package:potential_plus/screens/teacher/teacher_dashboard_screen.dart';
 
 enum AppRoutes {
   home,
