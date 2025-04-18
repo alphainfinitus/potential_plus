@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -8,6 +10,7 @@ import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/mark_attendance_screen.dart';
 import 'package:potential_plus/utils.dart';
+import 'package:potential_plus/providers/attendance_provider.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({
@@ -94,6 +97,18 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
   }
 
+  Future<void> _showEditAttendanceDialog(BuildContext context, AppUser student,
+      List<Attendance> attendances) async {
+    await showDialog(
+      context: context,
+      builder: (context) => EditAttendanceDialog(
+        student: student,
+        attendances: attendances,
+        onAttendanceUpdated: () => _fetchAttendance(),
+      ),
+    );
+  }
+
   Widget _buildAttendanceDots(List<Attendance> attendances) {
     return Row(
       children: [
@@ -148,27 +163,31 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
                   return Card(
                     margin: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 4.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            student.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    child: InkWell(
+                      onTap: () => _showEditAttendanceDialog(
+                          context, student, attendances),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              student.name,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          if (attendances.isEmpty)
-                            const Text(
-                              'No attendance marked for this date',
-                              style: TextStyle(color: Colors.grey),
-                            )
-                          else
-                            _buildAttendanceDots(attendances),
-                        ],
+                            const SizedBox(height: 8),
+                            if (attendances.isEmpty)
+                              const Text(
+                                'No attendance marked for this date',
+                                style: TextStyle(color: Colors.grey),
+                              )
+                            else
+                              _buildAttendanceDots(attendances),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -250,66 +269,152 @@ class _AddAttendanceDialogState extends State<AddAttendanceDialog> {
   }
 }
 
-class EditAttendanceDialog extends StatefulWidget {
+class EditAttendanceDialog extends ConsumerWidget {
   const EditAttendanceDialog({
     super.key,
-    required this.initialIsPresent,
+    required this.student,
+    required this.attendances,
+    required this.onAttendanceUpdated,
   });
 
-  final bool initialIsPresent;
+  final AppUser student;
+  final List<Attendance> attendances;
+  final VoidCallback onAttendanceUpdated;
 
   @override
-  State<EditAttendanceDialog> createState() => _EditAttendanceDialogState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _EditAttendanceDialogContent(
+      student: student,
+      attendances: attendances,
+      onAttendanceUpdated: onAttendanceUpdated,
+    );
+  }
 }
 
-class _EditAttendanceDialogState extends State<EditAttendanceDialog> {
-  late bool isPresent;
+class _EditAttendanceDialogContent extends ConsumerStatefulWidget {
+  const _EditAttendanceDialogContent({
+    required this.student,
+    required this.attendances,
+    required this.onAttendanceUpdated,
+  });
+
+  final AppUser student;
+  final List<Attendance> attendances;
+  final VoidCallback onAttendanceUpdated;
 
   @override
-  void initState() {
-    super.initState();
-    isPresent = widget.initialIsPresent;
+  ConsumerState<_EditAttendanceDialogContent> createState() =>
+      _EditAttendanceDialogState();
+}
+
+class _EditAttendanceDialogState
+    extends ConsumerState<_EditAttendanceDialogContent> {
+  bool isLoading = false;
+  Map<String, bool> pendingUpdates = {};
+
+  Future<void> _updateAttendance(Attendance attendance, bool isPresent) async {
+    setState(() {
+      pendingUpdates[attendance.id] = isPresent;
+    });
+  }
+
+  Future<void> _saveAllUpdates() async {
+    if (pendingUpdates.isEmpty) {
+      Navigator.pop(context);
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      for (var entry in pendingUpdates.entries) {
+        await ref.read(attendanceNotifierProvider.notifier).updateAttendance(
+              attendanceId: entry.key,
+              isPresent: entry.value,
+            );
+      }
+
+      // Refresh the parent widget's attendance data
+      widget.onAttendanceUpdated();
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Attendance updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update attendance: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          pendingUpdates.clear();
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit Attendance'),
-      content: Row(
-        children: [
-          const Text('Status: '),
-          const Text('Present'),
-          Radio<bool>(
-            value: true,
-            groupValue: isPresent,
-            onChanged: (bool? value) {
-              setState(() {
-                isPresent = value ?? true;
-              });
-            },
-          ),
-          const Text('Absent'),
-          Radio<bool>(
-            value: false,
-            groupValue: isPresent,
-            onChanged: (bool? value) {
-              setState(() {
-                isPresent = value ?? false;
-              });
-            },
-          ),
-        ],
+      title: Text('Edit Attendance - ${widget.student.name}'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (widget.attendances.isEmpty)
+              const Text('No attendance records found')
+            else
+              ...widget.attendances.map((attendance) => Card(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: ListTile(
+                      title: Text(AppUtils.formatDate(attendance.createdAt)),
+                      subtitle: Text(AppUtils.formatTime(attendance.createdAt)),
+                      trailing: Switch(
+                        value: pendingUpdates.containsKey(attendance.id)
+                            ? pendingUpdates[attendance.id]!
+                            : attendance.isPresent,
+                        onChanged: isLoading
+                            ? null
+                            : (value) => _updateAttendance(attendance, value),
+                        activeColor: Colors.green,
+                        inactiveThumbColor: Colors.red,
+                      ),
+                    ),
+                  )),
+          ],
+        ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: isLoading ? null : () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context, isPresent);
-          },
-          child: const Text('Save'),
+        ElevatedButton(
+          onPressed: isLoading || pendingUpdates.isEmpty
+              ? null
+              : () => _saveAllUpdates(),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Save Changes'),
         ),
       ],
     );
