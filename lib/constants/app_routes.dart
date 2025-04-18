@@ -38,6 +38,7 @@ enum AppRoutes {
   adminManageClasses,
   adminManageStudents,
   adminManageTeachers,
+  adminManageAttendance,
 
   //teacher routes
   teacherHomeScreen,
@@ -82,6 +83,8 @@ extension AppRoutesExtension on AppRoutes {
         return '/admin/manage-students';
       case AppRoutes.adminManageTeachers:
         return '/admin/manage-teachers';
+      case AppRoutes.adminManageAttendance:
+        return '/admin/manage-attendance';
 
       case AppRoutes.teacherHomeScreen:
         return '/teacher';
@@ -102,7 +105,6 @@ extension AppRoutesExtension on AppRoutes {
         return '/student/events';
       case AppRoutes.studentFeedback:
         return '/student/feedback';
-
     }
   }
 }
@@ -123,6 +125,8 @@ final Map<String, WidgetBuilder> appRoutesMap = {
   AppRoutes.adminManageStudents.path: (context) =>
       const AdminManageStudentsScreen(),
   AppRoutes.adminManageTeachers.path: (context) =>
+      const AdminManageTeachersScreen(),
+  AppRoutes.adminManageAttendance.path: (context) =>
       const AdminManageTeachersScreen(),
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
   AppRoutes.teacherMarkAttendance.path: (context) =>

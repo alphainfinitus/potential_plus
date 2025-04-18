@@ -23,35 +23,36 @@ class AdminHomeScreen extends ConsumerWidget {
         title: const AppBarTitle(),
       ),
       body: user.when(
-        data: (appUser) {
-          // Not logged in, redirect to login screen
-          if (appUser == null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.go(AppRoutes.login.path);
-            });
-            return null;
-          }
+          data: (appUser) {
+            // Not logged in, redirect to login screen
+            if (appUser == null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go(AppRoutes.login.path);
+              });
+              return null;
+            }
 
-          if (institution == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (institution == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InstitutionActionsSection(
-              title: 'Admin Actions :',
-              actions: {
-                'Manage Classes': AppRoutes.adminManageClasses.path,
-                'Manage Students': AppRoutes.adminManageStudents.path,
-                'Manage Teachers': AppRoutes.adminManageTeachers.path,
-                'Edit Time Table': AppRoutes.adminEditTimeTable.path,
-              },
-            ),
-          );
-        },
-        error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
-        loading: () => const Center(child: CircularProgressIndicator())
-      ),
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InstitutionActionsSection(
+                title: 'Admin Actions :',
+                actions: {
+                  'Manage Classes': AppRoutes.adminManageClasses.path,
+                  'Manage Students': AppRoutes.adminManageStudents.path,
+                  'Manage Teachers': AppRoutes.adminManageTeachers.path,
+                  'Edit Time Table': AppRoutes.adminEditTimeTable.path,
+                  'Manage Attendance': AppRoutes.adminManageAttendance.path,
+                },
+              ),
+            );
+          },
+          error: (error, _) =>
+              const Center(child: Text(TextLiterals.authStatusUnkown)),
+          loading: () => const Center(child: CircularProgressIndicator())),
     );
   }
 }
