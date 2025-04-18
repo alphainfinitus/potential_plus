@@ -35,9 +35,11 @@ class TeacherRepository {
     required String institutionId,
     required String markedByUserId,
     required String classId,
+    DateTime? date,
   }) async {
     try {
       final newAttendanceDoc = DbService.attendancesCollRef().doc();
+      final attendanceDate = date ?? DateTime.now();
 
       final newAttendance = Attendance(
         id: newAttendanceDoc.id,
@@ -46,8 +48,8 @@ class TeacherRepository {
         classId: classId,
         isPresent: isPresent,
         markedByUserId: markedByUserId,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: attendanceDate,
+        updatedAt: attendanceDate,
       );
 
       await newAttendanceDoc.set(newAttendance);
@@ -61,7 +63,7 @@ class TeacherRepository {
         type: 'attendance',
         title: 'Attendance Marked',
         description: 'Marked attendance for student $studentId',
-        timestamp: DateTime.now(),
+        timestamp: attendanceDate,
       );
 
       await newActivityDoc.set(newActivity);

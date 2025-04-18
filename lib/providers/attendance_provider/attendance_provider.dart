@@ -27,6 +27,7 @@ class AttendanceNotifier extends _$AttendanceNotifier {
     required bool isPresent,
     required String institutionId,
     required String classId,
+    DateTime? date,
   }) async {
     final teacher = ref.read(authProvider).value;
     if (teacher == null) throw Exception('Not authenticated');
@@ -37,6 +38,7 @@ class AttendanceNotifier extends _$AttendanceNotifier {
       institutionId: institutionId,
       markedByUserId: teacher.id,
       classId: classId,
+      date: date,
     );
 
     // Create activity record

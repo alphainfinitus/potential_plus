@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/app_user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/providers/attendance_provider/attendance_provider.dart';
+import 'package:potential_plus/utils.dart';
 
 class MarkAttendanceScreen extends ConsumerStatefulWidget {
   const MarkAttendanceScreen({
@@ -22,11 +24,66 @@ class MarkAttendanceScreen extends ConsumerStatefulWidget {
 class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
   final Map<String, bool> attendanceStatus = {};
   bool isSaving = false;
+  bool isLoading = false;
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _initializeAttendanceStatus();
+  }
+
+  Future<void> _loadAttendanceForDate() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final students =
+          ref.read(classStudentsProvider(widget.institutionClass.id)).value;
+      if (students == null) return;
+
+      // Reset all attendance status to true (default)
+      for (var student in students.values) {
+        attendanceStatus[student.id] = true;
+      }
+
+      // Fetch attendance for the selected date
+      final startOfDay = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
+      final endOfDay = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        23,
+        59,
+        59,
+      );
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('attendances')
+          .where('classId', isEqualTo: widget.institutionClass.id)
+          .where('createdAt', isGreaterThanOrEqualTo: startOfDay)
+          .where('createdAt', isLessThanOrEqualTo: endOfDay)
+          .get();
+
+      // Update attendance status based on existing records
+      for (var doc in snapshot.docs) {
+        final attendance = Attendance.fromFirestore(doc);
+        attendanceStatus[attendance.userId] = attendance.isPresent;
+      }
+    } catch (e) {
+      print('Error loading attendance: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 
   void _initializeAttendanceStatus() {
@@ -36,6 +93,22 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
       for (var student in students.values) {
         attendanceStatus[student.id] = true; // Default to present
       }
+      _loadAttendanceForDate();
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      await _loadAttendanceForDate();
     }
   }
 
@@ -59,6 +132,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
       print('Starting to mark attendance for ${students.length} students');
       print('Institution ID: ${institution.id}');
       print('Class ID: ${widget.institutionClass.id}');
+      print('Date: ${selectedDate}');
 
       // Mark attendance for each student
       for (var student in students.values) {
@@ -72,6 +146,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
                 isPresent: isPresent,
                 institutionId: institution.id,
                 classId: widget.institutionClass.id,
+                date: selectedDate,
               );
           print('Successfully marked attendance for student ${student.id}');
         } catch (e) {
@@ -100,7 +175,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
           ),
         );
       }
-    } finally {
+
       if (mounted) {
         setState(() {
           isSaving = false;
@@ -134,27 +209,49 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
             ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: students.length,
-        itemBuilder: (context, index) {
-          final student = students.values.elementAt(index);
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      body: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.all(16),
             child: ListTile(
-              title: Text(student.name),
-              trailing: Switch(
-                value: attendanceStatus[student.id] ?? true,
-                onChanged: (value) {
-                  setState(() {
-                    attendanceStatus[student.id] = value;
-                  });
+              title: const Text('Select Date'),
+              subtitle: Text(AppUtils.formatDate(selectedDate)),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context),
+            ),
+          ),
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: students.length,
+                itemBuilder: (context, index) {
+                  final student = students.values.elementAt(index);
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 4.0),
+                    child: ListTile(
+                      title: Text(student.name),
+                      trailing: Switch(
+                        value: attendanceStatus[student.id] ?? true,
+                        onChanged: (value) {
+                          setState(() {
+                            attendanceStatus[student.id] = value;
+                          });
+                        },
+                        activeColor: Colors.green,
+                        inactiveThumbColor: Colors.red,
+                      ),
+                    ),
+                  );
                 },
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.red,
               ),
             ),
-          );
-        },
+        ],
       ),
     );
   }

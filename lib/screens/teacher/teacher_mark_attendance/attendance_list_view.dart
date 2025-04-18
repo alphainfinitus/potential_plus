@@ -7,6 +7,7 @@ import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/repositories/institution_class_repository.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/mark_attendance_screen.dart';
+import 'package:potential_plus/utils.dart';
 
 class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({
@@ -23,6 +24,7 @@ class AttendanceListView extends ConsumerStatefulWidget {
 class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
   Map<String, List<Attendance>> attendanceMap = {};
   bool isLoading = true;
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -39,13 +41,13 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
       final institution = ref.read(institutionProvider).value!;
       print('Fetching attendance for institution: ${institution.id}');
       print('Class ID: ${widget.institutionClass.id}');
-      print('Date: ${DateTime.now()}');
+      print('Date: $selectedDate');
 
       final List<Attendance> attendanceList =
           await InstitutionClassRepository.fetchClassAttendanceByDate(
         institutionId: institution.id,
         institutionClassId: widget.institutionClass.id,
-        date: DateTime.now(),
+        date: selectedDate,
       );
 
       print('Fetched ${attendanceList.length} attendance records');
@@ -77,11 +79,25 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      await _fetchAttendance();
+    }
+  }
 
   Widget _buildAttendanceDots(List<Attendance> attendances) {
     return Row(
       children: [
-        const Text('Today\'s Attendance: '),
+        Text('${AppUtils.formatDate(selectedDate)} Attendance: '),
         ...attendances.map((attendance) => Container(
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
               width: 16,
@@ -105,7 +121,62 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
 
     return Scaffold(
-      body: _buildBody(context, ref, students),
+      body: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.all(16),
+            child: ListTile(
+              title: const Text('Select Date'),
+              subtitle: Text(AppUtils.formatDate(selectedDate)),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _selectDate(context),
+            ),
+          ),
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: students.length,
+                itemBuilder: (context, index) {
+                  final student = students.values.elementAt(index);
+                  final attendances = attendanceMap[student.id] ?? [];
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 4.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (attendances.isEmpty)
+                            const Text(
+                              'No attendance marked for this date',
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          else
+                            _buildAttendanceDots(attendances),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -120,54 +191,6 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
         tooltip: 'Add Attendance',
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  Widget _buildBody(
-      BuildContext context, WidgetRef ref, Map<String, AppUser> students) {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        Text('Today\'s Attendance',
-            style: Theme.of(context).textTheme.titleLarge),
-        Expanded(
-          child: ListView.builder(
-            itemCount: students.length,
-            itemBuilder: (context, index) {
-              final student = students.values.elementAt(index);
-              final attendances = attendanceMap[student.id] ?? [];
-
-              return Card(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        student.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      if (attendances.isEmpty)
-                        const Text(
-                          'No attendance marked today',
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      else
-                        _buildAttendanceDots(attendances),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
