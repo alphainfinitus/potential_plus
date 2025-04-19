@@ -1,6 +1,5 @@
-import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/activity/activity.dart';
 import 'package:potential_plus/repositories/student_repository.dart';
-import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -25,7 +24,7 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
     }
     final nextActivities =
         await StudentRepository.fetchUserActivitiesBeforeDate(
-            appUser.id, lastActivity.timestamp);
+            appUser.id, lastActivity.createdAt);
 
     state = AsyncValue.data([
       ...state.value ?? [],
@@ -34,9 +33,9 @@ class StudentActivityNotifier extends _$StudentActivityNotifier {
   }
 
   // fetch activity details
-  Future<Attendance> fetchActivityDetails(
-      String activityId, String type) async {
-    return await StudentRepository.fetchActivityDetails(activityId, type);
+  Future<Activity> fetchActivityDetails(
+      String activityId) async {
+    return await StudentRepository.fetchActivityDetails(activityId);
   }
 }
 

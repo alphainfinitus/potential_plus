@@ -145,7 +145,7 @@ class _MarkAttendanceScreenState extends ConsumerState<MarkAttendanceScreen> {
                 studentId: student.id,
                 isPresent: isPresent,
                 institutionId: institution.id,
-                classId: widget.institutionClass.id,
+                institutionClass: widget.institutionClass,
                 date: selectedDate,
               );
           debugPrint(

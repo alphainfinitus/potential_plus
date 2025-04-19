@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/constants/user_role.dart';
-import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/activity/activity.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
@@ -30,7 +30,7 @@ class DbService {
           (institution) => institution.toMap());
 
   static CollectionReference<Activity> activitiesCollRef() => _collectionRef(
-      'activities', Activity.fromMap, (activity) => activity.toMap());
+      'temp_activities', Activity.fromMap, (activity) => activity.toMap());
 
   static CollectionReference<Attendance> attendancesCollRef() => _collectionRef(
       'attendances', Attendance.fromMap, (attendance) => attendance.toMap());

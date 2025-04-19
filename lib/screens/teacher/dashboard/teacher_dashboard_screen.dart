@@ -202,11 +202,11 @@ class TeacherDashboardScreen extends ConsumerWidget {
                       Column(
                         children: [
                           _ActivityItem(
-                            icon: _getActivityIcon(activities[i].type),
+                            icon: _getActivityIcon(activities[i].activityType.name),
                             title: activities[i].title,
                             subtitle: activities[i].description,
-                            time:
-                                AppUtils.formatTimeAgo(activities[i].timestamp),
+                            time: AppUtils.formatTimeAgo(
+                                activities[i].createdAt),
                           ),
                           if (i < activities.length - 1) const Divider(),
                         ],

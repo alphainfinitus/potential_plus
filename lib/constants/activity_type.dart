@@ -1,4 +1,4 @@
 enum ActivityType {
   attendance,
-  // announcement,
+  announcement,
 }

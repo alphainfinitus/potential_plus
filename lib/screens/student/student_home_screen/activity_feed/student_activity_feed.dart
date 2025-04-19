@@ -2,9 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:potential_plus/models/activity/attendance_activity.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/student_activity_provider/student_activity_provider.dart';
-import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/models/activity/activity.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:intl/intl.dart';
 import 'package:potential_plus/constants/responsive.dart';
@@ -76,9 +77,9 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
               itemBuilder: (context, index) {
                 if (index == activities.length - 1) {
                   // Load more when reaching the end
-                  ref
-                      .read(studentActivityNotifierProvider.notifier)
-                      .loadMoreActivities(activities[index]);
+                  // ref
+                  //     .read(studentActivityNotifierProvider.notifier)
+                  //     .loadMoreActivities(activities[index]);
                 }
                 return _buildActivityDetailTile(activities[index]);
               },
@@ -118,10 +119,10 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
   }
 
   Widget _buildActivityDetailTile(Activity activity) {
-    return FutureBuilder<Attendance>(
+    return FutureBuilder<Activity>(
       future: ref
           .read(studentActivityNotifierProvider.notifier)
-          .fetchActivityDetails(activity.id, activity.type),
+          .fetchActivityDetails(activity.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
@@ -185,10 +186,10 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
           );
         }
 
-        final attendance = snapshot.data!;
+        final activity = snapshot.data!;
         final formattedDate =
-            DateFormat('EEE, MMM dd, h:mm a').format(activity.timestamp);
-        final isPresent = attendance.isPresent;
+            DateFormat('EEE, MMM dd, h:mm a').format(activity.createdAt);
+        final isPresent = (activity.data as AttendanceActivity).isPresent;
 
         return Padding(
           padding: EdgeInsets.symmetric(
@@ -256,7 +257,7 @@ class _StudentActivityFeedState extends ConsumerState<StudentActivityFeed> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Class ID: ${attendance.classId}',
+                    (activity.data as AttendanceActivity).className,
                     style: TextStyle(
                       fontSize: Responsive.getFontSize(context, 14),
                       color: Theme.of(context)

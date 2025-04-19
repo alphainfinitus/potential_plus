@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:potential_plus/models/activity.dart';
+import 'package:potential_plus/constants/activity_type.dart';
+import 'package:potential_plus/models/activity/activity.dart';
+import 'package:potential_plus/models/activity/attendance_activity.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/attendance.dart';
+import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class TeacherRepository {
@@ -34,8 +38,8 @@ class TeacherRepository {
     required String studentId,
     required bool isPresent,
     required String institutionId,
-    required String markedByUserId,
-    required String classId,
+    required AppUser markedByUserId,
+    required InstitutionClass institutionClass,
     DateTime? date,
   }) async {
     try {
@@ -46,9 +50,9 @@ class TeacherRepository {
         id: newAttendanceDoc.id,
         userId: studentId,
         institutionId: institutionId,
-        classId: classId,
+        classId: institutionClass.id,
         isPresent: isPresent,
-        markedByUserId: markedByUserId,
+        markedByUserId: markedByUserId.id,
         createdAt: attendanceDate,
         updatedAt: attendanceDate,
       );
@@ -60,11 +64,22 @@ class TeacherRepository {
 
       final newActivity = Activity(
         id: newActivityDoc.id,
-        teacherId: markedByUserId,
-        type: 'attendance',
+        userId: markedByUserId.id,
+        userName: markedByUserId.name,
+        activityType: ActivityType.attendance,
         title: 'Attendance Marked',
-        description: 'Marked attendance for student $studentId',
-        timestamp: attendanceDate,
+        description:
+            'Marked attendance for student as ${isPresent ? 'present' : 'absent'}',
+        createdAt: attendanceDate,
+        data: AttendanceActivity(
+          className: institutionClass.name,
+          classId: institutionClass.id,
+          teacherName: markedByUserId.name,
+          teacherId: markedByUserId.id,
+          date: attendanceDate,
+          isPresent: isPresent,
+        ),
+        forUserId: studentId,
       );
 
       await newActivityDoc.set(newActivity);

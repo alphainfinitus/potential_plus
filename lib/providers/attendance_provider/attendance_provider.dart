@@ -1,8 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:potential_plus/constants/activity_type.dart';
+import 'package:potential_plus/models/activity/activity.dart';
+import 'package:potential_plus/models/activity/attendance_activity.dart';
 import 'package:potential_plus/models/attendance.dart';
+import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/repositories/teacher_repository.dart';
+import 'package:potential_plus/services/db_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attendance_provider.g.dart';
@@ -22,36 +27,29 @@ class AttendanceNotifier extends _$AttendanceNotifier {
   @override
   FutureOr<void> build() {}
 
-  Future<void> markAttendance({
-    required String studentId,
-    required bool isPresent,
-    required String institutionId,
-    required String classId,
-    DateTime? date,
-  }) async {
-    final teacher = ref.read(authProvider).value;
-    if (teacher == null) throw Exception('Not authenticated');
+Future<void> markAttendance({
+  required String studentId,
+  required bool isPresent,
+  required String institutionId,
+  required InstitutionClass institutionClass,
+  DateTime? date,
+}) async {
+  final teacher = ref.read(authProvider).value;
+  if (teacher == null) throw Exception('Not authenticated');
 
-    await TeacherRepository.updateStudentAttendance(
-      studentId: studentId,
-      isPresent: isPresent,
-      institutionId: institutionId,
-      markedByUserId: teacher.id,
-      classId: classId,
-      date: date,
-    );
+  final now = DateTime.now();
+  final attendanceDate = date ?? now;
 
-    // Create activity record
-    final activity = {
-      'teacherId': teacher.id,
-      'type': 'attendance',
-      'title': 'Attendance Marked',
-      'description': 'Marked attendance for student $studentId',
-      'timestamp': FieldValue.serverTimestamp(),
-    };
+  await TeacherRepository.updateStudentAttendance(
+    studentId: studentId,
+    isPresent: isPresent,
+    institutionId: institutionId,
+    markedByUserId: teacher,
+    institutionClass: institutionClass,
+    date: attendanceDate,
+  );
+}
 
-    await FirebaseFirestore.instance.collection('activities').add(activity);
-  }
 
   Future<void> updateAttendance({
     required String attendanceId,
