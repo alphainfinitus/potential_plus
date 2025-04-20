@@ -113,14 +113,11 @@ class DbService {
       final data = doc.data();
       return TimeTable(
         id: data.id,
-        entries: (data.entries as List)
-            .map((entry) => TimetableEntry.fromMap(entry))
-            .toList(),
+        entries: data.entries,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       );
     } catch (e) {
-      log('Error fetching timetable: $e');
       return null;
     }
   }

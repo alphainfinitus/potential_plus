@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/time_table.dart';
+import 'package:potential_plus/repositories/app_user_repository.dart';
 import 'package:potential_plus/screens/timetable/timetable_controller.dart';
+import 'package:potential_plus/shared/institution/select_teacher_dropdown.dart';
 import 'package:potential_plus/utils.dart';
 
 class TimetablePage extends ConsumerStatefulWidget {
@@ -258,14 +260,9 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: teacherController,
-                    decoration: InputDecoration(
-                      labelText: 'Teacher Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  SelectTeacherDropdown(
+                    onValueChanged: (value) =>
+                        teacherController.text = value.id,
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -426,15 +423,12 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: teacherController,
-                    decoration: InputDecoration(
-                      labelText: 'Teacher Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  SelectTeacherDropdown(
+                    onValueChanged: (value) {
+                      teacherController.text = value.id;
+                    },
                   ),
+
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -628,14 +622,14 @@ class LectureCard extends StatelessWidget {
                     color: colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    item.teacherId,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  FutureBuilder(
+                      future: AppUserRepository.fetchUserData(item.teacherId),
+                      builder: (context, snapshot) {
+                        return Text(snapshot.data?.name ?? "Unknown");
+                      },
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

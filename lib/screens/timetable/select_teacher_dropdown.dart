@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -26,26 +24,31 @@ class _SelectTeacherDropdownState extends ConsumerState<SelectTeacherDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
-    final List<AppUser> teachers = institutionTeachers?.values.toList() ?? [];
+    final List<AppUser>? users = ref.watch(teachersProvider).value?.values.toList();
 
-    log("teachers: ${teachers.map((e) => e.name).toList()}");
-
-    if (teachers.isEmpty) {
-      return const Center(child: Text("No teachers found"));
+    if (users == null) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    return Row(
+    if (users.isEmpty) {
+      return const Center(child: Text("No users found"));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text("Teacher : "),
-        const SizedBox(width: 16.0),
-        DropdownButton(
-          hint: const Text("Teacher"),
+        DropdownButtonFormField<AppUser>(
+          isExpanded: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          ),
+          hint: const Text("Select a class"),
           value: dropdownValue,
-          items: teachers.map((AppUser value) {
+          items: users.map((AppUser appUser) {
             return DropdownMenuItem(
-              value: value,
-              child: Text(value.name),
+              value: appUser,
+              child: Text(appUser.name),
             );
           }).toList(),
           onChanged: (AppUser? newValue) {
