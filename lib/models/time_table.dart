@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class TimeTable {
   final String id;
@@ -23,39 +24,73 @@ class TimeTable {
   }
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'entries': entries,
-    'createdAt': createdAt,
-    'updatedAt': updatedAt,
-  };
+        'id': id,
+        'entries': entries,
+        'createdAt': createdAt,
+        'updatedAt': updatedAt,
+      };
 }
 
 class TimetableEntry {
-  const TimetableEntry({
-    required this.subject,
-    required this.teacherId,
-    this.to,
-    this.from,
-  });
-
+  final String id;
   final String subject;
   final String teacherId;
-  final Timestamp? to;
   final Timestamp? from;
+  final Timestamp? to;
+  final int day;
+  final int lectureNumber;
 
-  factory TimetableEntry.fromMap(Map<String, String> map) {
+  TimetableEntry({
+    required this.id,
+    required this.subject,
+    required this.teacherId,
+    this.from,
+    this.to,
+    required this.day,
+    required this.lectureNumber,
+  });
+
+  TimetableEntry copyWith({
+    String? id,
+    String? subject,
+    String? teacherId,
+    Timestamp? from,
+    Timestamp? to,
+    int? day,
+    int? lectureNumber,
+  }) {
     return TimetableEntry(
-      subject: map['subject']!,
-      teacherId: map['teacherId']!,
-      to: map['to'] != null ? Timestamp.fromDate(DateTime.parse(map['to']!)) : null,
-      from: map['from'] != null ? Timestamp.fromDate(DateTime.parse(map['from']!)) : null,
+      id: id ?? this.id,
+      subject: subject ?? this.subject,
+      teacherId: teacherId ?? this.teacherId,
+      from: from ?? this.from,
+      to: to ?? this.to,
+      day: day ?? this.day,
+      lectureNumber: lectureNumber ?? this.lectureNumber,
     );
   }
 
-  Map<String, String> toMap() => {
-    'subject': subject,
-    'teacherId': teacherId,
-    'to': to != null ? to!.toDate().toString() : '',
-    'from': from != null ? from!.toDate().toString() : '',
-  };
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'subject': subject,
+      'teacherId': teacherId,
+      'from': from,
+      'to': to,
+      'day': day,
+      'lectureNumber': lectureNumber,
+    };
+  }
+
+  factory TimetableEntry.fromMap(Map<String, dynamic> map) {
+    return TimetableEntry(
+      id: map['id'] ?? UniqueKey().toString(),
+      subject: map['subject'],
+      teacherId: map['teacherId'],
+      from: map['from'],
+      to: map['to'],
+      day: map['day'] ?? 0,
+      lectureNumber: map['lectureNumber'] ?? 0,
+    );
+  }
 }
