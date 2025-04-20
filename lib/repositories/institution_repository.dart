@@ -11,12 +11,9 @@ class InstitutionRepository {
   }
 
   // returns a map with key of institutionClassId and value of InstitutionClass
-  static Future<Map<String, InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
+  static Future<List<InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
     final institutionClassesSnapshot = await DbService.classesCollRef().where('institutionId', isEqualTo: institutionId).get();
-    return institutionClassesSnapshot.docs.fold<Map<String, InstitutionClass>>(
-      {},
-      (acc, doc) => acc..[doc.id] = doc.data(),
-    );
+    return institutionClassesSnapshot.docs.map((doc) => doc.data()).toList();
   }
 
   // returns a map with key of teacherId and value of AppUser

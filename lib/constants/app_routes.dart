@@ -9,6 +9,7 @@ import 'package:potential_plus/screens/profile/profile_screen.dart';
 import 'package:potential_plus/screens/student/student_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
+import 'package:potential_plus/screens/timetable/class_selection_screen.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
 
 enum AppRoutes {
@@ -72,14 +73,7 @@ final Map<String, WidgetBuilder> appRoutesMap = {
   AppRoutes.login.path: (context) => const LoginScreen(),
   AppRoutes.forgotPassword.path: (context) => const ForgotPasswordScreen(),
   AppRoutes.adminHomeScreen.path: (context) => const AdminHomeScreen(),
-  AppRoutes.adminEditTimeTable.path: (context) => TimetablePage(
-        timeTable: TimeTable(
-          id: '1',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          entries: [],
-        ),
-      ),
+  AppRoutes.adminEditTimeTable.path: (context) => const ClassSelectionScreen(),
   AppRoutes.adminStudentInfo.path: (context) => const AdminStudentInfoScreen(),
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
   AppRoutes.teacherMarkAttendance.path: (context) =>
