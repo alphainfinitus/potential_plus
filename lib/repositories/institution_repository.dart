@@ -1,6 +1,7 @@
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class InstitutionRepository {
@@ -32,13 +33,6 @@ class InstitutionRepository {
     required String institutionClassId,
     required Map<String, List<TimetableEntry>> newTimeTable,
   }) async {
-    final institutionClassRef = DbService.classesCollRef().doc(institutionClassId);
 
-    // TODO: optimise this to only update the specific period
-    await institutionClassRef.update({
-      'timeTable': newTimeTable.map(
-				(key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())
-			),
-    });
   }
 }

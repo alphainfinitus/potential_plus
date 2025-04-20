@@ -5,6 +5,7 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/time_table.dart';
 
 class DbService {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -36,6 +37,9 @@ class DbService {
 
   static CollectionReference<InstitutionClass> classesCollRef() => 
       _collectionRef('classes', InstitutionClass.fromMap, (institutionClass) => institutionClass.toMap());
+
+  static CollectionReference<TimeTable> timeTablesCollRef() => 
+      _collectionRef('timeTables', TimeTable.fromMap, (timeTable) => timeTable.toMap());
 
   //queries
   static Query<AppUser> _institutionUserQueryRef(String institutionId, UserRole role) => 

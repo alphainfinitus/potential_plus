@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:potential_plus/screens/admin/admin_edit_time_table_screen/admin_edit_time_table_screen.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
@@ -73,7 +72,7 @@ final Map<String, WidgetBuilder> appRoutesMap = {
   AppRoutes.forgotPassword.path: (context) => const ForgotPasswordScreen(),
 
   AppRoutes.adminHomeScreen.path: (context) => const AdminHomeScreen(),
-  AppRoutes.adminEditTimeTable.path: (context) => const AdminEditTimeTableScreen(),
+  AppRoutes.adminEditTimeTable.path: (context) => const Placeholder(),
   AppRoutes.adminStudentInfo.path: (context) => const AdminStudentInfoScreen(),
 
   AppRoutes.teacherHomeScreen.path: (context) => const TeacherHomeScreen(),
