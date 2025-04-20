@@ -17,9 +17,11 @@ class TimeTable {
   factory TimeTable.fromMap(Map<String, dynamic> map) {
     return TimeTable(
       id: map['id'],
-      entries: map['entries'],
-      createdAt: map['createdAt'],
-      updatedAt: map['updatedAt'],
+      entries: (map['entries'] as List)
+          .map((entry) => TimetableEntry.fromMap(entry))
+          .toList(),
+      createdAt: map['createdAt'].toDate(),
+      updatedAt: map['updatedAt'].toDate(),
     );
   }
 
@@ -84,13 +86,13 @@ class TimetableEntry {
 
   factory TimetableEntry.fromMap(Map<String, dynamic> map) {
     return TimetableEntry(
-      id: map['id'] ?? UniqueKey().toString(),
+      id: map['id'],
       subject: map['subject'],
       teacherId: map['teacherId'],
       from: map['from'],
       to: map['to'],
-      day: map['day'] ?? 0,
-      lectureNumber: map['lectureNumber'] ?? 0,
+      day: map['day'],
+      lectureNumber: map['lectureNumber'],
     );
   }
 }

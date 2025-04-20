@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/providers/timetable_provider/timetable_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class TimetableController {
   final WidgetRef ref;
   final TimeTable timeTable;
+  final String classId;
   late final provider = timetableProvider(timeTable);
 
-  TimetableController(this.ref, this.timeTable);
+  TimetableController(this.ref, this.timeTable, this.classId);
 
   List<TimetableEntry> getLecturesForDay(int day) {
     return ref
@@ -57,7 +59,7 @@ class TimetableController {
     );
 
     return TimetableEntry(
-      id: UniqueKey().toString(),
+      id: const Uuid().v4(),
       subject: subject,
       teacherId: teacherId,
       from: Timestamp.fromDate(startDateTime),

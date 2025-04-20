@@ -6,7 +6,12 @@ import 'package:potential_plus/utils.dart';
 
 class TimetablePage extends ConsumerStatefulWidget {
   final TimeTable timeTable;
-  const TimetablePage({super.key, required this.timeTable});
+  final String classId;
+  const TimetablePage({
+    super.key,
+    required this.timeTable,
+    required this.classId,
+  });
 
   @override
   ConsumerState<TimetablePage> createState() => _TimetablePageState();
@@ -21,7 +26,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedDayIndex);
-    _controller = TimetableController(ref, widget.timeTable);
+    _controller = TimetableController(ref, widget.timeTable, widget.classId);
   }
 
   @override
@@ -34,15 +39,10 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           'Timetable',
           style: textTheme.headlineMedium?.copyWith(
@@ -145,7 +145,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
     return ReorderableListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: lectures.length + 1,
-      onReorder: (oldIndex, newIndex) {
+      onReorder: (oldIndex, newIndex) async {
         if (oldIndex < lectures.length && newIndex < lectures.length) {
           _controller.reorderLectures(dayIndex, oldIndex, newIndex);
         }
@@ -341,7 +341,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                       ),
                       const SizedBox(width: 8),
                       FilledButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (subjectController.text.isNotEmpty &&
                               startTime != null &&
                               endTime != null) {
@@ -509,7 +509,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                       ),
                       const SizedBox(width: 8),
                       FilledButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (subjectController.text.isNotEmpty &&
                               startTime != null &&
                               endTime != null) {

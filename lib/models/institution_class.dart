@@ -14,7 +14,7 @@ class InstitutionClass {
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String timeTable;
+  final String? timeTable;
 
   factory InstitutionClass.fromMap(Map<String, dynamic> data) {
     return InstitutionClass(

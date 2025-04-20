@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
+import 'package:potential_plus/services/db_service.dart';
 
 class ClassSelectionScreen extends ConsumerWidget {
   const ClassSelectionScreen({super.key});
@@ -49,25 +49,51 @@ class ClassSelectionScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final classItem = classList[index];
               return InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TimetablePage(
-                        timeTable: TimeTable(
-                          id: "id",
-                          entries: [],
-                          createdAt: DateTime.now(),
-                          updatedAt: DateTime.now(),
-                        ),
-                      ),
+                onTap: () async {
+                  // Show loading indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(
+                      child: CircularProgressIndicator(),
                     ),
                   );
+
+                  // Fetch timetable using DbService
+                  final timetable = await DbService.getClassTimetable(classItem.id);
+
+                  // Dismiss loading indicator
+                  Navigator.pop(context);
+
+                  if (timetable != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TimetablePage(
+                          timeTable: timetable,
+                          classId: classItem.id,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Show error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Failed to load timetable',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onError,
+                          ),
+                        ),
+                        backgroundColor: colorScheme.error,
+                      ),
+                    );
+                  }
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceVariant,
+                    color: colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: colorScheme.outlineVariant,

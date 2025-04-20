@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/time_table.dart';
+import 'package:potential_plus/services/db_service.dart';
 
 class TimetableNotifier extends StateNotifier<TimeTable> {
   TimetableNotifier(super.initial);
@@ -12,6 +15,8 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
       createdAt: state.createdAt,
       updatedAt: DateTime.now(),
     );
+    log("Time Table: ${state.entries.map((e) => e.toMap()).toList()}");
+    _updateFirestore();
   }
 
   void updateLecture(TimetableEntry lecture) {
@@ -19,13 +24,15 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
       if (e.id == lecture.id) return lecture;
       return e;
     }).toList();
-
+    log("Updated Time Table: ${updatedEntries.map((e) => e.toMap()).toList()}");
     state = TimeTable(
       id: state.id,
       entries: updatedEntries,
       createdAt: state.createdAt,
       updatedAt: DateTime.now(),
     );
+
+    _updateFirestore();
   }
 
   void reorderLectures(int day, int oldIndex, int newIndex) {
@@ -49,6 +56,16 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
       createdAt: state.createdAt,
       updatedAt: DateTime.now(),
     );
+    _updateFirestore();
+  }
+
+  Future<void> _updateFirestore() async {
+    try {
+      await DbService.updateClassTimetable(state.id, state);
+    } catch (e) {
+      print('Error updating timetable: $e');
+      rethrow;
+    }
   }
 }
 
