@@ -19,6 +19,11 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
     _updateFirestore();
   }
 
+  void removeLecture(TimetableEntry lecture) {
+    state.entries.remove(lecture);
+    _updateFirestore();
+  }
+
   void updateLecture(TimetableEntry lecture) {
     final updatedEntries = state.entries.map((e) {
       if (e.id == lecture.id) return lecture;

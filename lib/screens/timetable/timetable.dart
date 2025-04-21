@@ -163,7 +163,10 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
         return LectureCard(
           key: ValueKey(lectures[index].id),
           item: lectures[index],
-          onTap: () => _showEditLectureDialog(lectures[index], dayIndex),
+          onTap: (){
+            _showEditLectureDialog(lectures[index], dayIndex);
+            setState(() {});
+          },
           colorScheme: colorScheme,
           textTheme: textTheme,
         );
@@ -353,7 +356,6 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                                       .length +
                                   1,
                             );
-
                             _controller.addLecture(newLecture);
                             Navigator.pop(context);
                           }
@@ -493,7 +495,61 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                Container(
+                margin: const EdgeInsets.symmetric(vertical: 16.0),
+                
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Confirm Deletion'),
+                        content: const Text('Are you sure you want to delete this lecture? This action cannot be undone.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _controller.removeLecture(lecture);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                    ),
+                    // elevation: 2,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:  [
+                      Icon(Icons.delete_outline),
+                      SizedBox(width: 8.0),
+                      Text(
+                        'Delete Lecture',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

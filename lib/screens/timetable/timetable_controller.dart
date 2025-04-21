@@ -26,6 +26,10 @@ class TimetableController {
     ref.read(provider.notifier).addLecture(lecture);
   }
 
+  void removeLecture(TimetableEntry lecture){
+    ref.read(provider.notifier).removeLecture(lecture);
+  }
+
   void updateLecture(TimetableEntry lecture) {
     ref.read(provider.notifier).updateLecture(lecture);
   }
