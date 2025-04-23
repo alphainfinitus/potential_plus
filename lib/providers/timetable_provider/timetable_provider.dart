@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/services/db_service.dart';
@@ -15,7 +13,6 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
       createdAt: state.createdAt,
       updatedAt: DateTime.now(),
     );
-    log("Time Table: ${state.entries.map((e) => e.toMap()).toList()}");
     _updateFirestore();
   }
 
@@ -29,7 +26,6 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
       if (e.id == lecture.id) return lecture;
       return e;
     }).toList();
-    log("Updated Time Table: ${updatedEntries.map((e) => e.toMap()).toList()}");
     state = TimeTable(
       id: state.id,
       entries: updatedEntries,

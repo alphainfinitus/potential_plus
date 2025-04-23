@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/activity.dart';
@@ -92,7 +90,6 @@ class DbService {
     }
     var classData = classDoc.docs.first.data();
     var timetableId = classData.timeTableId;
-    log('timetableId: $timetableId');
     try {
       if (timetableId == null) {
         final uuid = const Uuid().v4(); // Generate a UUID

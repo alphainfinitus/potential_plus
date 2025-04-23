@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -29,7 +27,6 @@ class _SelectTeacherDropdownState extends ConsumerState<SelectTeacherDropdown> {
     final Map<String, AppUser>? institutionTeachers = ref.watch(teachersProvider).value;
     final List<AppUser> teachers = institutionTeachers?.values.toList() ?? [];
 
-    log("teachers: ${teachers.map((e) => e.name).toList()}");
 
     if (teachers.isEmpty) {
       return const Center(child: Text("No teachers found"));

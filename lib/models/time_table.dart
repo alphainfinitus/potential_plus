@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TimeTable {
@@ -16,14 +14,13 @@ class TimeTable {
   });
 
   factory TimeTable.fromMap(Map<String, dynamic> map) {
-    log("called");
     List<TimetableEntry> entries = [];
-    try{
-    for (var entry in map['entries']) {
-      entries.add(TimetableEntry.fromMap(entry));
-    }
-    }catch(e){
-      log('Conversion Error: $e');
+    try {
+      for (var entry in map['entries']) {
+        entries.add(TimetableEntry.fromMap(entry));
+      }
+    } catch (e) {
+      throw Exception(e);
     }
     return TimeTable(
       id: map['id'],
