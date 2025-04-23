@@ -96,13 +96,10 @@ class DbService {
 
       final doc = querySnapshot.docs.first;
       final data = doc.data();
-      return TimeTable(
-        id: data.id,
-        entries: data.entries,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-      );
+      print('data: ${data.toMap()}');
+      return data;
     } catch (e) {
+      print('Error getting timetable: $e');
       return null;
     }
   }
@@ -112,14 +109,12 @@ class DbService {
     try {
       final querySnapshot =
           await timeTablesCollRef().where('id', isEqualTo: timetableId).get();
-
       final doc = querySnapshot.docs.first;
       await doc.reference.set(
         timetable, 
         SetOptions(merge: true),
       );
     } catch (e) {
-      print('Error updating timetable: $e');
       rethrow;
     }
   }
