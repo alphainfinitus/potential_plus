@@ -91,18 +91,6 @@ class DbService {
     var classData = classDoc.docs.first.data();
     var timetableId = classData.timeTableId;
     try {
-      if (timetableId == null) {
-        final id = cuid();
-        final newTimetable = TimeTable(
-          id: id,
-          entries: [],
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        );
-        await timeTablesCollRef().doc(id).set(newTimetable);
-        classDoc.docs.first.reference.update({'timeTable': id});
-        return newTimetable;
-      }
       final querySnapshot =
           await timeTablesCollRef().where('id', isEqualTo: timetableId).get();
 
@@ -125,14 +113,11 @@ class DbService {
       final querySnapshot =
           await timeTablesCollRef().where('id', isEqualTo: timetableId).get();
 
-      if (querySnapshot.docs.isEmpty) {
-        throw Exception('Timetable not found');
-      }
       final doc = querySnapshot.docs.first;
-      await doc.reference.update({
-        'entries': timetable.entries.map((e) => e.toMap()).toList(),
-        'updatedAt': Timestamp.fromDate(DateTime.now()),
-      });
+      await doc.reference.set(
+        timetable, 
+        SetOptions(merge: true),
+      );
     } catch (e) {
       print('Error updating timetable: $e');
       rethrow;
