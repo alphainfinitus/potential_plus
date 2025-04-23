@@ -5,7 +5,7 @@ class InstitutionClass {
       {required this.id,
       required this.institutionId,
       required this.name,
-      required this.timeTable,
+      required this.timeTableId,
       required this.createdAt,
       required this.updatedAt});
 
@@ -14,14 +14,14 @@ class InstitutionClass {
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String? timeTable;
+  final String? timeTableId;
 
   factory InstitutionClass.fromMap(Map<String, dynamic> data) {
     return InstitutionClass(
         id: data['id'],
         institutionId: data['institutionId'],
         name: data['name'],
-        timeTable: data['timeTable'],
+        timeTableId: data['timeTable'],
         createdAt: (data['createdAt'] as Timestamp).toDate(),
         updatedAt: (data['updatedAt'] as Timestamp).toDate());
   }
@@ -30,7 +30,7 @@ class InstitutionClass {
         'id': id,
         'institutionId': institutionId,
         'name': name,
-        'timeTable': timeTable,
+        'timeTable': timeTableId,
         'createdAt': Timestamp.fromDate(createdAt),
         'updatedAt': Timestamp.fromDate(updatedAt)
       };

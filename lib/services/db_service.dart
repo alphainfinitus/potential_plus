@@ -91,7 +91,7 @@ class DbService {
       return null;
     }
     var classData = classDoc.docs.first.data();
-    var timetableId = classData.timeTable;
+    var timetableId = classData.timeTableId;
     log('timetableId: $timetableId');
     try {
       if (timetableId == null) {
