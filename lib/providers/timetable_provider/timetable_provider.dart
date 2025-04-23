@@ -36,7 +36,11 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
     _updateFirestore();
   }
 
-  void reorderEntrys(int day, int oldIndex, int newIndex) {
+  void reorderEntrys({
+    required int day,
+    required int oldIndex,
+    required int newIndex,
+  }) {
     final dayEntrys = state.entries.where((e) => e.day == day).toList();
     if (oldIndex < newIndex) {
       newIndex -= 1;

@@ -34,8 +34,12 @@ class TimetableController {
     ref.read(provider.notifier).updateEntry(entry);
   }
 
-  void reorderEntrys(int day, int oldIndex, int newIndex) {
-    ref.read(provider.notifier).reorderEntrys(day, oldIndex, newIndex);
+  void reorderEntrys({
+    required int day,
+    required int oldIndex,
+    required int newIndex,
+  }) {
+    ref.read(provider.notifier).reorderEntrys(day: day, oldIndex: oldIndex, newIndex: newIndex);
   }
 
   TimetableEntry createNewEntry({

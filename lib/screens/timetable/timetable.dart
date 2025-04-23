@@ -149,7 +149,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
       itemCount: entrys.length + 1,
       onReorder: (oldIndex, newIndex) async {
         if (oldIndex < entrys.length && newIndex < entrys.length) {
-          _controller.reorderEntrys(dayIndex, oldIndex, newIndex);
+          _controller.reorderEntrys(day: dayIndex, oldIndex: oldIndex, newIndex: newIndex);
         }
       },
       itemBuilder: (context, index) {
