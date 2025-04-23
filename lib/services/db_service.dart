@@ -6,7 +6,7 @@ import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
-import 'package:uuid/uuid.dart';
+import 'package:cuid2/cuid2.dart';
 
 class DbService {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -92,15 +92,15 @@ class DbService {
     var timetableId = classData.timeTableId;
     try {
       if (timetableId == null) {
-        final uuid = const Uuid().v4(); // Generate a UUID
+        final id = cuid();
         final newTimetable = TimeTable(
-          id: uuid,
+          id: id,
           entries: [],
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
-        await timeTablesCollRef().doc(uuid).set(newTimetable);
-        classDoc.docs.first.reference.update({'timeTable': uuid});
+        await timeTablesCollRef().doc(id).set(newTimetable);
+        classDoc.docs.first.reference.update({'timeTable': id});
         return newTimetable;
       }
       final querySnapshot =

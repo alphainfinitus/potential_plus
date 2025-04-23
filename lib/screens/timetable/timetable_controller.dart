@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/providers/timetable_provider/timetable_provider.dart';
-import 'package:uuid/uuid.dart';
+import 'package:cuid2/cuid2.dart';
 
 class TimetableController {
   final WidgetRef ref;
@@ -63,7 +63,7 @@ class TimetableController {
     );
 
     return TimetableEntry(
-      id: const Uuid().v4(),
+      id: cuid(),
       subject: subject,
       teacherId: teacherId,
       from: Timestamp.fromDate(startDateTime),
