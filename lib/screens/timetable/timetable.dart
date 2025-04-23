@@ -81,7 +81,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
               },
               itemCount: AppUtils.days.length,
               itemBuilder: (context, index) {
-                return _buildDraggableLectureList(
+                return _buildDraggableEntryList(
                     index, colorScheme, textTheme);
               },
             ),
@@ -140,31 +140,31 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
     );
   }
 
-  Widget _buildDraggableLectureList(
+  Widget _buildDraggableEntryList(
       int dayIndex, ColorScheme colorScheme, TextTheme textTheme) {
-    final lectures = _controller.getLecturesForDay(dayIndex);
+    final entrys = _controller.getEntrysForDay(dayIndex);
 
     return ReorderableListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: lectures.length + 1,
+      itemCount: entrys.length + 1,
       onReorder: (oldIndex, newIndex) async {
-        if (oldIndex < lectures.length && newIndex < lectures.length) {
-          _controller.reorderLectures(dayIndex, oldIndex, newIndex);
+        if (oldIndex < entrys.length && newIndex < entrys.length) {
+          _controller.reorderEntrys(dayIndex, oldIndex, newIndex);
         }
       },
       itemBuilder: (context, index) {
-        if (index == lectures.length) {
-          return _buildAddLectureCard(
-            key: const ValueKey('add_lecture_card'),
+        if (index == entrys.length) {
+          return _buildAddEntryCard(
+            key: const ValueKey('add_entry_card'),
             colorScheme: colorScheme,
             textTheme: textTheme,
           );
         }
-        return LectureCard(
-          key: ValueKey(lectures[index].id),
-          item: lectures[index],
+        return EntryCard(
+          key: ValueKey(entrys[index].id),
+          item: entrys[index],
           onTap: (){
-            _showEditLectureDialog(lectures[index], dayIndex);
+            _showEditEntryDialog(entrys[index], dayIndex);
             setState(() {});
           },
           colorScheme: colorScheme,
@@ -174,7 +174,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
     );
   }
 
-  Widget _buildAddLectureCard({
+  Widget _buildAddEntryCard({
     required Key key,
     required ColorScheme colorScheme,
     required TextTheme textTheme,
@@ -191,7 +191,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
         ),
       ),
       child: InkWell(
-        onTap: _showAddLectureDialog,
+        onTap: _showAddEntryDialog,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -205,7 +205,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Add New Lecture',
+                'Add New Entry',
                 style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -218,7 +218,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
     );
   }
 
-  void _showAddLectureDialog() {
+  void _showAddEntryDialog() {
     final subjectController = TextEditingController();
     final teacherController = TextEditingController();
     TimeOfDay? startTime;
@@ -247,7 +247,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Add New Lecture',
+                    'Add New Entry',
                     style: textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -345,18 +345,18 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                           if (subjectController.text.isNotEmpty &&
                               startTime != null &&
                               endTime != null) {
-                            final newLecture = _controller.createNewLecture(
+                            final newEntry = _controller.createNewEntry(
                               subject: subjectController.text,
                               teacherId: teacherController.text,
                               startTime: startTime!,
                               endTime: endTime!,
                               day: _selectedDayIndex,
-                              lectureNumber: _controller
-                                      .getLecturesForDay(_selectedDayIndex)
+                              entryNumber: _controller
+                                      .getEntrysForDay(_selectedDayIndex)
                                       .length +
                                   1,
                             );
-                            _controller.addLecture(newLecture);
+                            _controller.addEntry(newEntry);
                             Navigator.pop(context);
                           }
                         },
@@ -374,16 +374,16 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
     );
   }
 
-  void _showEditLectureDialog(TimetableEntry lecture, int dayIndex) {
-    final subjectController = TextEditingController(text: lecture.subject);
-    final teacherController = TextEditingController(text: lecture.teacherId);
+  void _showEditEntryDialog(TimetableEntry entry, int dayIndex) {
+    final subjectController = TextEditingController(text: entry.subject);
+    final teacherController = TextEditingController(text: entry.teacherId);
     TimeOfDay? startTime = TimeOfDay(
-      hour: lecture.from!.toDate().hour,
-      minute: lecture.from!.toDate().minute,
+      hour: entry.from!.toDate().hour,
+      minute: entry.from!.toDate().minute,
     );
     TimeOfDay? endTime = TimeOfDay(
-      hour: lecture.to!.toDate().hour,
-      minute: lecture.to!.toDate().minute,
+      hour: entry.to!.toDate().hour,
+      minute: entry.to!.toDate().minute,
     );
 
     showModalBottomSheet(
@@ -409,7 +409,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Edit Lecture',
+                    'Edit Entry',
                     style: textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -506,7 +506,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Confirm Deletion'),
-                        content: const Text('Are you sure you want to delete this lecture? This action cannot be undone.'),
+                        content: const Text('Are you sure you want to delete this entry? This action cannot be undone.'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -514,7 +514,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _controller.removeLecture(lecture);
+                              _controller.removeEntry(entry);
                               Navigator.pop(context);
                               Navigator.pop(context);
                             },
@@ -539,7 +539,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                       Icon(Icons.delete_outline),
                       SizedBox(width: 8.0),
                       Text(
-                        'Delete Lecture',
+                        'Delete Entry',
                         style: TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
@@ -563,16 +563,16 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
                           if (subjectController.text.isNotEmpty &&
                               startTime != null &&
                               endTime != null) {
-                            final updatedLecture =
-                                _controller.updateExistingLecture(
-                              lecture: lecture,
+                            final updatedEntry =
+                                _controller.updateExistingEntry(
+                              entry: entry,
                               subject: subjectController.text,
                               teacherId: teacherController.text,
                               startTime: startTime!,
                               endTime: endTime!,
                             );
 
-                            _controller.updateLecture(updatedLecture);
+                            _controller.updateEntry(updatedEntry);
                             Navigator.pop(context);
                           }
                         },
@@ -591,13 +591,13 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
   }
 }
 
-class LectureCard extends StatelessWidget {
+class EntryCard extends StatelessWidget {
   final TimetableEntry item;
   final VoidCallback onTap;
   final ColorScheme colorScheme;
   final TextTheme textTheme;
 
-  const LectureCard({
+  const EntryCard({
     super.key,
     required this.item,
     required this.onTap,
@@ -644,7 +644,7 @@ class LectureCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Lecture ${item.lectureNumber}',
+                      'Entry ${item.entryNumber}',
                       style: textTheme.labelMedium?.copyWith(
                         color: colorScheme.onPrimaryContainer,
                       ),

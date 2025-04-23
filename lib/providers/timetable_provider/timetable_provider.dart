@@ -5,8 +5,8 @@ import 'package:potential_plus/services/db_service.dart';
 class TimetableNotifier extends StateNotifier<TimeTable> {
   TimetableNotifier(super.initial);
 
-  void addLecture(TimetableEntry lecture) {
-    final updatedEntries = [...state.entries, lecture];
+  void addEntry(TimetableEntry entry) {
+    final updatedEntries = [...state.entries, entry];
     state = TimeTable(
       id: state.id,
       entries: updatedEntries,
@@ -16,14 +16,14 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
     _updateFirestore();
   }
 
-  void removeLecture(TimetableEntry lecture) {
-    state.entries.remove(lecture);
+  void removeEntry(TimetableEntry entry) {
+    state.entries.remove(entry);
     _updateFirestore();
   }
 
-  void updateLecture(TimetableEntry lecture) {
+  void updateEntry(TimetableEntry entry) {
     final updatedEntries = state.entries.map((e) {
-      if (e.id == lecture.id) return lecture;
+      if (e.id == entry.id) return entry;
       return e;
     }).toList();
     state = TimeTable(
@@ -36,24 +36,24 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
     _updateFirestore();
   }
 
-  void reorderLectures(int day, int oldIndex, int newIndex) {
-    final dayLectures = state.entries.where((e) => e.day == day).toList();
+  void reorderEntrys(int day, int oldIndex, int newIndex) {
+    final dayEntrys = state.entries.where((e) => e.day == day).toList();
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final item = dayLectures.removeAt(oldIndex);
-    dayLectures.insert(newIndex, item);
+    final item = dayEntrys.removeAt(oldIndex);
+    dayEntrys.insert(newIndex, item);
 
-    // Update lecture numbers
-    for (var i = 0; i < dayLectures.length; i++) {
-      dayLectures[i] = dayLectures[i].copyWith(lectureNumber: i + 1);
+    // Update entry numbers
+    for (var i = 0; i < dayEntrys.length; i++) {
+      dayEntrys[i] = dayEntrys[i].copyWith(entryNumber: i + 1);
     }
 
     // Update state
-    final otherLectures = state.entries.where((e) => e.day != day).toList();
+    final otherEntrys = state.entries.where((e) => e.day != day).toList();
     state = TimeTable(
       id: state.id,
-      entries: [...otherLectures, ...dayLectures],
+      entries: [...otherEntrys, ...dayEntrys],
       createdAt: state.createdAt,
       updatedAt: DateTime.now(),
     );

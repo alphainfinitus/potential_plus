@@ -13,38 +13,38 @@ class TimetableController {
 
   TimetableController(this.ref, this.timeTable, this.classId);
 
-  List<TimetableEntry> getLecturesForDay(int day) {
+  List<TimetableEntry> getEntrysForDay(int day) {
     return ref
         .watch(provider)
         .entries
         .where((entry) => entry.day == day)
         .toList()
-      ..sort((a, b) => a.lectureNumber.compareTo(b.lectureNumber));
+      ..sort((a, b) => a.entryNumber.compareTo(b.entryNumber));
   }
 
-  void addLecture(TimetableEntry lecture) {
-    ref.read(provider.notifier).addLecture(lecture);
+  void addEntry(TimetableEntry entry) {
+    ref.read(provider.notifier).addEntry(entry);
   }
 
-  void removeLecture(TimetableEntry lecture){
-    ref.read(provider.notifier).removeLecture(lecture);
+  void removeEntry(TimetableEntry entry){
+    ref.read(provider.notifier).removeEntry(entry);
   }
 
-  void updateLecture(TimetableEntry lecture) {
-    ref.read(provider.notifier).updateLecture(lecture);
+  void updateEntry(TimetableEntry entry) {
+    ref.read(provider.notifier).updateEntry(entry);
   }
 
-  void reorderLectures(int day, int oldIndex, int newIndex) {
-    ref.read(provider.notifier).reorderLectures(day, oldIndex, newIndex);
+  void reorderEntrys(int day, int oldIndex, int newIndex) {
+    ref.read(provider.notifier).reorderEntrys(day, oldIndex, newIndex);
   }
 
-  TimetableEntry createNewLecture({
+  TimetableEntry createNewEntry({
     required String subject,
     required String teacherId,
     required TimeOfDay startTime,
     required TimeOfDay endTime,
     required int day,
-    required int lectureNumber,
+    required int entryNumber,
   }) {
     final now = DateTime.now();
     final startDateTime = DateTime(
@@ -69,12 +69,12 @@ class TimetableController {
       from: Timestamp.fromDate(startDateTime),
       to: Timestamp.fromDate(endDateTime),
       day: day,
-      lectureNumber: lectureNumber,
+      entryNumber: entryNumber,
     );
   }
 
-  TimetableEntry updateExistingLecture({
-    required TimetableEntry lecture,
+  TimetableEntry updateExistingEntry({
+    required TimetableEntry entry,
     required String subject,
     required String teacherId,
     required TimeOfDay startTime,
@@ -96,7 +96,7 @@ class TimetableController {
       endTime.minute,
     );
 
-    return lecture.copyWith(
+    return entry.copyWith(
       subject: subject,
       teacherId: teacherId,
       from: Timestamp.fromDate(startDateTime),

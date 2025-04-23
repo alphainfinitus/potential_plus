@@ -45,7 +45,7 @@ class TimetableEntry {
   final Timestamp? from;
   final Timestamp? to;
   final int day;
-  final int lectureNumber;
+  final int entryNumber;
 
   TimetableEntry({
     required this.id,
@@ -54,7 +54,7 @@ class TimetableEntry {
     this.from,
     this.to,
     required this.day,
-    required this.lectureNumber,
+    required this.entryNumber,
   });
 
   TimetableEntry copyWith({
@@ -64,7 +64,7 @@ class TimetableEntry {
     Timestamp? from,
     Timestamp? to,
     int? day,
-    int? lectureNumber,
+    int? entryNumber,
   }) {
     return TimetableEntry(
       id: id ?? this.id,
@@ -73,7 +73,7 @@ class TimetableEntry {
       from: from ?? this.from,
       to: to ?? this.to,
       day: day ?? this.day,
-      lectureNumber: lectureNumber ?? this.lectureNumber,
+      entryNumber: entryNumber ?? this.entryNumber,
     );
   }
 
@@ -85,7 +85,7 @@ class TimetableEntry {
       'from': from,
       'to': to,
       'day': day,
-      'lectureNumber': lectureNumber,
+      'entryNumber': entryNumber,
     };
   }
 
@@ -97,7 +97,7 @@ class TimetableEntry {
       from: map['from'],
       to: map['to'],
       day: map['day'],
-      lectureNumber: map['lectureNumber'],
+      entryNumber: map['entryNumber'],
     );
   }
 }
