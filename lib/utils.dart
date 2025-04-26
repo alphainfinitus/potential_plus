@@ -7,26 +7,7 @@ class AppUtils {
     });
   }
 
-  static String getDayOfWeekByIndex(int index) {
-    switch (index) {
-      case 0:
-        return "Monday";
-      case 1:
-        return "Tuesday";
-      case 2:
-        return "Wednesday";
-      case 3:
-        return "Thursday";
-      case 4:
-        return "Friday";
-      case 5:
-        return "Saturday";
-      case 6:
-        return "Sunday";
-      default:
-        return "Unknown";
-    }
-  }
+  static final List<String> days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   static String toTitleCase(String text) {
     if (text.isEmpty) return text;

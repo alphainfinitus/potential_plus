@@ -11,7 +11,7 @@ String _$classesHash() => r'7bb7f9ca4f9853afb157128daa3196260c1d4248';
 /// See also [classes].
 @ProviderFor(classes)
 final classesProvider =
-    AutoDisposeFutureProvider<Map<String, InstitutionClass>?>.internal(
+    AutoDisposeFutureProvider<List<InstitutionClass>?>.internal(
   classes,
   name: r'classesProvider',
   debugGetCreateSourceHash:
@@ -20,8 +20,7 @@ final classesProvider =
   allTransitiveDependencies: null,
 );
 
-typedef ClassesRef
-    = AutoDisposeFutureProviderRef<Map<String, InstitutionClass>?>;
+typedef ClassesRef = AutoDisposeFutureProviderRef<List<InstitutionClass>?>;
 String _$classStudentsHash() => r'6acccd9faf9f8bd6d7f53f22dca749861b1a6985';
 
 /// Copied from Dart SDK

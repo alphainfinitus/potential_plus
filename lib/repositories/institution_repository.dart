@@ -1,6 +1,7 @@
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/models/institution_class.dart';
+import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class InstitutionRepository {
@@ -10,12 +11,9 @@ class InstitutionRepository {
   }
 
   // returns a map with key of institutionClassId and value of InstitutionClass
-  static Future<Map<String, InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
+  static Future<List<InstitutionClass>> fetchClassesForInstitution(String institutionId) async {
     final institutionClassesSnapshot = await DbService.classesCollRef().where('institutionId', isEqualTo: institutionId).get();
-    return institutionClassesSnapshot.docs.fold<Map<String, InstitutionClass>>(
-      {},
-      (acc, doc) => acc..[doc.id] = doc.data(),
-    );
+    return institutionClassesSnapshot.docs.map((doc) => doc.data()).toList();
   }
 
   // returns a map with key of teacherId and value of AppUser
@@ -32,13 +30,6 @@ class InstitutionRepository {
     required String institutionClassId,
     required Map<String, List<TimetableEntry>> newTimeTable,
   }) async {
-    final institutionClassRef = DbService.classesCollRef().doc(institutionClassId);
 
-    // TODO: optimise this to only update the specific period
-    await institutionClassRef.update({
-      'timeTable': newTimeTable.map(
-				(key, value) => MapEntry(key, value.map((e) => e.toMap()).toList())
-			),
-    });
   }
 }

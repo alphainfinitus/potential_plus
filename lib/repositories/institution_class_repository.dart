@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution.dart';
-import 'package:potential_plus/repositories/institution_repository.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/services/db_service.dart';
 
@@ -12,33 +11,8 @@ class InstitutionClassRepository {
     InstitutionClass institutionClass,
     int editedDayOfWeekIndex,
     int editedPeriodIndex,
-    TimetableEntry editedTimeTableEntry,
   ) async {
-    Map<String, List<TimetableEntry>> newTimetable = {};
-
-    // loop through each day of the week, and for each period, populate old period details and update the new period details
-    for (int dayOfWeekIndex = 0; dayOfWeekIndex < 7; dayOfWeekIndex++) {
-      newTimetable[dayOfWeekIndex.toString()] = [];
-
-      for (int periodIndex = 0; periodIndex <= institution.periodCount - 1; periodIndex++) {
-        if (dayOfWeekIndex == editedDayOfWeekIndex && periodIndex == editedPeriodIndex) {
-          newTimetable[dayOfWeekIndex.toString()]!.add(editedTimeTableEntry);
-        } else {
-          newTimetable[dayOfWeekIndex.toString()]!.add(
-            (institutionClass.timeTable[dayOfWeekIndex.toString()] != null &&
-              institutionClass.timeTable[dayOfWeekIndex.toString()]!.length > periodIndex) ?
-                institutionClass.timeTable[dayOfWeekIndex.toString()]![periodIndex] :
-                  const TimetableEntry(subject: '', teacherId: '')
-          );
-        }
-      }
-    }
-
-    await InstitutionRepository.updateClassPeriodDetails(
-      institutionId: institution.id,
-      institutionClassId: institutionClass.id,
-      newTimeTable: newTimetable,
-    );
+    
   }
 
   static Future<List<Attendance>> fetchClassAttendanceByDate({

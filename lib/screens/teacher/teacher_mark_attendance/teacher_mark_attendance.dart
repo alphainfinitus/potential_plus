@@ -31,7 +31,7 @@ class _TeacherMarkAttendanceScreenState extends ConsumerState<TeacherMarkAttenda
     // Handle the AsyncValue state of classesProvider
     classesState.whenData((classes) {
       if (classes != null && selectedClass != null) {
-        final updatedClass = classes.values.firstWhere(
+        final updatedClass = classes.firstWhere(
           (element) => element.id == selectedClass?.id,
           orElse: () => selectedClass!,
         );

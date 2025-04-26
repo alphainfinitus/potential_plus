@@ -24,7 +24,7 @@ class _SelectClassDropdownState extends ConsumerState<SelectClassDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, InstitutionClass>? classes = ref.watch(classesProvider).value;
+    final List<InstitutionClass>? classes = ref.watch(classesProvider).value;
 
     if (classes == null) {
       return const Center(child: CircularProgressIndicator());
@@ -45,10 +45,10 @@ class _SelectClassDropdownState extends ConsumerState<SelectClassDropdown> {
           ),
           hint: const Text("Select a class"),
           value: dropdownValue,
-          items: classes.keys.map((String key) {
+          items: classes.map((InstitutionClass institutionClass) {
             return DropdownMenuItem(
-              value: classes[key],
-              child: Text(classes[key]!.name),
+              value: institutionClass,
+              child: Text(institutionClass.name),
             );
           }).toList(),
           onChanged: (InstitutionClass? newValue) {
