@@ -95,11 +95,8 @@ class DbService {
           await timeTablesCollRef().where('id', isEqualTo: timetableId).get();
 
       final doc = querySnapshot.docs.first;
-      final data = doc.data();
-      print('data: ${data.toMap()}');
-      return data;
+      return doc.data();
     } catch (e) {
-      print('Error getting timetable: $e');
       return null;
     }
   }
