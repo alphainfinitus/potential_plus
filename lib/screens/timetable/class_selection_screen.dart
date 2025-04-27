@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
 import 'package:potential_plus/services/db_service.dart';
@@ -8,7 +9,8 @@ class ClassSelectionScreen extends ConsumerStatefulWidget {
   const ClassSelectionScreen({super.key});
 
   @override
-  ConsumerState<ClassSelectionScreen> createState() => _ClassSelectionScreenState();
+  ConsumerState<ClassSelectionScreen> createState() =>
+      _ClassSelectionScreenState();
 }
 
 class _ClassSelectionScreenState extends ConsumerState<ClassSelectionScreen> {
@@ -74,8 +76,10 @@ class _ClassSelectionScreenState extends ConsumerState<ClassSelectionScreen> {
                   );
                 }
 
-                final filteredClasses = classList.where((classItem) =>
-                    classItem.name.toLowerCase().contains(_searchQuery)).toList();
+                final filteredClasses = classList
+                    .where((classItem) =>
+                        classItem.name.toLowerCase().contains(_searchQuery))
+                    .toList();
 
                 if (filteredClasses.isEmpty) {
                   return Center(
@@ -105,20 +109,16 @@ class _ClassSelectionScreenState extends ConsumerState<ClassSelectionScreen> {
                             ),
                           );
 
-                          final timetable = await DbService.getClassTimetable(classItem.id);
+                          final timetable =
+                              await DbService.getClassTimetable(classItem.id);
 
                           Navigator.pop(context);
 
                           if (timetable != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TimetablePage(
-                                  timeTable: timetable,
-                                  classId: classItem.id,
-                                ),
-                              ),
-                            );
+                            context.push('/timetable', extra: {
+                              'timeTable': timetable,
+                              'classId': classItem.id,
+                            });
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

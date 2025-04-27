@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/constants/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
@@ -27,7 +27,9 @@ class AdminHomeScreen extends ConsumerWidget {
         data: (appUser) {
           // Not logged in, redirect to login screen
           if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.go('/login');
+            });
             return null;
           }
 
@@ -47,19 +49,19 @@ class AdminHomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 32.0,),
 
-                  InstitutionActionsSection(
+                  const InstitutionActionsSection(
                     title: 'Daily Actions :',
                     actions: {
-                      'Edit Time Table': AppRoutes.adminEditTimeTable.path,
+                      'Edit Time Table': '/admin/edit-time-table',
                     }
                   ),
 
                   const SizedBox(height: 16.0,),
 
-                  InstitutionActionsSection(
+                  const InstitutionActionsSection(
                     title: 'Other Actions :',
                     actions: {
-                      'Student Info': AppRoutes.adminStudentInfo.path,
+                      'Student Info': '/admin/student-info',
                     }
                   ),
                 ]
