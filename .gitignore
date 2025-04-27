@@ -47,3 +47,6 @@ android/app/.cxx/
 
 # Flutter/Dart
 pubspec.lock
+
+# FVM Version Cache
+.fvm/
