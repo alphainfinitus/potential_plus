@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/providers/classes_provider/classes_provider.dart';
-import 'package:potential_plus/screens/timetable/timetable.dart';
 import 'package:potential_plus/services/db_service.dart';
 
 class ClassSelectionScreen extends ConsumerStatefulWidget {
@@ -112,10 +112,10 @@ class _ClassSelectionScreenState extends ConsumerState<ClassSelectionScreen> {
                           final timetable =
                               await DbService.getClassTimetable(classItem.id);
 
-                          Navigator.pop(context);
+                          context.pop(context);
 
                           if (timetable != null) {
-                            context.push('/timetable', extra: {
+                            context.push(RouteNames.timetable, extra: {
                               'timeTable': timetable,
                               'classId': classItem.id,
                             });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
@@ -18,54 +19,54 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 
 final goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
+  initialLocation: RouteNames.home,
   routes: [
     GoRoute(
-      path: '/',
+      path: RouteNames.home,
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: '/profile',
+      path: RouteNames.profile,
       builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
-      path: '/login',
+      path: RouteNames.login,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
-      path: '/forgot-password',
+      path: RouteNames.forgotPassword,
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     // Admin routes
     GoRoute(
-      path: '/admin',
+      path: RouteNames.adminHome,
       builder: (context, state) => const AdminHomeScreen(),
     ),
     GoRoute(
-      path: '/admin/edit-time-table',
+      path: RouteNames.adminEditTimeTable,
       builder: (context, state) => const ClassSelectionScreen(),
     ),
     GoRoute(
-      path: '/admin/student-info',
+      path: RouteNames.adminStudentInfo,
       builder: (context, state) => const AdminStudentInfoScreen(),
     ),
     // Teacher routes
     GoRoute(
-      path: '/teacher',
+      path: RouteNames.teacherHome,
       builder: (context, state) => const TeacherHomeScreen(),
     ),
     GoRoute(
-      path: '/teacher/mark-attendance',
+      path: RouteNames.teacherMarkAttendance,
       builder: (context, state) => const TeacherMarkAttendanceScreen(),
     ),
     // Student routes
     GoRoute(
-      path: '/student',
+      path: RouteNames.studentHome,
       builder: (context, state) => const StudentHomeScreen(),
     ),
     // Timetable route
     GoRoute(
-      path: '/timetable',
+      path: RouteNames.timetable,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         return TimetablePage(

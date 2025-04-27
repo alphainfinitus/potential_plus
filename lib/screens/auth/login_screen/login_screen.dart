@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
@@ -25,7 +26,7 @@ class LoginScreen extends ConsumerWidget {
             // Already logged in, redirect to home screen
             if (appUser != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.go('/');
+                context.go(RouteNames.home);
               });
               return null;
             }

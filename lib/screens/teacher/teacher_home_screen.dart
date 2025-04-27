@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
@@ -8,7 +9,6 @@ import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/institution/institution_actions_section.dart';
-import 'package:potential_plus/utils.dart';
 
 class TeacherHomeScreen extends ConsumerWidget {
   const TeacherHomeScreen({super.key});
@@ -27,7 +27,7 @@ class TeacherHomeScreen extends ConsumerWidget {
             // Not logged in, redirect to login screen
             if (appUser == null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.go('/login');
+                context.go(RouteNames.login);
               });
               return null;
             }
@@ -49,10 +49,10 @@ class TeacherHomeScreen extends ConsumerWidget {
                       const SizedBox(
                         height: 32.0,
                       ),
-                      InstitutionActionsSection(
+                      const InstitutionActionsSection(
                           title: 'Daily Actions :',
                           actions: {
-                            'Mark Attendance': '/teacher/mark-attendance',
+                            'Mark Attendance': RouteNames.teacherMarkAttendance,
                           }),
                     ]),
               ),

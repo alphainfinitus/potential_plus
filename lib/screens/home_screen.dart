@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -23,7 +24,7 @@ class HomeScreen extends ConsumerWidget {
             // Not logged in, redirect to login screen
             if (appUser == null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.go('/login');
+                context.go(RouteNames.login);
               });
               return null;
             }
@@ -32,24 +33,19 @@ class HomeScreen extends ConsumerWidget {
             switch (appUser.role) {
               case UserRole.student:
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.go('/student');
+                  context.go(RouteNames.studentHome);
                 });
                 return null;
               case UserRole.teacher:
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.go('/teacher');
+                  context.go(RouteNames.teacherHome);
                 });
                 return null;
               case UserRole.admin:
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.go('/admin');
+                  context.go(RouteNames.adminHome);
                 });
                 return null;
-              default:
-                return const Center(
-                  child:
-                      Text('Error Code: 0x001 :( ${TextLiterals.genericError}'),
-                );
             }
           },
           error: (error, _) =>

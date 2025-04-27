@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/services/auth_service.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -131,7 +132,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
 
               TextButton(
-                  onPressed: () => context.go('/forgot-password'),
+                  onPressed: () => context.push(RouteNames.forgotPassword),
                   child: const Text('Forgot Password?')),
             ],
           )),

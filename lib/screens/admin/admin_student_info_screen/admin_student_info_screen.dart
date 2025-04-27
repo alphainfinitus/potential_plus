@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
@@ -37,7 +38,7 @@ class _AdminStudentInfoScreenState
             // Not logged in, redirect to login screen
             if (appUser == null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.go('/login');
+                context.go(RouteNames.login);
               });
               return null;
             }
