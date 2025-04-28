@@ -7,6 +7,8 @@ import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
 import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
+import 'package:potential_plus/screens/timetable/timetable.dart';
+import 'package:potential_plus/services/db_service.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/utils.dart';
 
@@ -35,9 +37,66 @@ class StudentHomeScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: StudentActivityFeed(appUser: appUser),
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    // Show loading indicator
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+
+                    // Fetch timetable using DbService
+                    final timetable = await DbService.getClassTimetable(appUser.classId!);
+                    // Dismiss loading indicator
+                    Navigator.pop(context);
+
+                    if (timetable != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TimetablePage(
+                            timeTable: timetable,
+                            classId: appUser.classId!,
+                            isReadOnly: true,
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Show error
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to load timetable',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onError,
+                            ),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.schedule),
+                  label: const Text('View Timetable'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: StudentActivityFeed(appUser: appUser),
+                ),
+              ),
+            ],
           );
         },
         error: (error, _) => const Center(child: Text(TextLiterals.authStatusUnkown)),
