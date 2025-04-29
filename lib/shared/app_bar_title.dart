@@ -25,7 +25,7 @@ class AppBarTitle extends ConsumerWidget {
         const Spacer(),
         if (currentRoute != RouteNames.profile && user.value != null)
           GestureDetector(
-            onTap: () => context.go(RouteNames.profile),
+            onTap: () => context.push(RouteNames.profile),
             child: const Icon(Icons.account_circle_outlined),
           ),
       ],
