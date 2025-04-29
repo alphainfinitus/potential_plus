@@ -13,10 +13,10 @@ class RouteNames {
   // Teacher routes
   static const String teacherHome = '/teacher';
   static const String teacherMarkAttendance = '/teacher/mark-attendance';
+  static const String teacherTimeTable = '/teacher/timetable';
 
   // Student routes
   static const String studentHome = '/student';
+  static const String studentTimeTable = '/student/timetable';
 
-  // Timetable route
-  static const String timetable = '/timetable';
 }

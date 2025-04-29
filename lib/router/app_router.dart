@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
@@ -14,14 +15,35 @@ import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_mark_attendance.dart';
 import 'package:potential_plus/screens/timetable/class_selection_screen.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
+import 'package:potential_plus/utils.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
+
+String? _checkAuthentication(BuildContext context) {
+  final container = ProviderScope.containerOf(context);
+
+  if (!AppUtils.isUserAuthenticated(container)) {
+    return RouteNames.login;
+  }
+
+  return null;
+}
 
 final _goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: RouteNames.home,
   errorBuilder: (context, state) => const NotFoundPage(),
+  redirect: (context, state) {
+    // Public routes that don't need authentication
+    if (state.matchedLocation == RouteNames.login ||
+        state.matchedLocation == RouteNames.forgotPassword) {
+      return null;
+    }
+
+    // All other routes need authentication
+    return _checkAuthentication(context);
+  },
   routes: [
     GoRoute(
       path: RouteNames.home,
@@ -68,9 +90,12 @@ final _goRouter = GoRouter(
     ),
     // Timetable route
     GoRoute(
-      path: RouteNames.timetable,
+      path: RouteNames.studentTimeTable,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+        final extra = state.extra as Map<String, dynamic>?;
+        if (extra == null) {
+          return const NotFoundPage();
+        }
         return TimetablePage(
           timeTable: extra['timeTable'] as TimeTable,
           classId: extra['classId'] as String,

@@ -115,7 +115,7 @@ class _ClassSelectionScreenState extends ConsumerState<ClassSelectionScreen> {
                           context.pop(context);
 
                           if (timetable != null) {
-                            context.push(RouteNames.timetable, extra: {
+                            context.push(RouteNames.studentTimeTable, extra: {
                               'timeTable': timetable,
                               'classId': classItem.id,
                             });
