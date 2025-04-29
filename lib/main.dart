@@ -23,7 +23,7 @@ class AppRootWidget extends ConsumerWidget {
     return MaterialApp.router(
       title: TextLiterals.appTitle,
       theme: currentTheme,
-      routerConfig: goRouter,
+      routerConfig: router,
     );
   }
 }

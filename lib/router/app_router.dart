@@ -6,6 +6,7 @@ import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
+import 'package:potential_plus/screens/error/not_found_page.dart';
 import 'package:potential_plus/screens/home_screen.dart';
 import 'package:potential_plus/screens/profile/profile_screen.dart';
 import 'package:potential_plus/screens/student/student_home_screen.dart';
@@ -17,9 +18,10 @@ import 'package:potential_plus/screens/timetable/timetable.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
-final goRouter = GoRouter(
+final _goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: RouteNames.home,
+  errorBuilder: (context, state) => const NotFoundPage(),
   routes: [
     GoRoute(
       path: RouteNames.home,
@@ -77,3 +79,6 @@ final goRouter = GoRouter(
     ),
   ],
 );
+
+/// Public getter for the router instance
+GoRouter get router => _goRouter;
