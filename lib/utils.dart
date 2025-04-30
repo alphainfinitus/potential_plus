@@ -1,11 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 
 class AppUtils {
-  static void pushReplacementNamedAfterBuild(BuildContext context, String routeName) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.of(context).pushReplacementNamed(routeName);
-    });
-  }
 
   static final List<String> days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
@@ -13,4 +9,16 @@ class AppUtils {
     if (text.isEmpty) return text;
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
+
+  static bool isUserAuthorized(ProviderContainer container,
+      {required String requiredRole}) {
+    final user = container.read(authProvider).value;
+    return user != null && user.role.name == requiredRole;
+  }
+
+  static bool isUserAuthenticated(ProviderContainer container) {
+    final user = container.read(authProvider).value;
+    return user != null;
+  }
+
 }
