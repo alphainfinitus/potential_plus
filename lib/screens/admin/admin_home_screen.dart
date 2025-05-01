@@ -50,10 +50,11 @@ class AdminHomeScreen extends ConsumerWidget {
                       const SizedBox(
                         height: 32.0,
                       ),
-                      const  InstitutionActionsSection(
+                      const InstitutionActionsSection(
                           title: 'Daily Actions :',
                           actions: {
                             'Edit Time Table': RouteNames.adminEditTimeTable,
+                            'Mark Attendance': RouteNames.adminAttendance,
                           }),
                       const SizedBox(
                         height: 16.0,
