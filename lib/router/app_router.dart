@@ -16,6 +16,7 @@ import 'package:potential_plus/screens/teacher/teacher_mark_attendance/teacher_m
 import 'package:potential_plus/screens/timetable/class_selection_screen.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
 import 'package:potential_plus/utils.dart';
+import 'package:potential_plus/screens/admin/admin_attendance_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -73,6 +74,10 @@ final _goRouter = GoRouter(
     GoRoute(
       path: RouteNames.adminStudentInfo,
       builder: (context, state) => const AdminStudentInfoScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.adminAttendance,
+      builder: (context, state) => const AdminAttendanceScreen(),
     ),
     // Teacher routes
     GoRoute(

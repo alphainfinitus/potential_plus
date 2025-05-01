@@ -9,6 +9,7 @@ class RouteNames {
   static const String adminHome = '/admin';
   static const String adminEditTimeTable = '/admin/edit-time-table';
   static const String adminStudentInfo = '/admin/student-info';
+  static const String adminAttendance = '/admin/attendance';
 
   // Teacher routes
   static const String teacherHome = '/teacher';
@@ -18,5 +19,4 @@ class RouteNames {
   // Student routes
   static const String studentHome = '/student';
   static const String studentTimeTable = '/student/timetable';
-
 }
