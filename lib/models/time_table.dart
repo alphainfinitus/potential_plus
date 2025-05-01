@@ -57,6 +57,30 @@ class TimetableEntry {
     required this.entryNumber,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TimetableEntry &&
+        other.id == id &&
+        other.subject == subject &&
+        other.teacherId == teacherId &&
+        other.from == from &&
+        other.to == to &&
+        other.day == day &&
+        other.entryNumber == entryNumber;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        subject.hashCode ^
+        teacherId.hashCode ^
+        from.hashCode ^
+        to.hashCode ^
+        day.hashCode ^
+        entryNumber.hashCode;
+  }
+
   TimetableEntry copyWith({
     String? id,
     String? subject,

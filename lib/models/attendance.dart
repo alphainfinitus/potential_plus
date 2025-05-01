@@ -10,6 +10,7 @@ class Attendance {
     required this.createdAt,
     required this.updatedAt,
     required this.markedByUserId,
+    this.metaData,
   });
 
   final String id;
@@ -20,6 +21,7 @@ class Attendance {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String markedByUserId;
+  final MetaData? metaData;
 
   factory Attendance.fromMap(Map<String, dynamic> data) {
     return Attendance(
@@ -31,17 +33,46 @@ class Attendance {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       markedByUserId: data['markedByUserId'],
+      metaData:
+          data['metaData'] != null ? MetaData.fromMap(data['metaData']) : null,
     );
   }
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'userId': userId,
-    'isPresent': isPresent,
-    'institutionId': institutionId,
-    'classId': classId,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
-    'markedByUserId': markedByUserId,
-  };
+        'id': id,
+        'userId': userId,
+        'isPresent': isPresent,
+        'institutionId': institutionId,
+        'classId': classId,
+        'createdAt': Timestamp.fromDate(createdAt),
+        'updatedAt': Timestamp.fromDate(updatedAt),
+        'markedByUserId': markedByUserId,
+        'metaData': metaData?.toMap(),
+      };
+}
+
+class MetaData {
+  const MetaData({
+    required this.subject,
+    required this.timeTableId,
+    required this.timeTableEntryId,
+  });
+
+  final String subject;
+  final String timeTableId;
+  final String timeTableEntryId;
+
+  factory MetaData.fromMap(Map<String, dynamic> data) {
+    return MetaData(
+      subject: data['subject'],
+      timeTableId: data['timeTableId'],
+      timeTableEntryId: data['timeTableEntryId'],
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'subject': subject,
+        'timeTableId': timeTableId,
+        'timeTableEntryId': timeTableEntryId,
+      };
 }
