@@ -31,8 +31,8 @@ class InstitutionClassRepository {
 
 		final attendancesSnapshot = await DbService.attendancesCollRef()
       .where('userId', whereIn: studentIds)
-      .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-      .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow))
+      .where('forDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+      .where('forDate', isLessThan: Timestamp.fromDate(startOfTomorrow))
       .get();
 
 		//3. return the attendances

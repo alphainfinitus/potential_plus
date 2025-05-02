@@ -115,7 +115,7 @@ class DbService {
 
       final doc = querySnapshot.docs.first;
       await doc.reference.set(
-        timetable, 
+        timetable,
         SetOptions(merge: true),
       );
     } catch (e) {
@@ -141,5 +141,78 @@ class DbService {
         updatedAt: data.updatedAt,
       );
     });
+  }
+
+  // Add new attendance-related queries
+  static Query<Attendance> lectureAttendanceQueryRef({
+    required String classId,
+    required String timeTableEntryId,
+    required DateTime date,
+  }) {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
+
+    return attendancesCollRef()
+        .where('classId', isEqualTo: classId)
+        .where('timeTableEntryId', isEqualTo: timeTableEntryId)
+        .where('createdAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow));
+  }
+
+  static Future<void> markAttendance({
+    required String institutionId,
+    required String classId,
+    required String timeTableId,
+    required String timeTableEntryId,
+    required List<Map<String, dynamic>> attendanceData,
+    required DateTime date,
+  }) async {
+    final batch = db.batch();
+    final now = DateTime.now();
+
+    for (final data in attendanceData) {
+      final attendance = Attendance(
+        id: cuid(),
+        userId: data['userId'],
+        institutionId: institutionId,
+        classId: classId,
+        isPresent: data['isPresent'],
+        markedByUserId: data['markedByUserId'],
+        forDate: date,
+        createdAt: now,
+        updatedAt: now,
+        metaData: MetaData(
+          subject: data['subject'],
+          timeTableId: timeTableId,
+          timeTableEntryId: timeTableEntryId,
+        ),
+      );
+
+      final docRef = attendancesCollRef().doc(attendance.id);
+      batch.set(docRef, attendance);
+    }
+
+    await batch.commit();
+  }
+
+  static Future<Map<String, bool>> getLectureAttendance({
+    required String classId,
+    required String timeTableEntryId,
+    required DateTime date,
+  }) async {
+    final querySnapshot = await lectureAttendanceQueryRef(
+      classId: classId,
+      timeTableEntryId: timeTableEntryId,
+      date: date,
+    ).get();
+
+    final attendanceMap = <String, bool>{};
+    for (final doc in querySnapshot.docs) {
+      final attendance = doc.data();
+      attendanceMap[attendance.userId] = attendance.isPresent;
+    }
+
+    return attendanceMap;
   }
 }

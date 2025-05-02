@@ -86,7 +86,7 @@ final _goRouter = GoRouter(
     ),
     GoRoute(
       path: RouteNames.teacherMarkAttendance,
-      builder: (context, state) => const TeacherMarkAttendanceScreen(),
+      builder: (context, state) => TeacherMarkAttendanceScreen(),
     ),
     // Student routes
     GoRoute(

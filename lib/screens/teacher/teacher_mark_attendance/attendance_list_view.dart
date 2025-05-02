@@ -13,7 +13,6 @@ class AttendanceListView extends ConsumerStatefulWidget {
   const AttendanceListView({super.key, required this.institutionClass});
 
   final InstitutionClass institutionClass;
-
   @override
   ConsumerState<AttendanceListView> createState() => _AttendanceListViewState();
 }
@@ -36,7 +35,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
 
     try {
       final institution = ref.read(institutionProvider).value!;
-      final List<Attendance> attendanceList = await InstitutionClassRepository.fetchClassAttendanceByDate(
+      final List<Attendance> attendanceList =
+          await InstitutionClassRepository.fetchClassAttendanceByDate(
         institutionId: institution.id,
         institutionClassId: widget.institutionClass.id,
         date: DateTime.now(),
@@ -94,7 +94,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
   @override
   Widget build(BuildContext context) {
     final InstitutionClass institutionClass = widget.institutionClass;
-    final Map<String, AppUser>? students = ref.watch(classStudentsProvider(institutionClass.id)).value;
+    final Map<String, AppUser>? students =
+        ref.watch(classStudentsProvider(institutionClass.id)).value;
 
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -105,7 +106,8 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
     }
 
     if (students.isEmpty) {
-      return Center(child: Text('No students found for ${institutionClass.name}'));
+      return Center(
+          child: Text('No students found for ${institutionClass.name}'));
     }
 
     return ListView.builder(
@@ -124,13 +126,19 @@ class _AttendanceListViewState extends ConsumerState<AttendanceListView> {
               Radio<bool>(
                 value: true,
                 groupValue: attendanceMap[student.id] ?? false,
-                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
+                onChanged: isLoading
+                    ? null
+                    : (bool? value) =>
+                        _handleAttendanceChange(student.id, value),
               ),
               const Text('Absent'),
               Radio<bool>(
                 value: false,
                 groupValue: attendanceMap[student.id] ?? false,
-                onChanged: isLoading ? null : (bool? value) => _handleAttendanceChange(student.id, value),
+                onChanged: isLoading
+                    ? null
+                    : (bool? value) =>
+                        _handleAttendanceChange(student.id, value),
               ),
             ],
           ),

@@ -81,7 +81,8 @@ class _TeacherMarkAttendanceScreenState
                     }),
                     const SizedBox(height: 32.0),
                     if (selectedClass != null)
-                      AttendanceListView(institutionClass: selectedClass!),
+                      AttendanceListView(
+                          institutionClass: selectedClass!),
                   ],
                 ),
               ),

@@ -59,6 +59,7 @@ class TeacherRepository {
 
       final newAttendance = Attendance(
         id: newAttendanceDoc.id,
+        forDate: DateTime.now(),
         userId: studentId,
         institutionId: institutionId,
         classId: classId,

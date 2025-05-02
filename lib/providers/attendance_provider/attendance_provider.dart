@@ -1,85 +1,82 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/models/attendance.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/services/db_service.dart';
-import 'package:cuid2/cuid2.dart';
+import 'package:potential_plus/controllers/attendance_controller.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 
-final attendanceProvider =
-    StateNotifierProvider<AttendanceNotifier, AsyncValue<void>>((ref) {
+final attendanceStateProvider =
+    StateNotifierProvider<AttendanceNotifier, Map<String, bool>>((ref) {
   return AttendanceNotifier();
 });
 
-class AttendanceNotifier extends StateNotifier<AsyncValue<void>> {
-  AttendanceNotifier() : super(const AsyncValue.data(null));
+class AttendanceNotifier extends StateNotifier<Map<String, bool>> {
+  AttendanceNotifier() : super({});
 
-  Future<void> markAttendance({
-    required String institutionId,
-    required String classId,
-    required String timeTableId,
-    required String timeTableEntryId,
-    required List<Map<String, dynamic>> attendanceData,
-  }) async {
-    try {
-      state = const AsyncValue.loading();
+  void setAttendance(Map<String, bool> attendance) {
+    state = attendance;
+  }
 
-      // First, get existing attendance records for this lecture and date
-      final today = DateTime.now();
-      final startOfDay = DateTime(today.year, today.month, today.day);
-      final endOfDay = DateTime(today.year, today.month, today.day + 1);
+  void toggleAttendance(String studentId, bool isPresent) {
+    state = {...state, studentId: isPresent};
+  }
 
-      final existingAttendanceQuery = await DbService.attendancesCollRef()
-          .where('classId', isEqualTo: classId)
-          .where('metaData.timeTableEntryId', isEqualTo: timeTableEntryId)
-          .where('createdAt', isGreaterThanOrEqualTo: startOfDay)
-          .where('createdAt', isLessThan: endOfDay)
-          .get();
-
-      // Create a map of existing attendance records by userId
-      final Map<String, String> existingAttendanceIds = {};
-      for (var doc in existingAttendanceQuery.docs) {
-        final data = doc.data();
-        existingAttendanceIds[data.userId] = doc.id;
-      }
-
-      // Process each attendance record
-      for (var data in attendanceData) {
-        final userId = data['userId'] as String;
-        final existingId = existingAttendanceIds[userId];
-
-        final attendance = Attendance(
-          id: existingId ??
-              cuid(), // Use existing ID if available, otherwise create new
-          userId: userId,
-          isPresent: data['isPresent'],
-          institutionId: institutionId,
-          classId: classId,
-          createdAt: existingId != null
-              ? DateTime.now()
-              : DateTime.now(), // Keep original creation date if updating
-          updatedAt: DateTime.now(),
-          markedByUserId: data['markedByUserId'],
-          metaData: MetaData(
-            subject: data['subject'],
-            timeTableId: timeTableId,
-            timeTableEntryId: timeTableEntryId,
-          ),
-        );
-
-        final docRef = DbService.attendancesCollRef().doc(attendance.id);
-        await docRef.set(attendance);
-      }
-
-      state = const AsyncValue.data(null);
-    } catch (e, stack) {
-      log("error: $e");
-      state = AsyncValue.error(e, stack);
-    }
+  void setAllAttendance(bool isPresent) {
+    state = Map.fromEntries(state.keys.map((key) => MapEntry(key, isPresent)));
   }
 }
+
+final attendanceControllerProvider =
+    Provider.family<AttendanceController?, (String, String, DateTime)>(
+        (ref, params) {
+  final (classId, timeTableEntryId, date) = params;
+  final currentUser = ref.watch(authProvider).value;
+
+  final timetableAsync = ref.watch(classTimetableProvider(classId));
+  final selectedEntry = timetableAsync.when(
+    data: (timetable) => timetable?.entries.firstWhere(
+      (entry) => entry.id == timeTableEntryId,
+      orElse: () => TimetableEntry(
+        id: '',
+        subject: '',
+        teacherId: '',
+        day: 0,
+        entryNumber: 0,
+      ),
+    ),
+    loading: () => null,
+    error: (_, __) => null,
+  );
+
+  if (selectedEntry == null ||
+      currentUser == null ||
+      selectedEntry.id.isEmpty) {
+    return null;
+  }
+
+  return AttendanceController(
+    institutionId: currentUser.institutionId,
+    classId: classId,
+    timeTableId: timetableAsync.value?.id ?? '',
+    timeTableEntryId: timeTableEntryId,
+    date: date,
+    subject: selectedEntry.subject,
+    markedByUserId: currentUser.id,
+  );
+});
+
+final attendanceDataProvider =
+    FutureProvider.family<Map<String, bool>, (String, String, DateTime)>(
+        (ref, params) async {
+  final (classId, timeTableEntryId, date) = params;
+
+  final controller = ref
+      .watch(attendanceControllerProvider((classId, timeTableEntryId, date)));
+  if (controller == null) return {};
+
+  return await controller.getAttendance();
+});
 
 // Providers for UI state
 final selectedClassProvider = StateProvider<InstitutionClass?>((ref) => null);
@@ -114,25 +111,25 @@ final lectureAttendanceProvider = FutureProvider.family<
       DateTime date
     })>((ref, params) async {
   try {
+    final startOfDay =
+        DateTime(params.date.year, params.date.month, params.date.day);
+    final endOfDay =
+        DateTime(params.date.year, params.date.month, params.date.day + 1);
     final querySnapshot = await DbService.attendancesCollRef()
         .where('classId', isEqualTo: params.classId)
         .where('metaData.timeTableEntryId', isEqualTo: params.timeTableEntryId)
-        .where('createdAt',
-            isGreaterThanOrEqualTo:
-                DateTime(params.date.year, params.date.month, params.date.day))
-        .where('createdAt',
-            isLessThan: DateTime(
-                params.date.year, params.date.month, params.date.day + 1))
+        .where('createdAt', isGreaterThanOrEqualTo: startOfDay)
+        .where('createdAt', isLessThan: endOfDay)
         .get();
 
     final Map<String, bool> attendanceMap = {};
     for (var doc in querySnapshot.docs) {
-      final attendance = doc.data();
-      attendanceMap[attendance.userId] = attendance.isPresent;
+      final data = doc.data();
+      attendanceMap[data.userId] = data.isPresent;
     }
+
     return attendanceMap;
   } catch (e) {
-    log("Error fetching attendance: $e");
     return {};
   }
 });
