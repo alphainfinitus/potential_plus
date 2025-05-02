@@ -2,134 +2,125 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/services/db_service.dart';
-import 'package:potential_plus/controllers/attendance_controller.dart';
+import 'package:potential_plus/screens/attendance/attendance_controller.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
+import 'package:potential_plus/services/db_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-final attendanceStateProvider =
-    StateNotifierProvider<AttendanceNotifier, Map<String, bool>>((ref) {
-  return AttendanceNotifier();
-});
-
-class AttendanceNotifier extends StateNotifier<Map<String, bool>> {
-  AttendanceNotifier() : super({});
-
-  void setAttendance(Map<String, bool> attendance) {
-    state = attendance;
-  }
-
-  void toggleAttendance(String studentId, bool isPresent) {
-    state = {...state, studentId: isPresent};
-  }
-
-  void setAllAttendance(bool isPresent) {
-    state = Map.fromEntries(state.keys.map((key) => MapEntry(key, isPresent)));
-  }
-}
-
-final attendanceControllerProvider =
-    Provider.family<AttendanceController?, (String, String, DateTime)>(
-        (ref, params) {
-  final (classId, timeTableEntryId, date) = params;
-  final currentUser = ref.watch(authProvider).value;
-
-  final timetableAsync = ref.watch(classTimetableProvider(classId));
-  final selectedEntry = timetableAsync.when(
-    data: (timetable) => timetable?.entries.firstWhere(
-      (entry) => entry.id == timeTableEntryId,
-      orElse: () => TimetableEntry(
-        id: '',
-        subject: '',
-        teacherId: '',
-        day: 0,
-        entryNumber: 0,
-      ),
-    ),
-    loading: () => null,
-    error: (_, __) => null,
-  );
-
-  if (selectedEntry == null ||
-      currentUser == null ||
-      selectedEntry.id.isEmpty) {
-    return null;
-  }
-
-  return AttendanceController(
-    institutionId: currentUser.institutionId,
-    classId: classId,
-    timeTableId: timetableAsync.value?.id ?? '',
-    timeTableEntryId: timeTableEntryId,
-    date: date,
-    subject: selectedEntry.subject,
-    markedByUserId: currentUser.id,
-  );
-});
-
-final attendanceDataProvider =
-    FutureProvider.family<Map<String, bool>, (String, String, DateTime)>(
-        (ref, params) async {
-  final (classId, timeTableEntryId, date) = params;
-
-  final controller = ref
-      .watch(attendanceControllerProvider((classId, timeTableEntryId, date)));
-  if (controller == null) return {};
-
-  return await controller.getAttendance();
-});
-
-// Providers for UI state
+// Selected class provider
 final selectedClassProvider = StateProvider<InstitutionClass?>((ref) => null);
-final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
-final selectedLectureProvider = StateProvider<TimetableEntry?>((ref) => null);
-final studentAttendanceProvider = StateProvider<Map<String, bool>>((ref) => {});
 
-// Provider for fetching students in a class
+// Selected date provider
+final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
+
+// Selected lecture provider
+final selectedLectureProvider = StateProvider<TimetableEntry?>((ref) => null);
+
+// Attendance state provider
+final attendanceStateProvider = StateProvider<Map<String, bool>>((ref) => {});
+
+// Attendance watcher provider
+final attendanceWatcherProvider = Provider((ref) {
+  final selectedClass = ref.watch(selectedClassProvider);
+  final selectedLecture = ref.watch(selectedLectureProvider);
+  final selectedDate = ref.watch(selectedDateProvider);
+
+  if (selectedClass == null || selectedLecture == null) return null;
+
+  // ignore: provider_parameters
+  return ref.watch(lectureAttendanceProvider(AttendanceParams(
+    classId: selectedClass.id,
+    timeTableEntryId: selectedLecture.id,
+    date: selectedDate,
+  )));
+});
+
+// Class timetable provider
+final classTimetableProvider =
+    FutureProvider.family<TimeTable?, String>((ref, classId) async {
+  return await DbService.getClassTimetable(classId);
+});
+
+// Class students provider
 final classStudentsProvider =
     FutureProvider.family<List<AppUser>, String>((ref, classId) async {
   final querySnapshot = await DbService.classStudentsQueryRef(classId).get();
   return querySnapshot.docs.map((doc) => doc.data()).toList();
 });
 
-// Provider for fetching timetable
-final classTimetableProvider =
-    FutureProvider.family<TimeTable?, String>((ref, classId) async {
-  return await DbService.getClassTimetable(classId);
+// Attendance parameters class
+class AttendanceParams {
+  final String classId;
+  final String timeTableEntryId;
+  final DateTime date;
+
+  const AttendanceParams({
+    required this.classId,
+    required this.timeTableEntryId,
+    required this.date,
+  });
+}
+
+// Lecture attendance provider
+final lectureAttendanceProvider =
+    FutureProvider.family<Map<String, bool>, AttendanceParams>(
+        (ref, params) async {
+  final currentUser = ref.watch(authProvider).value;
+  if (currentUser == null) return {};
+
+  final attendanceRef = FirebaseFirestore.instance
+      .collection('institutions')
+      .doc(currentUser.institutionId)
+      .collection('classes')
+      .doc(params.classId)
+      .collection('attendance')
+      .doc(
+          '${params.timeTableEntryId}_${params.date.toIso8601String().split('T')[0]}');
+
+  final attendanceDoc = await attendanceRef.get();
+  if (!attendanceDoc.exists) return {};
+
+  final data = attendanceDoc.data() as Map<String, dynamic>;
+  final attendance = data['attendance'] as Map<String, dynamic>;
+  return attendance.map((key, value) => MapEntry(key, value as bool));
 });
 
-// Provider to track attendance parameters
-final attendanceParamsProvider =
-    StateProvider<({String classId, String timeTableEntryId, DateTime date})?>(
-        (ref) => null);
+// Attendance controller provider
+final attendanceControllerProvider =
+    Provider.family<AttendanceController?, AttendanceParams>((ref, params) {
+  final currentUser = ref.watch(authProvider).value;
+  if (currentUser == null) return null;
 
-// Provider for fetching existing attendance
-final lectureAttendanceProvider = FutureProvider.family<
-    Map<String, bool>,
-    ({
-      String classId,
-      String timeTableEntryId,
-      DateTime date
-    })>((ref, params) async {
-  try {
-    final startOfDay =
-        DateTime(params.date.year, params.date.month, params.date.day);
-    final endOfDay =
-        DateTime(params.date.year, params.date.month, params.date.day + 1);
-    final querySnapshot = await DbService.attendancesCollRef()
-        .where('classId', isEqualTo: params.classId)
-        .where('metaData.timeTableEntryId', isEqualTo: params.timeTableEntryId)
-        .where('createdAt', isGreaterThanOrEqualTo: startOfDay)
-        .where('createdAt', isLessThan: endOfDay)
-        .get();
+  final timetableAsync = ref.watch(classTimetableProvider(params.classId));
+  return timetableAsync.when(
+    data: (timetable) {
+      if (timetable == null) return null;
 
-    final Map<String, bool> attendanceMap = {};
-    for (var doc in querySnapshot.docs) {
-      final data = doc.data();
-      attendanceMap[data.userId] = data.isPresent;
-    }
+      final selectedEntry = timetable.entries.firstWhere(
+        (entry) => entry.id == params.timeTableEntryId,
+        orElse: () => TimetableEntry(
+          id: '',
+          day: 0,
+          subject: '',
+          from: null,
+          to: null,
+          teacherId: '',
+          entryNumber: 0,
+        ),
+      );
 
-    return attendanceMap;
-  } catch (e) {
-    return {};
-  }
+      if (selectedEntry.id.isEmpty || currentUser.id.isEmpty) return null;
+
+      return AttendanceController(
+        institutionId: currentUser.institutionId,
+        classId: params.classId,
+        timeTableId: timetable.id,
+        timeTableEntryId: selectedEntry.id,
+        date: params.date,
+        markedByUserId: currentUser.id,
+      );
+    },
+    loading: () => null,
+    error: (_, __) => null,
+  );
 });
