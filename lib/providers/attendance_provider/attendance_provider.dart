@@ -2,10 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/screens/attendance/attendance_controller.dart';
+import 'package:potential_plus/controllers/attendance_controller.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:potential_plus/providers/attendance_provider/attendance_state_notifier.dart';
 
 // Selected class provider
 final selectedClassProvider = StateProvider<InstitutionClass?>((ref) => null);
@@ -17,22 +18,25 @@ final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 final selectedLectureProvider = StateProvider<TimetableEntry?>((ref) => null);
 
 // Attendance state provider
-final attendanceStateProvider = StateProvider<Map<String, bool>>((ref) => {});
+final attendanceStateProvider =
+    StateNotifierProvider<AttendanceStateNotifier, Map<String, bool>>((ref) {
+  return AttendanceStateNotifier();
+});
 
 // Attendance watcher provider
 final attendanceWatcherProvider = Provider((ref) {
   final selectedClass = ref.watch(selectedClassProvider);
   final selectedLecture = ref.watch(selectedLectureProvider);
   final selectedDate = ref.watch(selectedDateProvider);
+  final attendanceState = ref.watch(attendanceStateProvider.notifier);
 
-  if (selectedClass == null || selectedLecture == null) return null;
-
-  // ignore: provider_parameters
-  return ref.watch(lectureAttendanceProvider(AttendanceParams(
-    classId: selectedClass.id,
-    timeTableEntryId: selectedLecture.id,
-    date: selectedDate,
-  )));
+  if (selectedClass != null && selectedLecture != null) {
+    attendanceState.fetchAndUpdateAttendance(
+      classId: selectedClass.id,
+      timeTableEntryId: selectedLecture.id,
+      date: selectedDate,
+    );
+  }
 });
 
 // Class timetable provider
@@ -118,6 +122,7 @@ final attendanceControllerProvider =
         timeTableEntryId: selectedEntry.id,
         date: params.date,
         markedByUserId: currentUser.id,
+        subject: selectedEntry.subject,
       );
     },
     loading: () => null,
