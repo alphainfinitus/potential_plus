@@ -179,7 +179,7 @@ class DbService {
         classId: classId,
         isPresent: data['isPresent'],
         markedByUserId: data['markedByUserId'],
-        forDate: date,
+        dateTime: date,
         createdAt: now,
         updatedAt: now,
         metaData: MetaData(

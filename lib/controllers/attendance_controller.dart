@@ -36,8 +36,8 @@ class AttendanceController {
       final querySnapshot = await DbService.attendancesCollRef()
           .where('classId', isEqualTo: classId)
           .where('metaData.timeTableEntryId', isEqualTo: timeTableEntryId)
-          .where('forDate', isGreaterThanOrEqualTo: startOfDay)
-          .where('forDate', isLessThan: endOfDay)
+          .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
+          .where('dateTime', isLessThan: endOfDay)
           .get();
 
       final Map<String, bool> attendanceMap = {};
@@ -67,8 +67,8 @@ class AttendanceController {
       final existingQuery = await DbService.attendancesCollRef()
           .where('classId', isEqualTo: classId)
           .where('metaData.timeTableEntryId', isEqualTo: timeTableEntryId)
-          .where('forDate', isGreaterThanOrEqualTo: startOfDay)
-          .where('forDate', isLessThan: endOfDay)
+          .where('dateTime', isGreaterThanOrEqualTo: startOfDay)
+          .where('dateTime', isLessThan: endOfDay)
           .get();
 
       for (var doc in existingQuery.docs) {
@@ -90,13 +90,12 @@ class AttendanceController {
             'institutionId': institutionId,
           },
           'isPresent': isPresent,
-          'forDate': date,
+          'dateTime': date,
           'createdAt': DateTime.now(),
           'createdBy': markedByUserId,
         });
       }
       await batch.commit();
-
     } catch (e) {
       rethrow;
     }

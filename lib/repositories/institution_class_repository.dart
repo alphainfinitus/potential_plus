@@ -11,38 +11,39 @@ class InstitutionClassRepository {
     InstitutionClass institutionClass,
     int editedDayOfWeekIndex,
     int editedPeriodIndex,
-  ) async {
-    
-  }
+  ) async {}
 
   static Future<List<Attendance>> fetchClassAttendanceByDate({
-		required String institutionId,
-		required String institutionClassId,
-		required DateTime date,
-	}) async {
-		//1. get all students in the class
-		final studentsSnapshot = await DbService.classStudentsQueryRef(institutionClassId).get();
-		final students = studentsSnapshot.docs.map((doc) => doc.data()).toList();
+    required String institutionId,
+    required String institutionClassId,
+    required DateTime date,
+  }) async {
+    //1. get all students in the class
+    final studentsSnapshot =
+        await DbService.classStudentsQueryRef(institutionClassId).get();
+    final students = studentsSnapshot.docs.map((doc) => doc.data()).toList();
 
-		final studentIds = students.map((student) => student.id).toList();
+    final studentIds = students.map((student) => student.id).toList();
 
-		final startOfDay = DateTime(date.year, date.month, date.day);
+    final startOfDay = DateTime(date.year, date.month, date.day);
     final startOfTomorrow = DateTime(date.year, date.month, date.day + 1);
 
-		final attendancesSnapshot = await DbService.attendancesCollRef()
-      .where('userId', whereIn: studentIds)
-      .where('forDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-      .where('forDate', isLessThan: Timestamp.fromDate(startOfTomorrow))
-      .get();
+    final attendancesSnapshot = await DbService.attendancesCollRef()
+        .where('userId', whereIn: studentIds)
+        .where('dateTime',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('dateTime', isLessThan: Timestamp.fromDate(startOfTomorrow))
+        .get();
 
-		//3. return the attendances
-		return attendancesSnapshot.docs.map((doc) => doc.data()).toList();
-	}
+    //3. return the attendances
+    return attendancesSnapshot.docs.map((doc) => doc.data()).toList();
+  }
 
   static Future<Map<String, AppUser>> fetchClassStudents({
     required String classId,
   }) async {
-    final studentsSnapshot = await DbService.classStudentsQueryRef(classId).get();
+    final studentsSnapshot =
+        await DbService.classStudentsQueryRef(classId).get();
 
     return studentsSnapshot.docs.fold<Map<String, AppUser>>(
       {},
