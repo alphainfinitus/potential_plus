@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/controllers/attendance_controller.dart';
 
@@ -18,7 +17,6 @@ class AttendanceStateNotifier extends StateNotifier<Map<String, bool>> {
       );
       state = attendance;
     } catch (e) {
-      log("Error in fetchAndUpdateAttendance: $e");
       state = {};
     }
   }

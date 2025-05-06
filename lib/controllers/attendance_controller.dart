@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/services/db_service.dart';
 
@@ -29,11 +28,9 @@ class AttendanceController {
     try {
       // Validate inputs
       if (classId.isEmpty || timeTableEntryId.isEmpty) {
-        log("Invalid inputs for attendance fetch");
         return {};
       }
 
-      log("Fetching attendance for class: $classId, lecture: $timeTableEntryId, date: $date");
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = DateTime(date.year, date.month, date.day + 1);
       final querySnapshot = await DbService.attendancesCollRef()
@@ -49,10 +46,8 @@ class AttendanceController {
         attendanceMap[data.userId] = data.isPresent;
       }
 
-      log("Fetched attendance: $attendanceMap");
       return attendanceMap;
     } catch (e) {
-      log("Error fetching attendance: $e");
       return {};
     }
   }
@@ -62,11 +57,9 @@ class AttendanceController {
     try {
       // Validate inputs
       if (classId.isEmpty || timeTableEntryId.isEmpty || students.isEmpty) {
-        log("Invalid inputs for marking attendance");
         return;
       }
 
-      log("Marking attendance for class: $classId, lecture: $timeTableEntryId, date: $date");
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = DateTime(date.year, date.month, date.day + 1);
 
@@ -104,9 +97,7 @@ class AttendanceController {
       }
       await batch.commit();
 
-      log("Successfully marked attendance");
     } catch (e) {
-      log("Error marking attendance: $e");
       rethrow;
     }
   }
