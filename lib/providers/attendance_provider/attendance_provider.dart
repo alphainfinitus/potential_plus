@@ -1,58 +1,94 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/controllers/attendance_controller.dart';
-import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:potential_plus/providers/attendance_provider/attendance_state_notifier.dart';
+import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 
-// Selected class provider
-final selectedClassProvider = StateProvider<InstitutionClass?>((ref) => null);
+part 'attendance_provider.g.dart';
 
-// Selected date provider
-final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
+@riverpod
+class SelectedClass extends _$SelectedClass {
+  @override
+  InstitutionClass? build() => null;
+  void set(InstitutionClass? value) => state = value;
+}
 
-// Selected lecture provider
-final selectedLectureProvider = StateProvider<TimetableEntry?>((ref) => null);
+@riverpod
+class SelectedDate extends _$SelectedDate {
+  @override
+  DateTime build() => DateTime.now();
+  void set(DateTime value) => state = value;
+}
 
-// Attendance state provider
-final attendanceStateProvider =
-    StateNotifierProvider<AttendanceStateNotifier, Map<String, bool>>((ref) {
-  return AttendanceStateNotifier();
-});
+@riverpod
+class SelectedLecture extends _$SelectedLecture {
+  @override
+  TimetableEntry? build() => null;
+  void set(TimetableEntry? value) => state = value;
+}
 
-// Attendance watcher provider
-final attendanceWatcherProvider = Provider((ref) {
+@riverpod
+class AttendanceState extends _$AttendanceState {
+  @override
+  Map<String, bool> build() => {};
+
+  Future<void> fetchAndUpdateAttendance({
+    required String classId,
+    required String timeTableEntryId,
+    required DateTime date,
+  }) async {
+    try {
+      final attendance = await AttendanceController.fetchAttendance(
+        classId: classId,
+        timeTableEntryId: timeTableEntryId,
+        date: date,
+      );
+      state = attendance;
+    } catch (_) {
+      state = {};
+    }
+  }
+
+  void updateAttendance(String studentId, bool isPresent) {
+    state = {...state, studentId: isPresent};
+  }
+
+  void clearAttendance() {
+    state = {};
+  }
+}
+
+@riverpod
+void attendanceWatcher(Ref ref) {
   final selectedClass = ref.watch(selectedClassProvider);
   final selectedLecture = ref.watch(selectedLectureProvider);
   final selectedDate = ref.watch(selectedDateProvider);
-  final attendanceState = ref.watch(attendanceStateProvider.notifier);
+  final notifier = ref.watch(attendanceStateProvider.notifier);
 
   if (selectedClass != null && selectedLecture != null) {
-    attendanceState.fetchAndUpdateAttendance(
+    notifier.fetchAndUpdateAttendance(
       classId: selectedClass.id,
       timeTableEntryId: selectedLecture.id,
       date: selectedDate,
     );
   }
-});
+}
 
-// Class timetable provider
-final classTimetableProvider =
-    FutureProvider.family<TimeTable?, String>((ref, classId) async {
+@riverpod
+Future<TimeTable?> classTimetable(Ref ref, String classId) async {
   return await DbService.getClassTimetable(classId);
-});
+}
 
-// Class students provider
-final classStudentsProvider =
-    FutureProvider.family<List<AppUser>, String>((ref, classId) async {
+@riverpod
+Future<List<AppUser>> classStudents(Ref ref, String classId) async {
   final querySnapshot = await DbService.classStudentsQueryRef(classId).get();
   return querySnapshot.docs.map((doc) => doc.data()).toList();
-});
+}
 
-// Attendance parameters class
 class AttendanceParams {
   final String classId;
   final String timeTableEntryId;
@@ -65,10 +101,9 @@ class AttendanceParams {
   });
 }
 
-// Lecture attendance provider
-final lectureAttendanceProvider =
-    FutureProvider.family<Map<String, bool>, AttendanceParams>(
-        (ref, params) async {
+@riverpod
+Future<Map<String, bool>> lectureAttendance(
+    Ref ref, AttendanceParams params) async {
   final currentUser = ref.watch(authProvider).value;
   if (currentUser == null) return {};
 
@@ -87,11 +122,11 @@ final lectureAttendanceProvider =
   final data = attendanceDoc.data() as Map<String, dynamic>;
   final attendance = data['attendance'] as Map<String, dynamic>;
   return attendance.map((key, value) => MapEntry(key, value as bool));
-});
+}
 
-// Attendance controller provider
-final attendanceControllerProvider =
-    Provider.family<AttendanceController?, AttendanceParams>((ref, params) {
+@riverpod
+AttendanceController? attendanceController(
+    Ref ref, AttendanceParams params) {
   final currentUser = ref.watch(authProvider).value;
   if (currentUser == null) return null;
 
@@ -102,15 +137,6 @@ final attendanceControllerProvider =
 
       final selectedEntry = timetable.entries.firstWhere(
         (entry) => entry.id == params.timeTableEntryId,
-        orElse: () => TimetableEntry(
-          id: '',
-          day: 0,
-          subject: '',
-          from: null,
-          to: null,
-          teacherId: '',
-          entryNumber: 0,
-        ),
       );
 
       if (selectedEntry.id.isEmpty || currentUser.id.isEmpty) return null;
@@ -128,4 +154,4 @@ final attendanceControllerProvider =
     loading: () => null,
     error: (_, __) => null,
   );
-});
+}
