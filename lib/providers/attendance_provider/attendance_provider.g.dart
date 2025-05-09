@@ -6,7 +6,7 @@ part of 'attendance_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$attendanceWatcherHash() => r'2f36caa168459c5f895854529ff59c4715e19c37';
+String _$attendanceWatcherHash() => r'ea8fb7e453317f80f00615c92bc821ce1d2dc13f';
 
 /// See also [attendanceWatcher].
 @ProviderFor(attendanceWatcher)
@@ -306,7 +306,7 @@ class _ClassStudentsProviderElement
   String get classId => (origin as ClassStudentsProvider).classId;
 }
 
-String _$lectureAttendanceHash() => r'3e911776e68efd103714067faa964af92fd6b519';
+String _$lectureAttendanceHash() => r'c7ec54a1bcdf4112d4db171c0aa37e1ea3ed3e56';
 
 /// See also [lectureAttendance].
 @ProviderFor(lectureAttendance)
@@ -619,7 +619,7 @@ final selectedLectureProvider =
 );
 
 typedef _$SelectedLecture = AutoDisposeNotifier<TimetableEntry?>;
-String _$attendanceStateHash() => r'5dd9680c8cbaf30dfb65f9db6901387aea8f45c6';
+String _$attendanceStateHash() => r'86810aa32e23d97fcbbe9cf6a6bcdb232d5ebe73';
 
 /// See also [AttendanceState].
 @ProviderFor(AttendanceState)

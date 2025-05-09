@@ -3,9 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:potential_plus/models/institution_class.dart';
 import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/models/app_user.dart';
-import 'package:potential_plus/controllers/attendance_controller.dart';
+import 'package:potential_plus/screens/attendance/controllers/attendance_controller.dart';
 import 'package:potential_plus/services/db_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 
 part 'attendance_provider.g.dart';
@@ -42,13 +41,22 @@ class AttendanceState extends _$AttendanceState {
     required DateTime date,
   }) async {
     try {
-      final attendance = await AttendanceController.fetchAttendance(
+      final currentUser = ref.read(authProvider).value;
+      if (currentUser == null) return;
+
+      final attendanceMap = await DbService.getLectureAttendance(
         classId: classId,
         timeTableEntryId: timeTableEntryId,
         date: date,
       );
-      state = attendance;
-    } catch (_) {
+
+      // Only set state if attendance exists in Firebase
+      if (attendanceMap.isNotEmpty) {
+        state = attendanceMap;
+      } else {
+        state = {};
+      }
+    } catch (e) {
       state = {};
     }
   }
@@ -57,8 +65,43 @@ class AttendanceState extends _$AttendanceState {
     state = {...state, studentId: isPresent};
   }
 
-  void clearAttendance() {
-    state = {};
+  Future<void> submitAttendance() async {
+    try {
+      final currentUser = ref.read(authProvider).value;
+      if (currentUser == null) return;
+
+      final selectedClass = ref.read(selectedClassProvider);
+      final selectedLecture = ref.read(selectedLectureProvider);
+      final selectedDate = ref.read(selectedDateProvider);
+
+      if (selectedClass == null || selectedLecture == null) return;
+
+      final timetable =
+          await ref.read(classTimetableProvider(selectedClass.id).future);
+      if (timetable == null) return;
+
+      final attendanceData = state.entries
+          .map((entry) => {
+                'userId': entry.key,
+                'isPresent': entry.value,
+                'markedByUserId': currentUser.id,
+                'subject': selectedLecture.subject,
+              })
+          .toList();
+
+      await DbService.markAttendance(
+        institutionId: currentUser.institutionId,
+        classId: selectedClass.id,
+        timeTableId: timetable.id,
+        timeTableEntryId: selectedLecture.id,
+        attendanceData: attendanceData,
+        date: selectedDate,
+      );
+    } catch (e) {
+      // Revert state on error
+      state = {...state};
+      rethrow; // Rethrow to handle in UI
+    }
   }
 }
 
@@ -70,11 +113,15 @@ void attendanceWatcher(Ref ref) {
   final notifier = ref.watch(attendanceStateProvider.notifier);
 
   if (selectedClass != null && selectedLecture != null) {
-    notifier.fetchAndUpdateAttendance(
-      classId: selectedClass.id,
-      timeTableEntryId: selectedLecture.id,
-      date: selectedDate,
-    );
+    Future.microtask(() async {
+      if (ref.read(attendanceStateProvider).isEmpty) {
+        await notifier.fetchAndUpdateAttendance(
+          classId: selectedClass.id,
+          timeTableEntryId: selectedLecture.id,
+          date: selectedDate,
+        );
+      }
+    });
   }
 }
 
@@ -104,29 +151,15 @@ class AttendanceParams {
 @riverpod
 Future<Map<String, bool>> lectureAttendance(
     Ref ref, AttendanceParams params) async {
-  final currentUser = ref.watch(authProvider).value;
-  if (currentUser == null) return {};
-
-  final attendanceRef = FirebaseFirestore.instance
-      .collection('institutions')
-      .doc(currentUser.institutionId)
-      .collection('classes')
-      .doc(params.classId)
-      .collection('attendance')
-      .doc(
-          '${params.timeTableEntryId}_${params.date.toIso8601String().split('T')[0]}');
-
-  final attendanceDoc = await attendanceRef.get();
-  if (!attendanceDoc.exists) return {};
-
-  final data = attendanceDoc.data() as Map<String, dynamic>;
-  final attendance = data['attendance'] as Map<String, dynamic>;
-  return attendance.map((key, value) => MapEntry(key, value as bool));
+  return await DbService.getLectureAttendance(
+    classId: params.classId,
+    timeTableEntryId: params.timeTableEntryId,
+    date: params.date,
+  );
 }
 
 @riverpod
-AttendanceController? attendanceController(
-    Ref ref, AttendanceParams params) {
+AttendanceController? attendanceController(Ref ref, AttendanceParams params) {
   final currentUser = ref.watch(authProvider).value;
   if (currentUser == null) return null;
 

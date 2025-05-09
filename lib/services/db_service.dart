@@ -154,10 +154,10 @@ class DbService {
 
     return attendancesCollRef()
         .where('classId', isEqualTo: classId)
-        .where('timeTableEntryId', isEqualTo: timeTableEntryId)
-        .where('createdAt',
+        .where('metaData.timeTableEntryId', isEqualTo: timeTableEntryId)
+        .where('dateTime',
             isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-        .where('createdAt', isLessThan: Timestamp.fromDate(startOfTomorrow));
+        .where('dateTime', isLessThan: Timestamp.fromDate(startOfTomorrow));
   }
 
   static Future<void> markAttendance({
@@ -171,23 +171,42 @@ class DbService {
     final batch = db.batch();
     final now = DateTime.now();
 
+    final existingAttendanceQuery = await lectureAttendanceQueryRef(
+      classId: classId,
+      timeTableEntryId: timeTableEntryId,
+      date: date,
+    ).get();
+
+    final existingAttendanceMap = {
+      for (var doc in existingAttendanceQuery.docs)
+        doc.data().userId: doc.data()
+    };
+
     for (final data in attendanceData) {
-      final attendance = Attendance(
-        id: cuid(),
-        userId: data['userId'],
-        institutionId: institutionId,
-        classId: classId,
-        isPresent: data['isPresent'],
-        markedByUserId: data['markedByUserId'],
-        dateTime: date,
-        createdAt: now,
-        updatedAt: now,
-        metaData: MetaData(
-          subject: data['subject'],
-          timeTableId: timeTableId,
-          timeTableEntryId: timeTableEntryId,
-        ),
-      );
+      final userId = data['userId'] as String;
+      final existingAttendance = existingAttendanceMap[userId];
+
+      final attendance = existingAttendance != null
+          ? existingAttendance.copyWith(
+              isPresent: data['isPresent'],
+              updatedAt: now,
+            )
+          : Attendance(
+              id: cuid(),
+              userId: userId,
+              institutionId: institutionId,
+              classId: classId,
+              isPresent: data['isPresent'],
+              markedByUserId: data['markedByUserId'],
+              dateTime: date,
+              createdAt: now,
+              updatedAt: now,
+              metaData: MetaData(
+                subject: data['subject'],
+                timeTableId: timeTableId,
+                timeTableEntryId: timeTableEntryId,
+              ),
+            );
 
       final docRef = attendancesCollRef().doc(attendance.id);
       batch.set(docRef, attendance);
