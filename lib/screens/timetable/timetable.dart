@@ -9,10 +9,12 @@ import 'package:potential_plus/utils.dart';
 class TimetablePage extends ConsumerStatefulWidget {
   final TimeTable timeTable;
   final String classId;
+  final bool isReadOnly;
   const TimetablePage({
     super.key,
     required this.timeTable,
     required this.classId,
+    this.isReadOnly = false,
   });
 
   @override
@@ -144,6 +146,22 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
       int dayIndex, ColorScheme colorScheme, TextTheme textTheme) {
     final entrys = _controller.getEntrysForDay(dayIndex);
 
+    if (widget.isReadOnly) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: entrys.length,
+        itemBuilder: (context, index) {
+          return EntryCard(
+            key: ValueKey(entrys[index].id),
+            item: entrys[index],
+            onTap: () {}, // Empty callback for read-only mode
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+          );
+        },
+      );
+    }
+
     return ReorderableListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: entrys.length + 1,
@@ -163,7 +181,7 @@ class _TimetablePageState extends ConsumerState<TimetablePage> {
         return EntryCard(
           key: ValueKey(entrys[index].id),
           item: entrys[index],
-          onTap: (){
+          onTap: () {
             _showEditEntryDialog(entrys[index], dayIndex);
             setState(() {});
           },
