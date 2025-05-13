@@ -18,7 +18,14 @@ class TeacherRepository {
     final batch = DbService.db.batch();
 
     // 1. check if attendance already exists for today
-    final todayAttendanceSnapshot = (await DbService.attendanceForDateQueryRef(userId: studentId, institutionId: institutionId, date: DateTime.now()).limit(1).get()).docs.firstOrNull;
+    final todayAttendanceSnapshot = (await DbService.attendanceForDateQueryRef(
+                userId: studentId,
+                institutionId: institutionId,
+                date: DateTime.now())
+            .limit(1)
+            .get())
+        .docs
+        .firstOrNull;
 
     // 2. if it exists, update the attendance and the corresponding activity
     if (todayAttendanceSnapshot != null) {
@@ -29,7 +36,10 @@ class TeacherRepository {
       });
 
       // 2.1. update the corresponding activity
-      final activitySnapshot = await DbService.activityByActivityRefIdQueryRef(todayAttendanceSnapshot.id).limit(1).get();
+      final activitySnapshot = await DbService.activityByActivityRefIdQueryRef(
+              todayAttendanceSnapshot.id)
+          .limit(1)
+          .get();
       final activity = activitySnapshot.docs.firstOrNull;
 
       if (activity != null) {
@@ -59,6 +69,7 @@ class TeacherRepository {
 
       final newAttendance = Attendance(
         id: newAttendanceDoc.id,
+        dateTime: DateTime.now(),
         userId: studentId,
         institutionId: institutionId,
         classId: classId,

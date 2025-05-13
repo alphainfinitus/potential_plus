@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:potential_plus/constants/app_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
@@ -10,33 +11,32 @@ import 'package:potential_plus/screens/student/student_home_screen/activity_feed
 import 'package:potential_plus/screens/timetable/timetable.dart';
 import 'package:potential_plus/services/db_service.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
-import 'package:potential_plus/utils.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
-	const StudentHomeScreen({super.key});
+  const StudentHomeScreen({super.key});
 
-	@override
-	Widget build(BuildContext context, WidgetRef ref) {
-
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<AppUser?> user = ref.watch(authProvider);
     final Institution? institution = ref.watch(institutionProvider).value;
 
-		return Scaffold(
-			appBar: AppBar(
-				title: const AppBarTitle(),
-			),
-			body: user.when(
-        data: (appUser) {
-          // Not logged in, redirect to login screen
-          if (appUser == null) {
-            AppUtils.pushReplacementNamedAfterBuild(context, AppRoutes.login.path);
-            return null;
-          }
+    return Scaffold(
+      appBar: AppBar(
+        title: const AppBarTitle(),
+      ),
+      body: user.when(
+          data: (appUser) {
+            // Not logged in, redirect to login screen
+            if (appUser == null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go(RouteNames.login);
+              });
+              return null;
+            }
 
-          if (institution == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
+            if (institution == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
           return Column(
             children: [
               Padding(
@@ -105,3 +105,4 @@ class StudentHomeScreen extends ConsumerWidget {
 		);
 	}
 }
+
