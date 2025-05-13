@@ -11,6 +11,7 @@ import 'package:potential_plus/screens/error/not_found_page.dart';
 import 'package:potential_plus/screens/home_screen.dart';
 import 'package:potential_plus/screens/profile/profile_screen.dart';
 import 'package:potential_plus/screens/student/student_home_screen.dart';
+import 'package:potential_plus/screens/student/student_attendance_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_attendance_screen.dart';
 import 'package:potential_plus/screens/teacher/teacher_home_screen.dart';
 import 'package:potential_plus/screens/timetable/class_selection_screen.dart';
@@ -92,6 +93,10 @@ final _goRouter = GoRouter(
     GoRoute(
       path: RouteNames.studentHome,
       builder: (context, state) => const StudentHomeScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.studentAttendance,
+      builder: (context, state) => const StudentAttendanceScreen(),
     ),
     // Timetable route
     GoRoute(

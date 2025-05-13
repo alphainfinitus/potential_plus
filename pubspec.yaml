@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.0
+  sdk: '>=3.0.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,20 +30,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.2
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
-  firebase_core: ^3.3.0
-  firebase_auth: ^5.1.4
-  cloud_firestore: ^5.2.1
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
   google_fonts: ^6.2.1
   intl: ^0.19.0
   cuid2: ^3.1.0
   go_router: ^13.2.0
+  provider: ^6.1.1
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +52,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^2.0.0
   build_runner: ^2.4.12
   riverpod_generator: ^2.4.2
   custom_lint: ^0.6.5

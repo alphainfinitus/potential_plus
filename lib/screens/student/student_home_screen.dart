@@ -35,10 +35,28 @@ class StudentHomeScreen extends ConsumerWidget {
             if (institution == null) {
               return const Center(child: CircularProgressIndicator());
             }
-
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: StudentActivityFeed(appUser: appUser),
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      context.push(RouteNames.studentAttendance);
+                    },
+                    icon: const Icon(Icons.calendar_month),
+                    label: const Text('My Attendance'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: StudentActivityFeed(appUser: appUser),
+                  ),
+                ),
+              ],
             );
           },
           error: (error, _) =>
