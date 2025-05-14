@@ -6,7 +6,7 @@ part of 'classes_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$classesHash() => r'7bb7f9ca4f9853afb157128daa3196260c1d4248';
+String _$classesHash() => r'd77777adf0df5a786fb8f202b0062cb88bc9484d';
 
 /// See also [classes].
 @ProviderFor(classes)
@@ -20,6 +20,8 @@ final classesProvider =
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef ClassesRef = AutoDisposeFutureProviderRef<List<InstitutionClass>?>;
 String _$classStudentsHash() => r'6acccd9faf9f8bd6d7f53f22dca749861b1a6985';
 
@@ -158,6 +160,8 @@ class ClassStudentsProvider
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin ClassStudentsRef on AutoDisposeFutureProviderRef<Map<String, AppUser>> {
   /// The parameter `classId` of this provider.
   String get classId;
@@ -172,4 +176,4 @@ class _ClassStudentsProviderElement
   String get classId => (origin as ClassStudentsProvider).classId;
 }
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

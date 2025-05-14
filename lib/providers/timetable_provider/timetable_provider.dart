@@ -68,7 +68,6 @@ class TimetableNotifier extends StateNotifier<TimeTable> {
     try {
       await DbService.updateClassTimetable(state.id, state);
     } catch (e) {
-      print('Error updating timetable: $e');
       rethrow;
     }
   }
