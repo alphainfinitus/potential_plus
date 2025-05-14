@@ -32,7 +32,7 @@ class TimeTable {
 
   Map<String, dynamic> toMap() => {
         'id': id,
-        'entries': entries,
+        'entries': entries.map((entry) => entry.toMap()).toList(),
         'createdAt': createdAt,
         'updatedAt': updatedAt,
       };

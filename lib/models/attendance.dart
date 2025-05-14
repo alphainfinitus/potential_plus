@@ -53,6 +53,32 @@ class Attendance {
         'markedByUserId': markedByUserId,
         'metaData': metaData?.toMap(),
       };
+
+  Attendance copyWith({
+    String? id,
+    DateTime? dateTime,
+    String? userId,
+    bool? isPresent,
+    String? institutionId,
+    String? classId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? markedByUserId,
+    MetaData? metaData,
+  }) {
+    return Attendance(
+      id: id ?? this.id,
+      dateTime: dateTime ?? this.dateTime,
+      userId: userId ?? this.userId,
+      isPresent: isPresent ?? this.isPresent,
+      institutionId: institutionId ?? this.institutionId,
+      classId: classId ?? this.classId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      markedByUserId: markedByUserId ?? this.markedByUserId,
+      metaData: metaData ?? this.metaData,
+    );
+  }
 }
 
 class MetaData {
