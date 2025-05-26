@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - build_workflow
-
 jobs:
   build:
     runs-on: ubuntu-latest
