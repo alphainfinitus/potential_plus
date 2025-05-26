@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:potential_plus/router/route_names.dart';
 import 'package:potential_plus/models/time_table.dart';
+import 'package:potential_plus/screens/admin/admin_announcements.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
@@ -97,6 +98,10 @@ final _goRouter = GoRouter(
     GoRoute(
       path: RouteNames.studentAttendance,
       builder: (context, state) => const StudentAttendanceScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.adminAnnouncements,
+      builder: (context, state) => const AdminAnnouncementsScreen(),
     ),
     // Timetable route
     GoRoute(

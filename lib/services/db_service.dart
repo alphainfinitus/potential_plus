@@ -226,4 +226,75 @@ class DbService {
 
     return attendanceMap;
   }
+
+  // Announcement related methods
+  static Future<List<Activity>> getInstitutionAnnouncements(
+      String institutionId) async {
+    try {
+      final querySnapshot = await activitiesCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Stream<List<Activity>> streamInstitutionAnnouncements(
+      String institutionId) {
+    return activitiesCollRef()
+        .where('institutionId', isEqualTo: institutionId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  static Future<List<Activity>> getUserAnnouncements(
+      String userId, UserRole userRole, String institutionId) async {
+    try {
+      // Get announcements for all
+      final allAnnouncementsQuery = await activitiesCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .get();
+
+      final roleAnnouncementsQuery = await activitiesCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .get();
+
+      // Get user-specific announcements
+      final userAnnouncementsQuery = await activitiesCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .where('specificUserId', isEqualTo: userId)
+          .get();
+
+      List<Activity> announcements = [
+        ...allAnnouncementsQuery.docs.map((doc) => doc.data()),
+        ...roleAnnouncementsQuery.docs.map((doc) => doc.data()),
+        ...userAnnouncementsQuery.docs.map((doc) => doc.data()),
+      ];
+
+      // Sort by createdAt descending
+      announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      return announcements;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<AppUser>> getInstitutionStudents(
+      String institutionId) async {
+    try {
+      final querySnapshot = await usersCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .where('role', isEqualTo: UserRole.student.name)
+          .get();
+
+      return querySnapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      return [];
+    }
+  }
 }
