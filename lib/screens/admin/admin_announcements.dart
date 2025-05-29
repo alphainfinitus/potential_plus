@@ -4,15 +4,9 @@ import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/services/db_service.dart';
+import 'package:potential_plus/models/app_user.dart';
 import 'package:intl/intl.dart';
 import 'package:cuid2/cuid2.dart';
-
-enum RecipientType {
-  all,
-  teachers,
-  students,
-  specificStudent,
-}
 
 class AdminAnnouncementsScreen extends ConsumerStatefulWidget {
   const AdminAnnouncementsScreen({super.key});
@@ -33,7 +27,8 @@ class _AdminAnnouncementsScreenState
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
   final _studentIdController = TextEditingController();
-  RecipientType _selectedRecipient = RecipientType.all;
+  final _teacherIdController = TextEditingController();
+  TargetType _selectedRecipient = TargetType.ALL;
   bool _isCreatingActivity = false;
 
   @override
@@ -49,12 +44,18 @@ class _AdminAnnouncementsScreenState
     _titleController.dispose();
     _messageController.dispose();
     _studentIdController.dispose();
+    _teacherIdController.dispose();
     super.dispose();
   }
 
   Future<void> _loadActivities() async {
     final appUser = ref.read(authProvider).value;
-    if (appUser == null) return;
+    if (appUser == null) {
+      print('Error: appUser is null in _loadActivities');
+      return;
+    }
+
+    print('Loading announcements for institution: ${appUser.institutionId}');
 
     setState(() {
       _isLoading = true;
@@ -64,14 +65,58 @@ class _AdminAnnouncementsScreenState
       final activities =
           await DbService.getInstitutionAnnouncements(appUser.institutionId);
 
+      print('Loaded ${activities.length} announcements');
+
+      if (activities.isEmpty) {
+        print('No announcements found. This might be unexpected.');
+        // Consider creating a sample announcement for testing
+        await _createSampleAnnouncement(appUser);
+        // Try loading again
+        final retryActivities =
+            await DbService.getInstitutionAnnouncements(appUser.institutionId);
+        setState(() {
+          _activities = retryActivities;
+          _isLoading = false;
+        });
+        return;
+      }
+
       setState(() {
         _activities = activities;
         _isLoading = false;
       });
     } catch (e) {
+      print('Error in _loadActivities: $e');
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _createSampleAnnouncement(AppUser appUser) async {
+    print('Creating sample announcement for testing');
+    try {
+      final now = DateTime.now();
+
+      // Create a sample announcement
+      final activity = Activity(
+        id: cuid(),
+        userId: appUser.id,
+        targetType: TargetType.ALL,
+        activityType: ActivityType.announcement,
+        activityRefId: "",
+        createdAt: now,
+        updatedAt: now,
+        institutionId: appUser.institutionId,
+        title: "Sample Announcement",
+        message:
+            "This is a sample announcement created automatically for testing.",
+      );
+
+      await DbService.activitiesCollRef().doc(activity.id).set(activity);
+      print('Sample announcement created successfully with ID: ${activity.id}');
+    } catch (e) {
+      print('Error creating sample announcement: $e');
     }
   }
 
@@ -84,10 +129,18 @@ class _AdminAnnouncementsScreenState
       return;
     }
 
-    if (_selectedRecipient == RecipientType.specificStudent &&
+    if (_selectedRecipient == TargetType.SPECIFIC_STUDENT &&
         _studentIdController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a student ID')),
+      );
+      return;
+    }
+
+    if (_selectedRecipient == TargetType.SPECIFIC_TEACHER &&
+        _teacherIdController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a teacher ID')),
       );
       return;
     }
@@ -102,32 +155,39 @@ class _AdminAnnouncementsScreenState
 
       final now = DateTime.now();
 
+      // Determine the specific user ID based on recipient type
+      String? specificUserId;
+      if (_selectedRecipient == TargetType.SPECIFIC_STUDENT) {
+        specificUserId = _studentIdController.text;
+      } else if (_selectedRecipient == TargetType.SPECIFIC_TEACHER) {
+        specificUserId = _teacherIdController.text;
+      }
+
       // Create an activity for the announcement
       final activity = Activity(
         id: cuid(),
-        userId: _selectedRecipient == RecipientType.specificStudent
-            ? _studentIdController.text
-            : appUser.id,
-        activityType: ActivityType.attendance,
+        userId: appUser.id, // The creator's ID
+        targetType: _selectedRecipient,
+        activityType: ActivityType.announcement,
         activityRefId:
             "", // This would be used to reference other data if needed
         createdAt: now,
         updatedAt: now,
+        institutionId: appUser.institutionId,
+        title: _titleController.text,
+        message: _messageController.text,
+        specificUserId: specificUserId,
       );
 
-      // In a real implementation, you would also save the title, message, and target in a separate collection
-      // or add these as custom fields to the Activity document in Firestore
-
-      // Save the activity to Firestore
       await DbService.activitiesCollRef().doc(activity.id).set(activity);
 
       if (mounted) {
-        // Clear form fields
         _titleController.clear();
         _messageController.clear();
         _studentIdController.clear();
+        _teacherIdController.clear();
         setState(() {
-          _selectedRecipient = RecipientType.all;
+          _selectedRecipient = TargetType.ALL;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -135,7 +195,7 @@ class _AdminAnnouncementsScreenState
         );
 
         // Refresh activities list and switch to view tab
-        _loadActivities();
+        await _loadActivities();
         _tabController.animateTo(0); // Switch to the view tab
       }
     } catch (e) {
@@ -150,19 +210,6 @@ class _AdminAnnouncementsScreenState
           _isCreatingActivity = false;
         });
       }
-    }
-  }
-
-  String _getRecipientLabel(RecipientType recipient) {
-    switch (recipient) {
-      case RecipientType.all:
-        return 'All';
-      case RecipientType.teachers:
-        return 'Teachers';
-      case RecipientType.students:
-        return 'Students';
-      case RecipientType.specificStudent:
-        return 'Specific Student';
     }
   }
 
@@ -249,11 +296,11 @@ class _AdminAnnouncementsScreenState
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: DropdownButton<RecipientType>(
+                    child: DropdownButton<TargetType>(
                       isExpanded: true,
                       value: _selectedRecipient,
-                      items: RecipientType.values.map((recipient) {
-                        return DropdownMenuItem<RecipientType>(
+                      items: TargetType.values.map((recipient) {
+                        return DropdownMenuItem<TargetType>(
                           value: recipient,
                           child: Text(_getRecipientLabel(recipient)),
                         );
@@ -266,7 +313,8 @@ class _AdminAnnouncementsScreenState
                     ),
                   ),
                 ),
-                if (_selectedRecipient == RecipientType.specificStudent) ...[
+                const SizedBox(height: 16),
+                if (_selectedRecipient == TargetType.SPECIFIC_STUDENT) ...[
                   const SizedBox(height: 16),
                   const Text(
                     'Student ID',
@@ -280,6 +328,24 @@ class _AdminAnnouncementsScreenState
                     controller: _studentIdController,
                     decoration: const InputDecoration(
                       hintText: 'Enter student ID',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+                if (_selectedRecipient == TargetType.SPECIFIC_TEACHER) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Teacher ID',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _teacherIdController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter teacher ID',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -314,6 +380,21 @@ class _AdminAnnouncementsScreenState
       ),
     );
   }
+
+  String _getRecipientLabel(TargetType recipient) {
+    switch (recipient) {
+      case TargetType.ALL:
+        return 'All';
+      case TargetType.ALL_TEACHERS:
+        return 'Teachers';
+      case TargetType.ALL_STUDENTS:
+        return 'Students';
+      case TargetType.SPECIFIC_STUDENT:
+        return 'Specific Student';
+      case TargetType.SPECIFIC_TEACHER:
+        return 'Specific Teacher';
+    }
+  }
 }
 
 class ActivityCard extends StatelessWidget {
@@ -326,9 +407,9 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // In a real implementation, you would extract the title and message from a related document or metadata
-    final String title = "Announcement";
-    final String message = "Activity message";
+    // Get the title and message from the activity
+    final String title = activity.title ?? "Announcement";
+    final String message = activity.message ?? "No message provided";
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -350,9 +431,9 @@ class ActivityCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  _getRecipientLabel(activity),
+                  _getRecipientLabel(activity.targetType),
                   style: TextStyle(
-                    color: _getRecipientColor(activity),
+                    color: _getRecipientColor(activity.targetType),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -374,13 +455,33 @@ class ActivityCard extends StatelessWidget {
     );
   }
 
-  String _getRecipientLabel(Activity activity) {
-    // In a real implementation, you would determine the recipient type from activity metadata
-    return "All";
+  String _getRecipientLabel(TargetType targetType) {
+    switch (targetType) {
+      case TargetType.ALL:
+        return 'All';
+      case TargetType.ALL_TEACHERS:
+        return 'Teachers';
+      case TargetType.ALL_STUDENTS:
+        return 'Students';
+      case TargetType.SPECIFIC_STUDENT:
+        return 'Specific Student';
+      case TargetType.SPECIFIC_TEACHER:
+        return 'Specific Teacher';
+    }
   }
 
-  Color _getRecipientColor(Activity activity) {
-    // In a real implementation, you would determine the color based on recipient type
-    return Colors.blue;
+  Color _getRecipientColor(TargetType targetType) {
+    switch (targetType) {
+      case TargetType.ALL:
+        return Colors.blue;
+      case TargetType.ALL_TEACHERS:
+        return Colors.green;
+      case TargetType.ALL_STUDENTS:
+        return Colors.orange;
+      case TargetType.SPECIFIC_STUDENT:
+        return Colors.purple;
+      case TargetType.SPECIFIC_TEACHER:
+        return Colors.teal;
+    }
   }
 }

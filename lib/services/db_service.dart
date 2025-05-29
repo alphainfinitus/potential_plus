@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:potential_plus/constants/activity_type.dart';
 import 'package:potential_plus/constants/user_role.dart';
 import 'package:potential_plus/models/activity.dart';
 import 'package:potential_plus/models/app_user.dart';
@@ -230,15 +231,53 @@ class DbService {
   // Announcement related methods
   static Future<List<Activity>> getInstitutionAnnouncements(
       String institutionId) async {
+    print('Fetching announcements for institution: $institutionId');
+
     try {
+      // First check if we need to make a more basic query
+      final testQuery = await activitiesCollRef().limit(10).get();
+
+      print('Basic query found ${testQuery.docs.length} activities in total');
+
+      // Try a simpler query first
+      final basicQuery = await activitiesCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .get();
+
+      print(
+          'Basic institution query found ${basicQuery.docs.length} activities');
+
+      // Now try the full query
       final querySnapshot = await activitiesCollRef()
           .where('institutionId', isEqualTo: institutionId)
+          .where('activityType', isEqualTo: ActivityType.announcement.name)
           .orderBy('createdAt', descending: true)
           .get();
 
-      return querySnapshot.docs.map((doc) => doc.data()).toList();
+      print('Full query found ${querySnapshot.docs.length} announcements');
+
+      final result = querySnapshot.docs.map((doc) => doc.data()).toList();
+      return result;
     } catch (e) {
-      return [];
+      print('Error fetching announcements: $e');
+      // Try a fallback approach - get all activities and filter in memory
+      try {
+        print('Trying fallback approach...');
+        final allActivities = await activitiesCollRef().get();
+
+        print(
+            'Got ${allActivities.docs.length} total activities, filtering in memory');
+
+        return allActivities.docs
+            .map((doc) => doc.data())
+            .where((activity) =>
+                activity.institutionId == institutionId &&
+                activity.activityType == ActivityType.announcement)
+            .toList();
+      } catch (fallbackError) {
+        print('Fallback also failed: $fallbackError');
+        return [];
+      }
     }
   }
 
@@ -246,6 +285,7 @@ class DbService {
       String institutionId) {
     return activitiesCollRef()
         .where('institutionId', isEqualTo: institutionId)
+        .where('activityType', isEqualTo: ActivityType.announcement.name)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
@@ -257,15 +297,25 @@ class DbService {
       // Get announcements for all
       final allAnnouncementsQuery = await activitiesCollRef()
           .where('institutionId', isEqualTo: institutionId)
+          .where('activityType', isEqualTo: ActivityType.announcement.name)
+          .where('targetType', isEqualTo: TargetType.ALL.name)
           .get();
+
+      // Get role-specific announcements (students or teachers)
+      final String roleTargetType = userRole == UserRole.student
+          ? TargetType.ALL_STUDENTS.name
+          : TargetType.ALL_TEACHERS.name;
 
       final roleAnnouncementsQuery = await activitiesCollRef()
           .where('institutionId', isEqualTo: institutionId)
+          .where('activityType', isEqualTo: ActivityType.announcement.name)
+          .where('targetType', isEqualTo: roleTargetType)
           .get();
 
       // Get user-specific announcements
       final userAnnouncementsQuery = await activitiesCollRef()
           .where('institutionId', isEqualTo: institutionId)
+          .where('activityType', isEqualTo: ActivityType.announcement.name)
           .where('specificUserId', isEqualTo: userId)
           .get();
 
@@ -280,6 +330,7 @@ class DbService {
 
       return announcements;
     } catch (e) {
+      print('Error fetching user announcements: $e');
       return [];
     }
   }
@@ -294,6 +345,21 @@ class DbService {
 
       return querySnapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<List<AppUser>> getInstitutionTeachers(
+      String institutionId) async {
+    try {
+      final querySnapshot = await usersCollRef()
+          .where('institutionId', isEqualTo: institutionId)
+          .where('role', isEqualTo: UserRole.teacher.name)
+          .get();
+
+      return querySnapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      print('Error fetching teachers: $e');
       return [];
     }
   }

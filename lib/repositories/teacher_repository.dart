@@ -12,9 +12,6 @@ class TeacherRepository {
     required String markedByUserId,
     required String classId,
   }) async {
-    // TODO: use transactions to ensure atomicity
-    // TODO: control flow is too messy, refactor
-
     final batch = DbService.db.batch();
 
     // 1. check if attendance already exists for today
@@ -52,10 +49,13 @@ class TeacherRepository {
         final newActivityDoc = DbService.activitiesCollRef().doc();
 
         final newActivity = Activity(
+          institutionId: institutionId,
           id: newActivityDoc.id,
           userId: studentId,
           activityType: ActivityType.attendance,
           activityRefId: todayAttendanceSnapshot.id,
+          targetType:
+              TargetType.values.byName(TargetType.SPECIFIC_STUDENT.name),
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
@@ -85,10 +85,12 @@ class TeacherRepository {
       final newActivityDoc = DbService.activitiesCollRef().doc();
 
       final newActivity = Activity(
+        institutionId: institutionId,
         id: newActivityDoc.id,
         userId: studentId,
         activityType: ActivityType.attendance,
         activityRefId: newAttendanceDoc.id,
+        targetType: TargetType.values.byName(TargetType.SPECIFIC_STUDENT.name),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
