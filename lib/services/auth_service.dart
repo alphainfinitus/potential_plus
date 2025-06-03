@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:potential_plus/services/fcm_service.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static Future<User?> signIn(String email, String password) async {
     try {
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -22,6 +23,7 @@ class AuthService {
   }
 
   static Future<void> signOut() async {
+    await FCMService.removeToken();
     await _auth.signOut();
   }
 

@@ -5,10 +5,14 @@ import 'package:potential_plus/constants/text_literals.dart';
 import 'package:potential_plus/firebase_options.dart';
 import 'package:potential_plus/providers/current_theme_provider/current_theme_provider.dart';
 import 'package:potential_plus/router/app_router.dart';
+import 'package:potential_plus/services/fcm_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize FCM service
+  await FCMService.initialize();
 
   runApp(const ProviderScope(child: AppRootWidget()));
 }

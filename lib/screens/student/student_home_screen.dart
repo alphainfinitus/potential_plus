@@ -10,6 +10,7 @@ import 'package:potential_plus/providers/institution_provider/institution_provid
 import 'package:potential_plus/screens/student/student_home_screen/activity_feed/student_activity_feed.dart';
 import 'package:potential_plus/screens/timetable/timetable.dart';
 import 'package:potential_plus/services/db_service.dart';
+import 'package:potential_plus/services/token_manager.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
@@ -37,6 +38,12 @@ class StudentHomeScreen extends ConsumerWidget {
             if (institution == null) {
               return const Center(child: CircularProgressIndicator());
             }
+
+            // Verify FCM token when dashboard loads
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              TokenManager.verifyTokenOnDashboard();
+            });
+
             return Column(
               children: [
                 Padding(

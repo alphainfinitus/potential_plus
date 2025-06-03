@@ -40,7 +40,7 @@ class Activity {
       targetType: TargetType.values.byName(data['targetType']),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
-      institutionId: data['institutionId'] ?? '',
+      institutionId: data['institutionId'],
       title: data['title'],
       message: data['message'],
       specificUserId: data['specificUserId'],
