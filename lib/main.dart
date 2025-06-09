@@ -6,6 +6,7 @@ import 'package:potential_plus/firebase_options.dart';
 import 'package:potential_plus/providers/current_theme_provider/current_theme_provider.dart';
 import 'package:potential_plus/router/app_router.dart';
 import 'package:potential_plus/services/fcm_service.dart';
+import 'package:potential_plus/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,9 @@ Future<void> main() async {
 
   // Initialize FCM service
   await FCMService.initialize();
+
+  // Initialize the notification service
+  await NotificationService().initialize();
 
   runApp(const ProviderScope(child: AppRootWidget()));
 }
