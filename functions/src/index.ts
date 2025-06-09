@@ -16,6 +16,7 @@ import {
   handleNewAttendance, 
   handleBatchAttendanceUpdate 
 } from "./handlers/attendance-handlers";
+import { handleActivityCreated } from "./handlers/activity-handlers";
 
 admin.initializeApp();
 
@@ -52,3 +53,18 @@ export const onNewAttendance = onDocumentCreated("attendances/{attendanceId}", a
 });
 
 export const processAttendanceUpdate = onCall(handleBatchAttendanceUpdate);
+
+// Function that sends notifications when a new activity is created
+export const onActivityCreated = onDocumentCreated("activities/{activityId}", async (event) => {
+  try {
+    const activityData = event.data?.data();
+    
+    if (!activityData) {
+      return;
+    }
+    
+    await handleActivityCreated(event.params.activityId, activityData);
+  } catch (error) {
+    console.error("Error in onActivityCreated:", error);
+  }
+});
