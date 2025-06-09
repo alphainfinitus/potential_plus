@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
+
 
 
 export async function sendNotificationToUser(
@@ -14,7 +14,6 @@ export async function sendNotificationToUser(
         const userData = userDoc.data();
 
         if (userData && userData.fcmToken) {
-            // Send a notification to the user
             const message = {
                 notification: {
                     title: title,
@@ -25,12 +24,12 @@ export async function sendNotificationToUser(
             };
 
             await admin.messaging().send(message);
-            logger.info(`Sent notification to user ${userId}`);
+
         } else {
-            logger.info(`No FCM token found for user ${userId}, skipping notification`);
+
         }
     } catch (error) {
-        logger.error(`Error sending notification to user ${userId}:`, error);
+
     }
 }
 
@@ -58,8 +57,8 @@ export async function sendBatchNotifications(
         );
 
         await Promise.all(promises);
-        logger.info(`Sent batch notifications to ${notifications.length} users`);
+
     } catch (error) {
-        logger.error("Error sending batch notifications:", error);
+
     }
 } 

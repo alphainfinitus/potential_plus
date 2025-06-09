@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import * as logger from "firebase-functions/logger";
+
 import cuid from "cuid";
 import { ActivityData, ActivityType, TargetType } from "../models/types";
 
@@ -25,11 +25,11 @@ export async function createActivity(activityData: Partial<ActivityData>): Promi
         };
 
         await db.collection("activities").doc(activityId).set(activity);
-        logger.info(`Created activity: ${activityId}`);
+
 
         return activityId;
     } catch (error) {
-        logger.error("Error creating activity:", error);
+
         throw error;
     }
 }
@@ -69,11 +69,11 @@ export async function createActivitiesBatch(activitiesData: Partial<ActivityData
         }
 
         await batch.commit();
-        logger.info(`Created ${activityIds.length} activities in batch`);
+
 
         return activityIds;
     } catch (error) {
-        logger.error("Error creating activities batch:", error);
+
         throw error;
     }
 } 
