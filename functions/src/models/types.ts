@@ -54,4 +54,11 @@ export interface BatchAttendanceUpdateData {
         attendanceId?: string;
     }[];
     institutionId: string;
+    attendanceDate?: any; // Date for the attendance record
+    dateTime?: any; // DateTime field for the attendance record
+    subject?: string; // Subject name
+    metadata?: {
+        subject?: string;
+        [key: string]: any;
+    };
 } 
