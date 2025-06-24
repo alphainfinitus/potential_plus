@@ -7,6 +7,7 @@ import 'package:potential_plus/models/app_user.dart';
 import 'package:potential_plus/models/institution.dart';
 import 'package:potential_plus/providers/auth_provider/auth_provider.dart';
 import 'package:potential_plus/providers/institution_provider/institution_provider.dart';
+import 'package:potential_plus/services/token_manager.dart';
 import 'package:potential_plus/shared/app_bar_title.dart';
 import 'package:potential_plus/shared/institution/institution_actions_section.dart';
 import 'package:potential_plus/utils.dart';
@@ -37,6 +38,11 @@ class AdminHomeScreen extends ConsumerWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
+            // Verify FCM token when dashboard loads
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              TokenManager.verifyTokenOnDashboard();
+            });
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
@@ -63,6 +69,7 @@ class AdminHomeScreen extends ConsumerWidget {
                           title: 'Other Actions :',
                           actions: {
                             'Student Info': RouteNames.adminStudentInfo,
+                            'Announcements': RouteNames.adminAnnouncements,
                           }),
                     ]),
               ),

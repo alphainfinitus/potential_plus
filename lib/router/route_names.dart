@@ -10,7 +10,7 @@ class RouteNames {
   static const String adminEditTimeTable = '/admin/timetable';
   static const String adminStudentInfo = '/admin/student-info';
   static const String adminAttendance = '/admin/attendance';
-
+  static const String adminAnnouncements = '/admin/announcements';
   // Teacher routes
   static const String teacherHome = '/teacher';
   static const String teacherMarkAttendance = '/teacher/attendance';

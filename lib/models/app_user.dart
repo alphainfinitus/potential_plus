@@ -11,7 +11,8 @@ class AppUser {
     required this.institutionId,
     this.classId,
     required this.createdAt,
-    required this.updatedAt
+    required this.updatedAt,
+    this.fcmToken,
   });
 
   final String id;
@@ -23,7 +24,7 @@ class AppUser {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? classId;
-
+  final String? fcmToken;
 
   factory AppUser.fromMap(Map<String, dynamic> data) {
     UserRole role = UserRole.values.byName(data['role']);
@@ -37,19 +38,21 @@ class AppUser {
       institutionId: data['institutionId'],
       classId: data['classId'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate()
+      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+      fcmToken: data['fcmToken'],
     );
   }
 
   Map<String, dynamic> toMap() => {
-    'id': id,
-    'username': username,
-    'name': name,
-    'email': email,
-    'role': role.name,
-    'institutionId': institutionId,
-    'classId': classId,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt)
-  };
+        'id': id,
+        'username': username,
+        'name': name,
+        'email': email,
+        'role': role.name,
+        'institutionId': institutionId,
+        'classId': classId,
+        'createdAt': Timestamp.fromDate(createdAt),
+        'updatedAt': Timestamp.fromDate(updatedAt),
+        'fcmToken': fcmToken,
+      };
 }
