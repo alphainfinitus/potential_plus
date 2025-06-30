@@ -6,6 +6,7 @@ import 'package:potential_plus/models/time_table.dart';
 import 'package:potential_plus/screens/admin/admin_announcements.dart';
 import 'package:potential_plus/screens/admin/admin_home_screen.dart';
 import 'package:potential_plus/screens/admin/admin_student_info_screen/admin_student_info_screen.dart';
+import 'package:potential_plus/screens/admin/admin_user_management_screen.dart';
 import 'package:potential_plus/screens/auth/forgot_password_screen/forgot_password_screen.dart';
 import 'package:potential_plus/screens/auth/login_screen/login_screen.dart';
 import 'package:potential_plus/screens/error/not_found_page.dart';
@@ -80,6 +81,10 @@ final _goRouter = GoRouter(
     GoRoute(
       path: RouteNames.adminAttendance,
       builder: (context, state) => const AdminAttendanceScreen(),
+    ),
+    GoRoute(
+      path: RouteNames.adminUserManagement,
+      builder: (context, state) => const AdminUserManagementScreen(),
     ),
     // Teacher routes
     GoRoute(

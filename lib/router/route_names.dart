@@ -11,6 +11,7 @@ class RouteNames {
   static const String adminStudentInfo = '/admin/student-info';
   static const String adminAttendance = '/admin/attendance';
   static const String adminAnnouncements = '/admin/announcements';
+  static const String adminUserManagement = '/admin/user-management';
   // Teacher routes
   static const String teacherHome = '/teacher';
   static const String teacherMarkAttendance = '/teacher/attendance';

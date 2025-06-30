@@ -70,6 +70,7 @@ class AdminHomeScreen extends ConsumerWidget {
                           actions: {
                             'Student Info': RouteNames.adminStudentInfo,
                             'Announcements': RouteNames.adminAnnouncements,
+                            'User Management': RouteNames.adminUserManagement,
                           }),
                     ]),
               ),
