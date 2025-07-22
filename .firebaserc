@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "potential-plus-8f4ca"
+    "default": "YOUR_FIREBASE_PROJECT_ID_HERE"
   }
 }

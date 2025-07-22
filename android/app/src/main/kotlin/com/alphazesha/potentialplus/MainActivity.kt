@@ -1,4 +1,4 @@
-package com.alphazesha.potentialplus
+package com.yourcompany.yourapp
 
 import io.flutter.embedding.android.FlutterActivity
 

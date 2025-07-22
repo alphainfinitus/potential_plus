@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "841152581104",
-    "project_id": "potential-plus-8f4ca",
-    "storage_bucket": "potential-plus-8f4ca.appspot.com"
+    "project_number": "YOUR_PROJECT_NUMBER_HERE",
+    "project_id": "YOUR_FIREBASE_PROJECT_ID_HERE",
+    "storage_bucket": "YOUR_FIREBASE_PROJECT_ID_HERE.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:841152581104:android:9fd4cc6b5c073aecf3a135",
+        "mobilesdk_app_id": "YOUR_ANDROID_APP_ID_HERE",
         "android_client_info": {
-          "package_name": "com.alphazesha.potentialplus"
+          "package_name": "YOUR_PACKAGE_NAME_HERE"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyANsbFTA_YRzPFw35Q9vnKMEjTycMQ0NMU"
+          "current_key": "YOUR_ANDROID_API_KEY_HERE"
         }
       ],
       "services": {

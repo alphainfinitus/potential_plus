@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyANsbFTA_YRzPFw35Q9vnKMEjTycMQ0NMU',
-    appId: '1:841152581104:android:9fd4cc6b5c073aecf3a135',
-    messagingSenderId: '841152581104',
-    projectId: 'potential-plus-8f4ca',
-    storageBucket: 'potential-plus-8f4ca.appspot.com',
+    apiKey: 'YOUR_ANDROID_API_KEY_HERE',
+    appId: 'YOUR_ANDROID_APP_ID_HERE',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
+    projectId: 'YOUR_FIREBASE_PROJECT_ID_HERE',
+    storageBucket: 'YOUR_FIREBASE_PROJECT_ID_HERE.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAN6B5Kjphswm9ksbTFVx-htf2v1XnBAZI',
-    appId: '1:841152581104:ios:8fad8b4dc9b11b88f3a135',
-    messagingSenderId: '841152581104',
-    projectId: 'potential-plus-8f4ca',
-    storageBucket: 'potential-plus-8f4ca.appspot.com',
-    iosBundleId: 'com.alphazesha.potentialplus',
+    apiKey: 'YOUR_IOS_API_KEY_HERE',
+    appId: 'YOUR_IOS_APP_ID_HERE',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID_HERE',
+    projectId: 'YOUR_FIREBASE_PROJECT_ID_HERE',
+    storageBucket: 'YOUR_FIREBASE_PROJECT_ID_HERE.appspot.com',
+    iosBundleId: 'YOUR_IOS_BUNDLE_ID_HERE',
   );
 
 }

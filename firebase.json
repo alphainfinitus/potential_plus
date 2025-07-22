@@ -3,17 +3,17 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "potential-plus-8f4ca",
-          "appId": "1:841152581104:android:9fd4cc6b5c073aecf3a135",
+          "projectId": "YOUR_FIREBASE_PROJECT_ID_HERE",
+          "appId": "YOUR_ANDROID_APP_ID_HERE",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "potential-plus-8f4ca",
+          "projectId": "YOUR_FIREBASE_PROJECT_ID_HERE",
           "configurations": {
-            "android": "1:841152581104:android:9fd4cc6b5c073aecf3a135",
-            "ios": "1:841152581104:ios:8fad8b4dc9b11b88f3a135"
+            "android": "YOUR_ANDROID_APP_ID_HERE",
+            "ios": "YOUR_IOS_APP_ID_HERE"
           }
         }
       }
